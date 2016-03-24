@@ -1,0 +1,2 @@
+﻿Class diagram:
+In this current version of the class diagram, the team had a much clearer idea of what software entities would be interacting with each other. For example, the behaviour class will make it much easier to get the required action that the car should take depending on which behaviour is active. Additionally, the new Actuator class will be the only one interfacing directly with the Arduino board, and will drive the car through the pins after the data has been analyzed through the behaviours.
