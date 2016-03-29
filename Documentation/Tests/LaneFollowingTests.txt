@@ -1,0 +1,5 @@
+The first test case we want to evaluate is the base case of driving on a straight road, with no obstacles. The road layout will be a single straight road. To pass the test the car should not steer in any direction, and move forward. It should not touch the lane markings on either side of the lane, or cross into the next lane.
+
+The second test will be to evaluate the case of driving on a curve. The road layout will be one straight road; followed by a 90 degree curve to right, with a radius of 50cm; followed by another straight road. In order to pass the test the car should  not touch the lane markings on either side of the lane, or cross into the next lane, and should progress down the straight, around the corner, and down the second straight. 
+
+The third and final test will be evaluate the case of driving across and intersection. The road layout will have a two large straights crossing at an appropriately marked intersection point. In order to pass the test the car should drive through the intersection and continue to the other side of the straight. As above, the car should  not touch the lane markings on either side of the lane or cross into the next lane.
