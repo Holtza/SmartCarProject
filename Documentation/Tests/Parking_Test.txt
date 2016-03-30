@@ -1,0 +1,7 @@
+Parking Test Cases
+The first test case we want to evaluate is when normal circumstances are met. This happens when the sensors detect an empty space to the right of the car which is large enough to park in. In order to pass this test, the car should go through the states without looping back into any previous states. The sensors will calculate distance travelled from when the space is detected, to when a new obstacle is found. When the space is deemed to be enough for a parking, the car will stop and perform a predetermined backwards maneuver to park in the spot.
+
+The second test case is when the car detects a potential parking space, but the space is not large enough for parking. To pass the test, the car will initialize the parking behaviour like normal. Once it finishes measuring the empty spot and it identifies it as being too short, the car will revert into the “moving” state and continue searching for a parking spot.
+
+The final test case we need is when the space for parking is large enough, but there is an obstacle inside the space which inhibits the car from parking. In order to pass this test, the car should determine that the change in sensor data does not mean that there is a potential parking space. The car should instead continue searching for an open space like normal. The behaviour needs to be calibrated in a way so that the car does not react to small changes in sensor data.
+
