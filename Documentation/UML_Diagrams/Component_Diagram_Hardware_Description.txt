@@ -1,0 +1,9 @@
+The camera, which is the only sensor that is connected directly to the Odroid board, sends a 1080p video stream. It is capable of sending 30 frames per second.
+
+The servo as well as the ESC are controlled by sending pulsing signals, adjusting the duration in accordance to the wished speed and direction. The ESC is driven by the battery pack, and controls the motor. If a remote controller is switched on, the signals from the receiver are directed (through the Arduino board) to the ESC and motor, respectively. 
+
+The infrared sensors outputs analogue voltage (indicating the distance to the closest detected object) once every 20 milliseconds. The ultrasonic sensors are programmed to output the distance in cm to the nearest detected object (if an object is detected, 0 otherwise), and does this once every 65 milliseconds in a best case scenario.
+
+The IMU, which contains three separate sensors, outputs a serial stream with the combined data from the gyroscope, accelerometer and the magnetometer. The wheel encoder outputs the number of state changes recorded (or 'counts').
+
+The Arduino and Odroid boards are connected via USB, and a bitstream with data packets containing sensor data is sent to the Odroid board when prompted. These data packets are separated by delimiters and contains a control bit to check for missing and/or corrupt data. The stream can be interrupted to send data in the other direction, as to change the output to the ESC and servo when the car enters and executes a behaviour.
