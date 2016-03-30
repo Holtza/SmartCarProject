@@ -1,0 +1,16 @@
+Component diagram description
+
+Bellow we describe briefly each of the components:
+
+OdroidFilter: This component is responsible for gathering and unpacking the data from the Arduino side. It is also responsible for packing and sending data to the Arduino.
+ObstacleDetector: This component is responsible for calculating the distance from the obstacles.
+Overtaker: This component is responsible for estimating the necessary turn in order to overtake a car. It uses the obstacles distance/direction for that.
+LaneFollower: It uses the live image from the camera to calculate the lane images with all edges highlighted in white.
+ImageGatherer: This component contains the classes responsible for processing and filtering the image from the camera.
+CarParker: It is responsible for calculating the parking space and parking maneuver.
+DataHandler: The data handler is responsible for collecting and filtering the data we want according to the Driver state.
+Driver: The driver requests the data as it changes behaviour such as following lane, overtaking and parking.
+
+ArduinoFilter: This component is responsible for unpacking and gathering the data from the Odroid side. It is also responsible for packing and sending data to the Odroid.
+SensorGatherer: It gathers all data from the sensors.
+Controller: The controller uses output pins to control the motor and servo hardware.
