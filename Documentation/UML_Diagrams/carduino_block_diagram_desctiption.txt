@@ -1,0 +1,9 @@
+Block diagram describing power, ground, and signal connection on Arduino. 
+
+Most of the components are powered with 5 volts through the Arduino. Exceptions to this are the IMU (powered with 3.3 volts) and the ESC, which is powered by a battery pack.
+
+For the ultrasonic sensors, the special data line (SDA) and clock line (SCL) pins are used. The IR sensors outputs analogue values. 
+
+We use two channels for the receiver, where channel 1 is connected to an interrupt pin (3). When a remote control is switched on, the change in input from channel 1 causes an interrupt which allows us to control the car manually. 
+
+The RX (receiver) of the IMU is hooked up to an TX (transmitter) pin on the Arduino (1) and vice versa (the IMU's TX to Arduino's RX, pin 0).
