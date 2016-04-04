@@ -25,25 +25,31 @@ void setup() {
 
 void loop() {
 
-  Serial.print("US 1: ");
+  //Serial.print("US 1: ");
   int sonar1 = ReadSonarSensor(us1);
-  Serial.println(sonar1);
+  //Serial.println(sonar1);
 
-  Serial.print("US 2: ");
+  //Serial.print("US 2: ");
   int sonar2 = ReadSonarSensor(us2);
-  Serial.println(sonar2);
+  //Serial.println(sonar2);
 
-  Serial.print("IR 1: ");
+  //Serial.print("IR 1: ");
   int inred1 = analogRead(IR1);
-  Serial.println(inred1);
+  //Serial.println(inred1);
 
-  Serial.print("IR 2: ");
+  //Serial.print("IR 2: ");
   int inred2 = analogRead(IR2);
-  Serial.println(inred2);
+  //Serial.println(inred2);
 
-  Serial.print("IR 3: ");
+  //Serial.print("IR 3: ");
   int inred3 = analogRead(IR3);
-  Serial.println(inred3);
+  //Serial.println(inred3);
+
+  String valueString = setString(sonar1, sonar2, inred1, inred2, inred3);
+  //Serial.println(valueString);
+
+  String encodedString = encodeNetstring(valueString);
+  Serial.println(encodedString);
 
 }
 
@@ -75,6 +81,25 @@ int ReadSonarSensor(int address){
   
   return readValue;
   
+}
+
+//Method for turning int values into a string
+String setString(int i_1, int i_2, int i_3, int i_4, int i_5){
+ String s1 = String(i_1);
+ String s2 = String(i_2);
+ String s3 = String(i_3);
+ String s4 = String(i_4);
+ String s5 = String(i_5);
+
+ String valueS = s1 + " " + s2 + " " + s3 + " " + s4 + " " + s5;
+
+ return valueS;
+}
+
+String encodeNetstring(String string){
+  int len = string.length();
+  if (len <= 0) return "empty";
+  return len + String(":" + string + ",");
 }
   
  
