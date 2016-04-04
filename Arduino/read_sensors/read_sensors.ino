@@ -1,7 +1,7 @@
 /*
  * Sketch to read the distance sensors
- * Returns a netstring into the following format:
- * "[length]:[US1_value] [US2_value] [IR1_value] [IR2_value] [IR3_value],"
+ * Returns a netstring into the following format CSV
+ * "[length], [US1_value], [US2_value], [IR1_value], [IR2_value], [IR3_value]"
  * 
  * Author: Martina Freiholtz
  * 
@@ -10,7 +10,6 @@
  * https://www.arduino.cc/en/Reference/Wire
  * https://www.arduino.cc/en/Tutorial/ReadAnalogVoltage
  */
-
 
 #include <Wire.h>
 
@@ -26,16 +25,11 @@ int us2 = 114;
 void setup() {
   Wire.begin();
   Serial.begin(9600);
-
 }
 
-
-
 void loop() {
-
   String netstring = ReadSensors();
-  Serial.print(netstring);
-
+  Serial.println(netstring);
 }
 
 /*
@@ -50,8 +44,6 @@ String ReadSensors(){
   int sonar2 = ReadUSSensor(us2);
   //Serial.println(sonar2);
   
-
-
   //Serial.print("IR 1: ");
   int inred1 = VoltageToCm(analogRead(IR1));  //Read IR sensors
   //Serial.println(inred1);
@@ -69,7 +61,6 @@ String ReadSensors(){
 
   String encodedString = encodeNetstring(valueString); //Create netstring and return it
   return encodedString;
-  
 }
 
 /*
@@ -77,7 +68,6 @@ String ReadSensors(){
  * given the address of that sensor.
  */
 int ReadUSSensor(int address){
-  
   int readValue = 0;
   
   Wire.beginTransmission(address);
@@ -94,29 +84,27 @@ int ReadUSSensor(int address){
   Wire.requestFrom(address, 2); //request two bytes from us1
 
   //receiver reading from sensor:
-  if (2 <= Wire.available()) { //if 2 bytes were received
+  if(2 <= Wire.available()){ //if 2 bytes were received
     readValue = Wire.read(); //receive high byte (overwrites previous reading
     readValue = readValue << 8; //shift high byte as lower 8 bits
     readValue |= Wire.read(); //receive low byte as lower 8 bits
   }
   
   return readValue; //Return the value
-  
 }
 
 /*
  * Takes 5 integer values and separate them with spaces in a string
  */
 String setString(int i_1, int i_2, int i_3, int i_4, int i_5){
- String s1 = String(i_1);
- String s2 = String(i_2);
- String s3 = String(i_3);
- String s4 = String(i_4);
- String s5 = String(i_5);
+  String s1 = String(i_1);
+  String s2 = String(i_2);
+  String s3 = String(i_3);
+  String s4 = String(i_4);
+  String s5 = String(i_5);
 
- String valueS = s1 + " " + s2 + " " + s3 + " " + s4 + " " + s5;
-
- return valueS;
+  String valueS = s1 + ", " + s2 + ", " + s3 + ", " + s4 + ", " + s5;
+  return valueS;
 }
 
 /*
@@ -124,8 +112,10 @@ String setString(int i_1, int i_2, int i_3, int i_4, int i_5){
  */
 String encodeNetstring(String string){
   int len = string.length();
-  if (len <= 0) return "empty";
-  return len + String(":" + string + ",");
+  if (len <= 0){
+    return "empty";
+  }
+  return len + String("," + string + ",");
 }
 
 /*
@@ -138,5 +128,3 @@ int VoltageToCm(int voltrep){
   int i = (int) value;
   return i;
 }
-  
- 
