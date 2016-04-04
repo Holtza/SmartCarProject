@@ -1,12 +1,20 @@
 /*
+ * Sketch to read the distance sensors
+ * Returns a netstring into the following format:
+ * "[length]:[US1_value] [US2_value] [IR1_value] [IR2_value] [IR3_value],"
+ * 
+ * Author: Martina Freiholtz
+ * 
  * Sources used:
  * https://www.arduino.cc/en/Tutorial/SFRRangerReader
  * https://www.arduino.cc/en/Reference/Wire
+ * https://www.arduino.cc/en/Tutorial/ReadAnalogVoltage
  */
+
 
 #include <Wire.h>
 
-//adresses
+//Ultrasonic addresses
 int us1 = 112;
 int us2 = 114;
 
@@ -25,37 +33,50 @@ void setup() {
 
 void loop() {
 
-  //Serial.print("US 1: ");
-  int sonar1 = ReadSonarSensor(us1);
-  //Serial.println(sonar1);
-
-  //Serial.print("US 2: ");
-  int sonar2 = ReadSonarSensor(us2);
-  //Serial.println(sonar2);
-
-  //Serial.print("IR 1: ");
-  int inred1 = analogRead(IR1);
-  //Serial.println(inred1);
-
-  //Serial.print("IR 2: ");
-  int inred2 = analogRead(IR2);
-  //Serial.println(inred2);
-
-  //Serial.print("IR 3: ");
-  int inred3 = analogRead(IR3);
-  //Serial.println(inred3);
-
-  String valueString = setString(sonar1, sonar2, inred1, inred2, inred3);
-  //Serial.println(valueString);
-
-  String encodedString = encodeNetstring(valueString);
-  Serial.println(encodedString);
+  String netstring = ReadSensors();
+  Serial.print(netstring);
 
 }
 
+/*
+ * Reads the sensors and returns a netstring, using helper functions.
+ */
+String ReadSensors(){
+   //Serial.print("US 1: ");
+  int sonar1 = ReadUSSensor(us1);  //Read ultrasonic sensors
+  //Serial.println(sonar1);
+
+  //Serial.print("US 2: ");
+  int sonar2 = ReadUSSensor(us2);
+  //Serial.println(sonar2);
+  
 
 
-int ReadSonarSensor(int address){
+  //Serial.print("IR 1: ");
+  int inred1 = VoltageToCm(analogRead(IR1));  //Read IR sensors
+  //Serial.println(inred1);
+
+  //Serial.print("IR 2: ");
+  int inred2 = VoltageToCm(analogRead(IR2));
+  //Serial.println(inred2);
+
+  //Serial.print("IR 3: ");
+  int inred3 = VoltageToCm(analogRead(IR3));
+  //Serial.println(inred3);
+
+  String valueString = setString(sonar1, sonar2, inred1, inred2, inred3); //Create string containing the sensor values as ints
+  //Serial.println(valueString);
+
+  String encodedString = encodeNetstring(valueString); //Create netstring and return it
+  return encodedString;
+  
+}
+
+/*
+ * Function which uses the Wire library to read from an ultrasonic sensor,
+ * given the address of that sensor.
+ */
+int ReadUSSensor(int address){
   
   int readValue = 0;
   
@@ -79,11 +100,13 @@ int ReadSonarSensor(int address){
     readValue |= Wire.read(); //receive low byte as lower 8 bits
   }
   
-  return readValue;
+  return readValue; //Return the value
   
 }
 
-//Method for turning int values into a string
+/*
+ * Takes 5 integer values and separate them with spaces in a string
+ */
 String setString(int i_1, int i_2, int i_3, int i_4, int i_5){
  String s1 = String(i_1);
  String s2 = String(i_2);
@@ -96,10 +119,24 @@ String setString(int i_1, int i_2, int i_3, int i_4, int i_5){
  return valueS;
 }
 
+/*
+ * Takes a string as an argument and encodes it as a netstring
+ */
 String encodeNetstring(String string){
   int len = string.length();
   if (len <= 0) return "empty";
   return len + String(":" + string + ",");
+}
+
+/*
+ * Takes the voltage respresenation read from an analog port, transforms it into
+ * voltages, and calculates and returns the distance in cm
+ */
+int VoltageToCm(int voltrep){
+  float voltage = voltrep * (5.0 / 1023.0);
+  float value = 12.5 / voltage;
+  int i = (int) value;
+  return i;
 }
   
  
