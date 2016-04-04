@@ -33,8 +33,16 @@ void setup() {
 
 void loop() {
 
-  
-  //Serial.print("US 1: ");
+  String netstring = ReadSensors();
+  Serial.print(netstring);
+
+}
+
+/*
+ * Reads the sensors and returns a netstring, using helper functions.
+ */
+String ReadSensors(){
+   //Serial.print("US 1: ");
   int sonar1 = ReadUSSensor(us1);  //Read ultrasonic sensors
   //Serial.println(sonar1);
 
@@ -59,11 +67,10 @@ void loop() {
   String valueString = setString(sonar1, sonar2, inred1, inred2, inred3); //Create string containing the sensor values as ints
   //Serial.println(valueString);
 
-  String encodedString = encodeNetstring(valueString); //Create netstring and print it to the Serial
-  Serial.println(encodedString);
-
+  String encodedString = encodeNetstring(valueString); //Create netstring and return it
+  return encodedString;
+  
 }
-
 
 /*
  * Function which uses the Wire library to read from an ultrasonic sensor,
