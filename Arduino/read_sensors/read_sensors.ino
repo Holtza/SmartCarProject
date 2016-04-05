@@ -126,5 +126,6 @@ int VoltageToCm(int voltrep){
   float voltage = voltrep * (5.0 / 1023.0);
   float value = 12.5 / voltage;
   int i = (int) value;
+  if (value > 45) return 100;
   return i;
 }
