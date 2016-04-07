@@ -1,0 +1,16 @@
+#IncludeRegexLine: ^[ 	]*#[ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+../include/Driver.h
+opendavinci/odcore/base/module/TimeTriggeredConferenceClientModule.h
+../include/opendavinci/odcore/base/module/TimeTriggeredConferenceClientModule.h
+
+/home/tobias/Downloads/OpenDaVINCI-3.0.0/automotive/miniature/driver/apps/driver.cpp
+Driver.h
+/home/tobias/Downloads/OpenDaVINCI-3.0.0/automotive/miniature/driver/apps/Driver.h
+
