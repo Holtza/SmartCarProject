@@ -1,0 +1,22 @@
+#IncludeRegexLine: ^[ 	]*#[ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+../include/LaneDetector.h
+opencv/cv.h
+-
+memory
+-
+opendavinci/odcore/base/module/TimeTriggeredConferenceClientModule.h
+../include/opendavinci/odcore/base/module/TimeTriggeredConferenceClientModule.h
+opendavinci/odcore/wrapper/SharedMemory.h
+../include/opendavinci/odcore/wrapper/SharedMemory.h
+
+/home/tobias/Downloads/OpenDaVINCI-3.0.0/automotive/miniature/lanedetector/apps/lanedetector.cpp
+LaneDetector.h
+/home/tobias/Downloads/OpenDaVINCI-3.0.0/automotive/miniature/lanedetector/apps/LaneDetector.h
+
