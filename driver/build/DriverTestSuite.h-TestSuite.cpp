@@ -28,7 +28,7 @@ bool suite_DriverTest_init = false;
 static DriverTest suite_DriverTest;
 
 static CxxTest::List Tests_DriverTest = { 0, 0 };
-CxxTest::StaticSuiteDescription suiteDescription_DriverTest( "/home/tobias/Downloads/OpenDaVINCI-3.0.0/automotive/miniature/driver/testsuites/DriverTestSuite.h", 51, "DriverTest", suite_DriverTest, Tests_DriverTest );
+CxxTest::StaticSuiteDescription suiteDescription_DriverTest( "/home/kristiyan/OpenDaVINCI/automotive/miniature/driver/testsuites/DriverTestSuite.h", 51, "DriverTest", suite_DriverTest, Tests_DriverTest );
 
 static class TestDescription_suite_DriverTest_testDriverSuccessfullyCreated : public CxxTest::RealTestDescription {
 public:

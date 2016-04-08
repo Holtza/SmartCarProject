@@ -1,3 +1,3 @@
-/home/tobias/Downloads/OpenDaVINCI-3.0.0/automotive/miniature/driver/build/CMakeFiles/DriverTestSuite.h-TestSuite.dir
-/home/tobias/Downloads/OpenDaVINCI-3.0.0/automotive/miniature/driver/build/CMakeFiles/driver.dir
-/home/tobias/Downloads/OpenDaVINCI-3.0.0/automotive/miniature/driver/build/CMakeFiles/driverlib-static.dir
+/home/kristiyan/OpenDaVINCI/automotive/miniature/driver/build/CMakeFiles/DriverTestSuite.h-TestSuite.dir
+/home/kristiyan/OpenDaVINCI/automotive/miniature/driver/build/CMakeFiles/driverlib-static.dir
+/home/kristiyan/OpenDaVINCI/automotive/miniature/driver/build/CMakeFiles/driver.dir
