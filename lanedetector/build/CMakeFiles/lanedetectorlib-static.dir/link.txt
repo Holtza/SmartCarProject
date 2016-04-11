@@ -1,2 +1,2 @@
-/usr/bin/ar cr liblanedetectorlib-static.a  CMakeFiles/lanedetectorlib-static.dir/src/LaneDetector.cpp.o
+/usr/bin/ar cq liblanedetectorlib-static.a  CMakeFiles/lanedetectorlib-static.dir/src/LaneDetector.cpp.o
 /usr/bin/ranlib liblanedetectorlib-static.a

@@ -28,7 +28,7 @@ bool suite_LaneDetectorTest_init = false;
 static LaneDetectorTest suite_LaneDetectorTest;
 
 static CxxTest::List Tests_LaneDetectorTest = { 0, 0 };
-CxxTest::StaticSuiteDescription suiteDescription_LaneDetectorTest( "/home/tobias/Downloads/OpenDaVINCI-3.0.0/automotive/miniature/lanedetector/testsuites/LaneDetectorTestSuite.h", 67, "LaneDetectorTest", suite_LaneDetectorTest, Tests_LaneDetectorTest );
+CxxTest::StaticSuiteDescription suiteDescription_LaneDetectorTest( "/home/kristiyan/OpenDaVINCI/automotive/miniature/lanedetector/testsuites/LaneDetectorTestSuite.h", 67, "LaneDetectorTest", suite_LaneDetectorTest, Tests_LaneDetectorTest );
 
 static class TestDescription_suite_LaneDetectorTest_testLaneDetectorSuccessfullyCreated : public CxxTest::RealTestDescription {
 public:

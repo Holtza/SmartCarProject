@@ -39,6 +39,8 @@
 #define IMAGE_HEIGHT 480
 #define IMAGE_SAMPLE 25
 #define IMAGE_LINE_SPACING IMAGE_HEIGHT/(10/3)/IMAGE_SAMPLE
+#define TURN_RATE 15
+#define THRESHOLD 60
 
 namespace automotive {
     namespace miniature {
@@ -122,6 +124,9 @@ namespace automotive {
 	   int avgLeft = 0;
 	   int avgRight = 0;
 	   int blue = 0;
+	   double desiredSteeringWheelAngle;
+       VehicleControl control;
+
            cv::Mat m = cv::cvarrToMat(m_image);
 	   for(i=0;i<IMAGE_SAMPLE;i++){
 	   	for(d=-1;d<=1;d+=2){
@@ -158,14 +163,29 @@ namespace automotive {
            }
 	   
 	   avgDirection = avgLeft/IMAGE_SAMPLE - avgRight/IMAGE_SAMPLE;
-	   if(avgDirection >= 20){
-	       avgDirection = -1;
-	   }else if(avgDirection <= 20){
-	       avgDirection = 1;
+
+	   control.setSpeed(2);
+
+	   cerr << avgDirection <<  " - ";
+
+       //left
+	   if(avgDirection >= THRESHOLD){
+	   	  	desiredSteeringWheelAngle = -TURN_RATE;
+	        control.setSteeringWheelAngle(desiredSteeringWheelAngle* cartesian::Constants::DEG2RAD);
+	        cerr << "Left" << endl;
+	  }else if(avgDirection <= -THRESHOLD){
+	        desiredSteeringWheelAngle = TURN_RATE;
+	        control.setSteeringWheelAngle(desiredSteeringWheelAngle * cartesian::Constants::DEG2RAD);
+	        cerr << "Right" << endl;
+
+       //neutral
 	   }else{
-	       avgDirection = 0;
+	       desiredSteeringWheelAngle = 0;
+	       control.setSteeringWheelAngle(desiredSteeringWheelAngle * cartesian::Constants::DEG2RAD);
+	       cerr << "Forward" << endl;
 	   }
- 	   cout << avgDirection << endl;
+ 	   
+
            cv::line(m, cvPoint(IMAGE_WIDTH/2,IMAGE_HEIGHT), cvPoint(IMAGE_WIDTH/2, 0), CV_RGB(0,255,0), 1,8,0);
             // 1. Do something with the image m_image here, for example: find lane marking features, optimize quality, ...
 	 // Example: Show the image.
@@ -188,13 +208,16 @@ namespace automotive {
             // Here, you see an example of how to send the data structure SteeringData to the ContainerConference.
             // This data structure will be received by all running components. In our example, it will be processed
             // by a potential component to "drive" the car.
-            SteeringData sd;
-            sd.setExampleData(1234.56);
+         //   SteeringData sd;
+         //   sd.setExampleData(1234.56);
+
+            Container v(control);
+            getConference().send(v);
 
             // Create container for finally sending the data.
-            Container c(sd);
+        //    Container c(sd);
             // Send container.
-            getConference().send(c);
+        //    getConference().send(c);
         }
 
         // This method will do the main data processing job.
