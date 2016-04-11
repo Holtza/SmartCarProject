@@ -20,6 +20,7 @@
 #include <iostream>
 #include <memory>
 #include <stdio.h>
+#include <math.h>
 #include <opencv/cv.h>
 #include <opencv/highgui.h>
 
@@ -39,8 +40,8 @@
 #define IMAGE_HEIGHT 480
 #define IMAGE_SAMPLE 25
 #define IMAGE_LINE_SPACING IMAGE_HEIGHT/(10/3)/IMAGE_SAMPLE
-#define TURN_RATE 15
-#define THRESHOLD 60
+#define TURN_RATE 17
+#define THRESHOLD 55
 
 namespace automotive {
     namespace miniature {
@@ -130,12 +131,15 @@ namespace automotive {
            cv::Mat m = cv::cvarrToMat(m_image);
 	   for(i=0;i<IMAGE_SAMPLE;i++){
 	   	for(d=-1;d<=1;d+=2){
-		    if(green == 255){
-			green = 0;
-			red = 255;
+	   		int intensity = 255*sqrt(IMAGE_SAMPLE-i)/sqrt(IMAGE_SAMPLE);
+		    if(d==1){
+				green = intensity;
+				blue = intensity;
+				red = 0;
 		    }else{
-			red=0;
-			green=255;
+		    	green = intensity/4;
+				blue = intensity;
+				red= intensity/2;
 		    }
 
 	       	    for(k=0;k<IMAGE_WIDTH/2 - 3;k++){	   
@@ -186,9 +190,8 @@ namespace automotive {
 	   }
  	   
 
-           cv::line(m, cvPoint(IMAGE_WIDTH/2,IMAGE_HEIGHT), cvPoint(IMAGE_WIDTH/2, 0), CV_RGB(0,255,0), 1,8,0);
-            // 1. Do something with the image m_image here, for example: find lane marking features, optimize quality, ...
-	 // Example: Show the image.
+           cv::line(m, cvPoint(IMAGE_WIDTH/2,IMAGE_HEIGHT), cvPoint(IMAGE_WIDTH/2, 0), CV_RGB(255,255,255), 1,8,0);
+           
             if (m_debug) {
                 if (m_image != NULL) {
                     cvShowImage("Camera Feed Image", m_image);
