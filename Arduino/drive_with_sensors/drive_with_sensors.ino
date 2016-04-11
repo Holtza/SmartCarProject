@@ -59,6 +59,7 @@ void setup() {
 }
 
 void loop() {
+  Serial.print(millis());
   String netstring = readSensors();
   Serial.println(netstring);
   motor.writeMicroseconds(getRequestedSpeed());
@@ -121,7 +122,7 @@ String setString(int i_1, int i_2, int i_3, int i_4, int i_5){
   String s4 = String(i_4);
   String s5 = String(i_5);
 
-  String valueS = s1 + ", " + s2 + ", " + s3 + ", " + s4 + ", " + s5;
+  String valueS = s1 + "," + s2 + "," + s3 + "," + s4 + "," + s5;
   return valueS;
 }
 
@@ -133,7 +134,7 @@ String encodeNetstring(String string){
   if (len <= 0){
     return "empty";
   }
-  return len + String("," + string + ",");
+  return String(",") + len + String("," + string);
 }
 
 /*
