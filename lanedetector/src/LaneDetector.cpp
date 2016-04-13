@@ -23,6 +23,7 @@
 #include <math.h>
 #include <opencv/cv.h>
 #include <opencv/highgui.h>
+#include <opencv2/imgproc/imgproc.hpp>
 
 #include "opendavinci/odcore/base/KeyValueConfiguration.h"
 #include "opendavinci/odcore/base/Lock.h"
@@ -128,7 +129,25 @@ namespace automotive {
 	   double desiredSteeringWheelAngle;
        VehicleControl control;
 
-           cv::Mat m = cv::cvarrToMat(m_image);
+
+	 /*image filtering */
+       //Gaussian Blur filter
+       cv::Mat src_img,dst, color_dst, blured_img;
+       src_img = m_image;
+      
+       blur(src_img,blured_img, cv::Size(3,3));
+       cvtColor(blured_img, color_dst, cv::COLOR_RGB2GRAY);
+
+       //canny detector filter
+       Canny(blured_img, blured_img, 50, 170, 3);
+       dst = cv::Scalar::all(0);
+       src_img.copyTo(dst, blured_img);
+       
+       IplImage* image = new IplImage(blured_img);
+ 
+
+         cv::Mat m = cv::cvarrToMat(image);
+           
 	   for(i=0;i<IMAGE_SAMPLE;i++){
 	   	for(d=-1;d<=1;d+=2){
 	   		int intensity = 255*sqrt(IMAGE_SAMPLE-i)/sqrt(IMAGE_SAMPLE);
@@ -193,8 +212,8 @@ namespace automotive {
            cv::line(m, cvPoint(IMAGE_WIDTH/2,IMAGE_HEIGHT), cvPoint(IMAGE_WIDTH/2, 0), CV_RGB(255,255,255), 1,8,0);
            
             if (m_debug) {
-                if (m_image != NULL) {
-                    cvShowImage("Camera Feed Image", m_image);
+                if (image != NULL) {
+                    cvShowImage("Camera Feed Image", image);
                     cvWaitKey(10);
                 }
             }
@@ -267,7 +286,7 @@ namespace automotive {
                 }
 
 		        if (c.getDataType() == odcore::data::image::SharedImage::ID()) {
-			        // Example for processing the received container.
+       		        // Example for processing the received container.
 			        has_next_frame = readSharedImage(c);
 		        }
 
