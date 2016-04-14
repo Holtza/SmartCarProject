@@ -37,10 +37,25 @@ if not, write to the Free Software
 #include "LaneDetector.h"
 #define IMAGE_WIDTH 640
 #define IMAGE_HEIGHT 480
+
+#define CENTER_LINE_X (IMAGE_WIDTH/2 - 85)
+#define MAX_WIDTH (IMAGE_WIDTH/2 + 85)
 #define IMAGE_SAMPLE 25
 #define IMAGE_LINE_SPACING IMAGE_HEIGHT/(10/3)/IMAGE_SAMPLE
 #define TURN_RATE 17
-#define THRESHOLD 55
+#define THRESHOLD 70
+
+#define KERNEL_SIZE 3
+#define CANNY_LOW_THRESHOLD 50
+#define CANNY_HIGH_THRESHOLD 170
+#define BLUR_RADIUS 5
+#define LEFT_RED 1
+#define LEFT_GREEN 0.4
+#define LEFT_BLUE 0
+#define RIGHT_RED 0
+#define RIGHT_GREEN 0.6
+#define RIGHT_BLUE 1
+
 namespace  automotive {
     namespace  miniature {
         using namespace std;
@@ -119,55 +134,48 @@ namespace  automotive {
             }
             return retVal;
         }
+
+        void LaneDetector::applyFilter(cv::Mat *img){
+            blur(*img, *img, cv::Size(BLUR_RADIUS, BLUR_RADIUS));
+            Canny(*img, *img, CANNY_LOW_THRESHOLD, CANNY_HIGH_THRESHOLD, KERNEL_SIZE);
+            cv::cvtColor(*img, *img, CV_GRAY2BGR);
+        }
+
         // This method is called to process an image described by the
         // SharedImage data structure.
         void LaneDetector::processImage() {
             int  i,d,k,red,green,length;
-            int  sample,
-            avgDirection;
+            int  avgDirection;
             int  avgLeft = 0;
             int  avgRight = 0;
             int  blue = 0;
             double  desiredSteeringWheelAngle;
             VehicleControl control;
-            /*
-            * image filtering
-            */
-            // Gaussian Blur filter
-            cv::Mat src_img, dst, color_dst, blured_img;
-            src_img = m_image;
-            blur(src_img, blured_img, cv::Size(5, 5));
-            // canny detector filter
-            Canny(blured_img, blured_img, 50, 170, 3);
-            dst = cv::Scalar::all(0);
-            src_img.copyTo(dst, blured_img);
-            IplImage  *image = new IplImage(blured_img);
+            
+            
+            cv::Mat img;
+            img = m_image;
+            applyFilter(&img);
+            IplImage  *image = new IplImage(img);
             cv::Mat m = cv::cvarrToMat(image);
-            for (i = 0;
-            i < IMAGE_SAMPLE;
-            i++) {
-                for (d = -1;
-                d <= 1;
-                d += 2) {
-                    int  intensity =
-                    255 * sqrt(IMAGE_SAMPLE - i) / sqrt(IMAGE_SAMPLE);
+
+            for (i = 0;i < IMAGE_SAMPLE;i++) {
+                for (d = -1;d <= 1;d += 2) {
+                    int  intensity = 255 * sqrt(IMAGE_SAMPLE - i) / sqrt(IMAGE_SAMPLE);
                     if (d == 1) {
-                        green = intensity;
-                        blue = intensity;
-                        red = 0;
+                        green = (int)(intensity*LEFT_GREEN);
+                        blue = (int)(intensity*LEFT_BLUE);
+                        red = (int)(intensity*LEFT_RED);
                     }
                     else {
-                        green = intensity / 4;
-                        blue = intensity;
-                        red = intensity / 2;
+                        green = (int)(intensity*RIGHT_GREEN);
+                        blue = (int)(intensity*RIGHT_BLUE);
+                        red = (int)(intensity*RIGHT_RED);
                     }
-                    for (k = 0;
-                    k < IMAGE_WIDTH / 2 - 3;
-                    k++) {
-                        int  x = (IMAGE_WIDTH / 2) + k * d;
-                        int  y =
-                        IMAGE_HEIGHT - (i * IMAGE_LINE_SPACING);
-                        sample = m.at < cv::Vec3b > (y, x)[0];
+                    for (k = 0;k < MAX_WIDTH; k++) {
+                        int  x = CENTER_LINE_X + k * d;
+                        int  y = IMAGE_HEIGHT - (i * IMAGE_LINE_SPACING);
+                        int sample = m.at < cv::Vec3b > (y, x)[0];
                         length = k;
                         // cv::Vec3b colour =
                         // m.at<cv::Vec3b>(cvPoint(IMAGE_WIDTH/2+k*d,
@@ -182,18 +190,15 @@ namespace  automotive {
                     else {
                         avgLeft += length;
                     }
-                    CvPoint cvP1 =
-                    cvPoint(IMAGE_WIDTH / 2,
-                    IMAGE_HEIGHT - (i * IMAGE_LINE_SPACING));
-                    CvPoint cvP2 =
-                    cvPoint(IMAGE_WIDTH / 2 + length * d,
-                    IMAGE_HEIGHT - (i * IMAGE_LINE_SPACING));
-                    cv::line(m, cvP1, cvP2, CV_RGB(red, green, blue), 1, 8,
-                    0);
+
+                    if(m_debug) {
+                        CvPoint cvP1 = cvPoint(CENTER_LINE_X, IMAGE_HEIGHT - (i * IMAGE_LINE_SPACING));
+                        CvPoint cvP2 = cvPoint(CENTER_LINE_X+ length * d, IMAGE_HEIGHT - (i * IMAGE_LINE_SPACING));
+                        cv::line(m, cvP1, cvP2, CV_RGB(red, green, blue), 1, 8,0);
+                    }
                 }
             }
-            avgDirection =
-            avgLeft / IMAGE_SAMPLE - avgRight / IMAGE_SAMPLE;
+            avgDirection = avgLeft / IMAGE_SAMPLE - avgRight / IMAGE_SAMPLE;
             control.setSpeed(2);
             cerr << avgDirection << " - ";
             // left
@@ -219,10 +224,8 @@ namespace  automotive {
                 DEG2RAD);
                 cerr << "Forward" << endl;
             }
-            cv::line(m, cvPoint(IMAGE_WIDTH / 2, IMAGE_HEIGHT),
-            cvPoint(IMAGE_WIDTH / 2, 0), CV_RGB(255, 255, 255), 1,
-            8, 0);
             if (m_debug) {
+                cv::line(m, cvPoint(CENTER_LINE_X, IMAGE_HEIGHT), cvPoint(CENTER_LINE_X, 0), CV_RGB(255, 255, 255), 1, 8, 0);
                 if (image != NULL) {
                     cvShowImage("Camera Feed Image", image);
                     cvWaitKey(10);
@@ -245,6 +248,7 @@ namespace  automotive {
             // Send container.
             // getConference().send(c);
         }
+
         // This method will do the main data processing job.
         // Therefore, it tries to open the real camera first. If that
         // fails, the virtual camera images from camgen are used.
