@@ -5,14 +5,16 @@ Servo esc, Sservo;
 const int motor = 6;
 const int servo = 5;
 int delay_sec = 10;
-int neutral = 1500;//1300;
-int high = 2000;//1800;
-int low = 1000;//850;
+int neutral = 1500; // //value for making car stand still
+int high = 2000;  ////value for making car go forward
+int low = 1000;  //value for making car go backwards
 
 
  
 void setup(){
-  attachInterrupt(digitalPinToInterrupt(3), manualOverride, FALLING);
+  //interup for safety, triggered when remote controll is turned on
+  attachInterrupt(digitalPinToInterrupt(3), manualOverride, FALLING); 
+  
   Serial.begin(9600);
   pinMode(motor, OUTPUT);
   esc.attach(motor);
@@ -37,11 +39,11 @@ void setup(){
 void loop(){
   
 
-  if(Serial.available() > 0){
-    int last_input = Serial.read();
+  if(Serial.available() > 0){  // checks if there's any buffered data
+    int last_input = Serial.read();  // if so, fetch it
     Serial.print("user input: " + String(last_input) + " - ");
 
-    switch(last_input){
+    switch(last_input){  // check what key was pressed (ASCII)
       case 119: //W
         //forward
         esc.writeMicroseconds(1570);
@@ -83,7 +85,7 @@ void loop(){
 
 }
 
-void manualOverride(){
+void manualOverride(){  //function that runs when the remote controll is turned on
   esc.writeMicroseconds(neutral);
   Serial.println("INTERUPTED");
 }
