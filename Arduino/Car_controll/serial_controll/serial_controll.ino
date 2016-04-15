@@ -2,8 +2,8 @@
 
 
 Servo esc, Sservo;
-const int motor = 6;
-const int servo = 5;
+const int motor = 9;
+const int servo = 6;
 int delay_sec = 10;
 int neutral = 1500; // //value for making car stand still
 int high = 2000;  ////value for making car go forward
@@ -47,7 +47,7 @@ void loop(){
       case 119: //W
         //forward
         esc.writeMicroseconds(1570);
-        Serial.println("Forward");
+        Serial.println("Forward?");
         break;
         
       case 122: //Z
@@ -62,23 +62,23 @@ void loop(){
       case 97: //A
         //left
         Sservo.write(60);
-        Serial.println("left");
+        Serial.println("left?");
         break;
         
       case 100: //D
         //right
         Sservo.write(120);
-        Serial.println("right");
+        Serial.println("right?");
         break;
 
       case 115: //S
         //straight
         Sservo.write(90);
-        Serial.println("Straight");
+        Serial.println("Straight?");
         break;
         
       default:
-        Serial.println("unknown input");
+        Serial.println("unknown input?");
     }
   }
 
