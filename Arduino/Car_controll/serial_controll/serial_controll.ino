@@ -40,45 +40,45 @@ void loop(){
   
 
   if(Serial.available() > 0){  // checks if there's any buffered data
-    int last_input = Serial.read();  // if so, fetch it
+    char last_input = Serial.read();  // if so, fetch it
     Serial.print("user input: " + String(last_input) + " - ");
 
     switch(last_input){  // check what key was pressed (ASCII)
-      case 119: //W
+      case 'w':
         //forward
         esc.writeMicroseconds(1570);
         Serial.println("Forward?");
         break;
         
-      case 122: //Z
+      case 'z':
         //back
         esc.writeMicroseconds(1250);
         break;
         
-      case 120: //X
-        esc.writeMicroseconds(1500);
+      case 'x':
+        esc.writeMicroseconds(neutral);
         break;
         
-      case 97: //A
+      case 'a':
         //left
         Sservo.write(60);
         Serial.println("left?");
         break;
         
-      case 100: //D
+      case 'd':
         //right
         Sservo.write(120);
         Serial.println("right?");
         break;
 
-      case 115: //S
+      case 's':
         //straight
         Sservo.write(90);
         Serial.println("Straight?");
         break;
         
       default:
-        Serial.println("unknown input?");
+        Serial.println("unknown input");
     }
   }
 
