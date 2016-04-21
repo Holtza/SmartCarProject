@@ -1,5 +1,15 @@
+/*
+ * 'x' (120) = Stop
+ * 'w' (119) = Turn on motor.
+ * 'A'(65) --> 'Z'(90) --> 's'(115) = Max left --> Neutral --> Max right
+ * 'z' (122) = Reverse
+ */
+ 
 #include <Servo.h>
-
+#define LOWER_MESSAGE_ANGLE 'A'
+#define UPPER_MESSAGE_ANGLE 's'
+#define LOWER_WHEEL_ANGLE 60
+#define UPPER_WHEEL_ANGLE 120
 #define STATIONARYTHRESHOLD  1;
 
 Servo esc, Sservo;
@@ -9,6 +19,7 @@ int delay_sec = 10;
 int neutral = 1500; // //value for making car stand still
 int high = 2000;  ////value for making car go forward
 int low = 1000;  //value for making car go backwards
+char buffer;
 
 //accelerometer constants 
 const int groundpin = 
@@ -24,7 +35,7 @@ int y = 0;
 int z = 0;
 boolean stationary;
 
-
+boolean driving = false;
 
  
 void setup(){
@@ -46,11 +57,7 @@ void setup(){
 
   esc.writeMicroseconds(neutral);
   int i = 5;
-  while(i > 0){
-    Serial.println(String(i));
-    i--;
-    delay(1000);
-  }
+  
 
   Serial.println("listening");
 
@@ -60,47 +67,46 @@ void setup(){
 
 void loop(){
   
-
+  if(driving)
+    esc.writeMicroseconds(1572);
   if(Serial.available() > 0){  // checks if there's any buffered data
     char last_input = Serial.read();  // if so, fetch it
     Serial.print("user input: " + String(last_input) + " - ");
 
+    if(last_input >= LOWER_MESSAGE_ANGLE && last_input <= UPPER_MESSAGE_ANGLE){
+        setWheelAngle(last_input);
+    }else{
+        Serial.println("Not in Range?");
+    }
+    
     switch(last_input){  // check what key was pressed (ASCII)
-      case 'w':
+      case 'w': //w
         //forward
-        esc.writeMicroseconds(1570);
-        Serial.println("Forward?");
+        if(buffer != 'w'){
+          driving = true;
+          Serial.println("Forward?");
+        }
+        buffer = 'w';
         break;
         
-      case 'z':
+      case 'z': //z
         //back
-        esc.writeMicroseconds(1250);
+        if(buffer != 'z'){
+          esc.writeMicroseconds(1250);
+        }
+        buffer = 'z';
         break;
         
-      case 'x':
-        esc.writeMicroseconds(neutral);
-        break;
-        
-      case 'a':
-        //left
-        Sservo.write(60);
-        Serial.println("left?");
-        break;
-        
-      case 'd':
-        //right
-        Sservo.write(120);
-        Serial.println("right?");
-        break;
-
-      case 's':
-        //straight
-        Sservo.write(90);
-        Serial.println("Straight?");
-        break;
+      case 'x': //x
+        if(buffer != 'x'){
+          driving = false;
+          esc.writeMicroseconds(1500);
+        }
+        buffer = 'x';
+        break;       
         
       default:
-        Serial.println("unknown input");
+        Serial.println("unknown input?");
     }
   }
   // read accelerometer data
@@ -147,4 +153,27 @@ void manualOverride(){  //function that runs when the remote controll is turned 
   esc.writeMicroseconds(neutral);
   Serial.println("INTERUPTED");
 }
+
+void setWheelAngle(int input){
+
+
+  
+  Serial.print("degs:");
+  Serial.println((int)input);
+  input -= LOWER_MESSAGE_ANGLE;
+  Serial.print("degs:");
+  Serial.println((int)input);
+  input *= (UPPER_WHEEL_ANGLE - LOWER_WHEEL_ANGLE);
+  Serial.print("degs:");
+  Serial.println((int)input);
+  input /= (UPPER_MESSAGE_ANGLE - LOWER_MESSAGE_ANGLE);
+  Serial.print("degs:");
+  Serial.println((int)input);
+  input += LOWER_WHEEL_ANGLE;
+  Sservo.write(input);
+  
+  Serial.print("degs:");
+  Serial.println((int)input);
+}
+
 
