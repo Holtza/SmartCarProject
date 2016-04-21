@@ -20,6 +20,9 @@ without even the implied warranty of
 if not, write to the Free Software
 * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
 */
+#include <fstream>
+#include <cstdlib>
+#include <unistd.h>
 #include <iostream>
 #include <memory>
 #include <stdio.h>
@@ -38,12 +41,14 @@ if not, write to the Free Software
 #define IMAGE_WIDTH 640
 #define IMAGE_HEIGHT 480
 
-#define CENTER_LINE_X (IMAGE_WIDTH/2 - 85)
-#define MAX_WIDTH (IMAGE_WIDTH/2 + 85)
+#define CENTER_LINE_X (IMAGE_WIDTH/2 - 100)
+#define MAX_WIDTH (IMAGE_WIDTH/2 + 45)
 #define IMAGE_SAMPLE 25
 #define IMAGE_LINE_SPACING IMAGE_HEIGHT/(10/3)/IMAGE_SAMPLE
 #define TURN_RATE 17
 #define THRESHOLD 70
+#define LEFT_THRESHOLD 4700
+#define RIGHT_THRESHOLD 6000
 
 #define KERNEL_SIZE 3
 #define CANNY_LOW_THRESHOLD 50
@@ -55,6 +60,13 @@ if not, write to the Free Software
 #define RIGHT_RED 0
 #define RIGHT_GREEN 0.6
 #define RIGHT_BLUE 1
+
+using namespace std;
+
+    ifstream input("/dev/ttyACM0");
+    ofstream output("/dev/ttyACM0");
+    FILE *file;
+    int mySystemFlag = 0;
 
 namespace  automotive {
     namespace  miniature {
@@ -76,6 +88,19 @@ namespace  automotive {
         }
         LaneDetector::~LaneDetector() {
         }
+        
+        void  LaneDetector::write(char const* str){
+            if(mySystemFlag == 0)system("stty -F /dev/ttyACM0 cs8 9600 ignbrk -brkint -icrnl -imaxbel -opost -onlcr -isig -icanon -iexten -echo -echoe -echoctl -echoke noflsh -ixon -crtscts");
+            mySystemFlag = 1;
+           // file = fopen("dickweed.txt", "w");
+            file = fopen("/root/middleman.txt", "w");
+            cout << str << endl;
+            fprintf(file, "%s", str);
+          //  output << str;
+            fclose(file);
+           // usleep(500000);
+        }
+
         void  LaneDetector::setUp() {
             // This method will be called automatically _before_ running
             // body().
@@ -128,7 +153,7 @@ namespace  automotive {
                         si.getBytesPerPixel());
                     }
                     // Mirror the image.
-                    cvFlip(m_image, 0, -1);
+                   // cvFlip(m_image, 0, -1);
                     retVal = true;
                 }
             }
@@ -149,6 +174,9 @@ namespace  automotive {
             int  avgLeft = 0;
             int  avgRight = 0;
             int  blue = 0;
+            char const* turnLeft = "a";
+            char const* turnRight = "d";
+            char const* turnStraight = "s";
             double  desiredSteeringWheelAngle;
             VehicleControl control;
             
@@ -200,20 +228,22 @@ namespace  automotive {
             }
             avgDirection = avgLeft / IMAGE_SAMPLE - avgRight / IMAGE_SAMPLE;
             control.setSpeed(2);
-            cerr << avgDirection << " - ";
+            cerr << avgRight+(avgDirection*0)<< " - ";
             // left
-            if (avgDirection >= THRESHOLD) {
+            if (avgRight <= LEFT_THRESHOLD) {
                 desiredSteeringWheelAngle = -TURN_RATE;
                 control.setSteeringWheelAngle(desiredSteeringWheelAngle *
                 cartesian::Constants::
                 DEG2RAD);
+                write(turnLeft);
                 cerr << "Left" << endl;
             }
-            else if (avgDirection <= -THRESHOLD) {
+            else if (avgRight >= RIGHT_THRESHOLD) {
                 desiredSteeringWheelAngle = TURN_RATE;
                 control.setSteeringWheelAngle(desiredSteeringWheelAngle *
                 cartesian::Constants::
                 DEG2RAD);
+                write(turnRight);
                 cerr << "Right" << endl;
                 // neutral
             }
@@ -222,6 +252,7 @@ namespace  automotive {
                 control.setSteeringWheelAngle(desiredSteeringWheelAngle *
                 cartesian::Constants::
                 DEG2RAD);
+                write(turnStraight);
                 cerr << "Forward" << endl;
             }
             if (m_debug) {
@@ -286,6 +317,7 @@ namespace  automotive {
             while (getModuleStateAndWaitForRemainingTimeInTimeslice() ==
             odcore::data::dmcp::ModuleStateMessage::RUNNING) {
                 bool has_next_frame = false;
+                //char const* goForward = "w";
                 // Use the shared memory image.
                 Container  c;
                 if (player.get() != NULL) {
@@ -304,6 +336,7 @@ namespace  automotive {
                     has_next_frame = readSharedImage(c);
                 }
                 // Process the read image.
+                //write(goForward);
                 if (true == has_next_frame) {
                     processImage();
                 }

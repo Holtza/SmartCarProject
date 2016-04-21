@@ -21,7 +21,6 @@
 #define LANEDETECTOR_H_
 
 #include <opencv/cv.h>
-
 #include <memory>
 #include "opendavinci/odcore/base/module/TimeTriggeredConferenceClientModule.h"
 #include "opendavinci/odcore/wrapper/SharedMemory.h"
@@ -88,6 +87,8 @@ namespace automotive {
 	            virtual void tearDown();
 
                 void processImage();
+                void applyFilter(cv::Mat *image);
+                void write(char const*);
         };
 
     } // miniature
