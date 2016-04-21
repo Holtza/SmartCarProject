@@ -129,6 +129,25 @@ void loop(){
 
 }
 
+/*
+ * Takes the voltage respresenation read from an analog port, transforms it into
+ * voltages, and calculates and returns the distance in cm
+ */
+float VoltageToCm(int voltrep){
+  float voltage = voltrep * (5.0 / 1023.0);
+  float value = 12.5 / voltage;
+ // int i = (int) value;
+  if (value > 45.0) return 100.0;
+  return i;
+}
+
+// converts centimeter into meter
+float CmToMeter(float cm){
+     return float meter = cm / 100.0;
+}
+
+
+
 void manualOverride(){  //function that runs when the remote controll is turned on
   esc.writeMicroseconds(neutral);
   Serial.println("INTERUPTED");
