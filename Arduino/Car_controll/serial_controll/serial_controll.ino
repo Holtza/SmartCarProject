@@ -112,10 +112,10 @@ void loop(){
   Serial.print(analogRead(zpin));
   Serial.println();
   delay(100);
-  // read the acceleration on each axis as analog voltage
-  x = analogRead(xpin);
-  y = analogRead(ypin);
-  z = analogRead(zpin);
+  // read the acceleration on each axis as analog voltage and converts into meter
+  x = voltageToCm(analogRead(xpin);
+  y = voltageToCm(analogRead(ypin));
+  z = voltageToCm(analogRead(zpin));
   movement = x + y + z;
   totalAcceleration = movement * movement;
   
@@ -131,19 +131,14 @@ void loop(){
 
 /*
  * Takes the voltage respresenation read from an analog port, transforms it into
- * voltages, and calculates and returns the distance in cm
+ * voltages, and calculates and returns the value in meter
  */
-float VoltageToCm(int voltrep){
+int voltageToCm(int voltrep){
   float voltage = voltrep * (5.0 / 1023.0);
   float value = 12.5 / voltage;
- // int i = (int) value;
-  if (value > 45.0) return 100.0;
-  return i;
-}
-
-// converts centimeter into meter
-float CmToMeter(float cm){
-     return float meter = cm / 100.0;
+  int i = (int) value;
+  if (value > 45) return 100 / 100;
+  return i / 100;
 }
 
 
