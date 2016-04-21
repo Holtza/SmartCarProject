@@ -23,14 +23,8 @@ void setup(){
 
 
   esc.writeMicroseconds(neutral);
-  int i = 5;
-  while(i > 0){
-    Serial.println(String(i));
-    i--;
-    delay(1000);
-  }
 
-  Serial.println("listening");
+  Serial.println("listening?");
 
   
 
@@ -87,6 +81,6 @@ void loop(){
 
 void manualOverride(){  //function that runs when the remote controll is turned on
   esc.writeMicroseconds(neutral);
-  Serial.println("INTERUPTED");
+  Serial.println("INTERUPTED?");
 }
 
