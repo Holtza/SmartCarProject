@@ -1,5 +1,6 @@
 #include <Servo.h>
 
+#define STATIONARYTHRESHOLD  1;
 
 Servo esc, Sservo;
 const int motor = 9;
@@ -9,6 +10,21 @@ int neutral = 1500; // //value for making car stand still
 int high = 2000;  ////value for making car go forward
 int low = 1000;  //value for making car go backwards
 
+//accelerometer constants 
+const int groundpin = 
+const int powerpin =
+const int xpin=   //x-axis of the accelerometer
+const int ypin=  // y-axis
+const int zpin=  // z-axis
+
+int movement = 0;
+int totalAcceleration = 0;
+int x = 0; 
+int y = 0;
+int z = 0;
+boolean stationary;
+
+
 
  
 void setup(){
@@ -17,14 +33,26 @@ void setup(){
   
   Serial.begin(9600);
   pinMode(motor, OUTPUT);
+  // accelerometer
+  pinMode(groundpin, OUTPUT);
+  pinMode(powerpin, OUTPUT);
+  digitalWrite(groundpin, LOW);
+  digitalWrite(powerpin, HIGH);
+  //end
   esc.attach(motor);
   Sservo.attach(servo); 
   Sservo.write(90);
 
 
   esc.writeMicroseconds(neutral);
+  int i = 5;
+  while(i > 0){
+    Serial.println(String(i));
+    i--;
+    delay(1000);
+  }
 
-  Serial.println("listening?");
+  Serial.println("listening");
 
   
 
@@ -75,12 +103,34 @@ void loop(){
         Serial.println("unknown input");
     }
   }
-
+  // read accelerometer data
+  // print the sensor values:
+  Serial.print(analogRead(xpin));
+  Serial.print("\t");
+  Serial.print(analogRead(ypin));
+  Serial.print("\t");
+  Serial.print(analogRead(zpin));
+  Serial.println();
+  delay(100);
+  // read the acceleration on each axis as analog voltage
+  x = analogRead(xpin);
+  y = analogRead(ypin);
+  z = analogRead(zpin);
+  movement = x + y + z;
+  totalAcceleration = movement * movement;
+  
+   
+  if(totalAcceleration > STATIONARYTHRESHOLD*STATIONARYTHRESHOLD){
+     stationary = true;
+  }else {
+     stationary = false;
+  }
+  
 
 }
 
 void manualOverride(){  //function that runs when the remote controll is turned on
   esc.writeMicroseconds(neutral);
-  Serial.println("INTERUPTED?");
+  Serial.println("INTERUPTED");
 }
 
