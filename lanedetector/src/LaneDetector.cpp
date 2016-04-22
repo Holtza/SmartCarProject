@@ -42,8 +42,12 @@ if not, write to the Free Software
 #define MAX_WIDTH (IMAGE_WIDTH/2 + 85)
 #define IMAGE_SAMPLE 25
 #define IMAGE_LINE_SPACING IMAGE_HEIGHT/(10/3)/IMAGE_SAMPLE
-#define TURN_RATE 17
-#define THRESHOLD 70
+#define TURN_RATE_SHARP 14
+#define TURN_RATE_SHORT 3
+#define TURN_RATE_AVG 9
+#define THRESHOLD 120
+#define THRESHOLD_AVG 80
+#define THRESHOLD_LOW 70
 
 #define KERNEL_SIZE 3
 #define CANNY_LOW_THRESHOLD 50
@@ -151,8 +155,11 @@ namespace  automotive {
             int  blue = 0;
             double  desiredSteeringWheelAngle;
             VehicleControl control;
-            
-            
+
+            enum StateMachineMoving {LEFT, RIGHT, FORWARD, SHORT_LEFT, SHORT_RIGHT, LEFT_SHARP, RIGHT_SHARP};
+
+            StateMachineMoving movingState;
+    
             cv::Mat img;
             img = m_image;
             applyFilter(&img);
@@ -199,31 +206,84 @@ namespace  automotive {
                 }
             }
             avgDirection = avgLeft / IMAGE_SAMPLE - avgRight / IMAGE_SAMPLE;
-            control.setSpeed(2);
-            cerr << avgDirection << " - ";
-            // left
+
+              
             if (avgDirection >= THRESHOLD) {
-                desiredSteeringWheelAngle = -TURN_RATE;
-                control.setSteeringWheelAngle(desiredSteeringWheelAngle *
-                cartesian::Constants::
-                DEG2RAD);
-                cerr << "Left" << endl;
+                movingState = LEFT_SHARP;
             }
-            else if (avgDirection <= -THRESHOLD) {
-                desiredSteeringWheelAngle = TURN_RATE;
-                control.setSteeringWheelAngle(desiredSteeringWheelAngle *
-                cartesian::Constants::
-                DEG2RAD);
-                cerr << "Right" << endl;
-                // neutral
+            else if(avgDirection >= THRESHOLD_AVG){
+                movingState = LEFT;
+            }
+            else if(avgDirection >= THRESHOLD_LOW){
+                movingState = SHORT_LEFT;
+            }
+
+            else if(avgDirection <= -THRESHOLD) {
+                movingState = RIGHT_SHARP;
+                
+            }
+            else if(avgDirection <= -THRESHOLD_AVG){
+                movingState = RIGHT;
+            }
+            else if(avgDirection <= -THRESHOLD_LOW){
+                movingState = SHORT_RIGHT;
             }
             else {
+                movingState = FORWARD;
+            }
+
+            cerr << avgDirection << " - ";
+
+            if(movingState == FORWARD){
+                control.setSpeed(2);
                 desiredSteeringWheelAngle = 0;
                 control.setSteeringWheelAngle(desiredSteeringWheelAngle *
-                cartesian::Constants::
-                DEG2RAD);
+                cartesian::Constants::DEG2RAD);
                 cerr << "Forward" << endl;
             }
+            else if(movingState == SHORT_LEFT){
+                control.setSpeed(1.5);
+                desiredSteeringWheelAngle = -TURN_RATE_SHORT;
+                control.setSteeringWheelAngle(desiredSteeringWheelAngle *
+                cartesian::Constants::DEG2RAD);
+                cerr << "Left Short" << endl;
+            }
+            else if(movingState == SHORT_RIGHT){
+                control.setSpeed(1.5);
+                desiredSteeringWheelAngle = TURN_RATE_SHORT;
+                control.setSteeringWheelAngle(desiredSteeringWheelAngle *
+                cartesian::Constants::DEG2RAD);
+                cerr << "Right Short" << endl;
+            }
+            else if(movingState == LEFT){
+                control.setSpeed(1);
+                desiredSteeringWheelAngle = -TURN_RATE_AVG;
+                control.setSteeringWheelAngle(desiredSteeringWheelAngle *
+                cartesian::Constants::DEG2RAD);
+                cerr << "Left" << endl;
+            }
+            else if(movingState == RIGHT){
+                control.setSpeed(1);
+                desiredSteeringWheelAngle = TURN_RATE_AVG;
+                control.setSteeringWheelAngle(desiredSteeringWheelAngle *
+                cartesian::Constants::DEG2RAD);
+                cerr << "Right" << endl;
+            }
+            else if(movingState == LEFT_SHARP){
+                control.setSpeed(0.5);
+                desiredSteeringWheelAngle = -TURN_RATE_SHARP;
+                control.setSteeringWheelAngle(desiredSteeringWheelAngle *
+                cartesian::Constants::DEG2RAD);
+                cerr << "Left Sharp" << endl;
+            }
+            else if(movingState == RIGHT_SHARP){
+                control.setSpeed(0.5);
+                desiredSteeringWheelAngle = TURN_RATE_SHARP;
+                control.setSteeringWheelAngle(desiredSteeringWheelAngle *
+                cartesian::Constants::DEG2RAD);
+                cerr << "Right Sharp" << endl;
+            }
+            
             if (m_debug) {
                 cv::line(m, cvPoint(CENTER_LINE_X, IMAGE_HEIGHT), cvPoint(CENTER_LINE_X, 0), CV_RGB(255, 255, 255), 1, 8, 0);
                 if (image != NULL) {
