@@ -20,6 +20,7 @@
 
 #include <cstdio>
 #include <cmath>
+#include <iostream>
 
 #include "opendavinci/odcore/io/conference/ContainerConference.h"
 #include "opendavinci/odcore/data/Container.h"
@@ -60,7 +61,7 @@ namespace automotive {
             const int32_t INFRARED_REAR_RIGHT = 2;
 
             const double OVERTAKING_DISTANCE = 10;
-            const double HEADING_PARALLEL = 0.005;
+            const double HEADING_PARALLEL = 0.07;
             const int val[] = {12, 11};
 
             // Overall state machines for moving and measuring.
@@ -193,6 +194,8 @@ namespace automotive {
                     // and the driven parts of the turn are plausible.
                     const double IR_FR = sbd.getValueForKey_MapOfDistances(INFRARED_FRONT_RIGHT);
                     const double IR_RR = sbd.getValueForKey_MapOfDistances(INFRARED_REAR_RIGHT);
+
+                    cerr << "vals: " << fabs(IR_FR - IR_RR) << endl;
 
                     if ((fabs(IR_FR - IR_RR) < HEADING_PARALLEL) && ((stageToRightLaneLeftTurn - stageToRightLaneRightTurn) > 0)) {
                         // Straight forward again.
