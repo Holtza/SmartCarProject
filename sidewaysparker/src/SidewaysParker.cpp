@@ -71,15 +71,17 @@ namespace automotive {
             const int REVERSING = 2;
             const int BACKWARDS_RIGHT = 3;
             const int BACKWARDS_LEFT = 4;
-            const int STOP = 5;
-            const int ALIGNING = 6;
+            const int ALIGNING = 5;
+            const int STOPPING = 6;
+            
           
            
             double carSize = 5.0;
             double currentTraveledPath; 
             int count;
             int count2;
-            int state = DETECTING_OBSTACLE;
+            //int move;
+            int state = DETECTING_OBSTACLE; // initial state 
 
 
             while (getModuleStateAndWaitForRemainingTimeInTimeslice() == odcore::data::dmcp::ModuleStateMessage::RUNNING) {
@@ -103,6 +105,7 @@ namespace automotive {
         
                       switch (state) {
 
+                        // The initial state is "DETECTING_OBSTACLE". Once a gap is found, the state is changed to "MEASURING"
                         case DETECTING_OBSTACLE: {
                         cout << "DETECTING_OBSTACLE" << endl;
                         vc.setSpeed(.8);
@@ -114,7 +117,7 @@ namespace automotive {
                         }
                      }
                         break;
-
+                        // Initialize measurement. Here we calculate whether the gap space is big enough for parking. If the gap is at least 2.2 the size of the car, the state is changed to "REVERSING", otherwise change back to "DETECTING_OBSTACLE".
                         case MEASURING:{
                         cout << "MEASURING" << endl;
                         cout << "Gap Space= " << vd.getAbsTraveledPath() - currentTraveledPath << endl;
@@ -132,7 +135,7 @@ namespace automotive {
                         }
                     }
                        break;
-
+                        // Here we prepare for backwards maneuver.
                         case REVERSING: {
                         cout << "REVERSING" << endl;
                         ++count;
@@ -145,7 +148,7 @@ namespace automotive {
                 }
 
                         break;
-                        
+                        // Initialize Backwards maneuver steering wheel to the right. If the car has traveled enough distance, change to "BACKWARDS_LEFT".
                         case BACKWARDS_RIGHT: {
           
                         cout << "BACKWARDS_RIGHT" << endl;
@@ -164,7 +167,7 @@ namespace automotive {
 
                      }
                         break;
-
+                        // Initialize Backwards maneuver steering wheel to the left. Continue backwards to the left until the IR_Rear is < 2, we can change to "ALIGNING" state so that  the car stops parallel to the road
                         case BACKWARDS_LEFT: {
 
                           cout << "BACKWARDS_LEFT" << endl;
@@ -174,11 +177,12 @@ namespace automotive {
                  
                           if(sbd.getValueForKey_MapOfDistances(INFRARED_REAR) < carSize * 0.4 && sbd.getValueForKey_MapOfDistances(INFRARED_REAR) > 0){
                             state = ALIGNING;
+                            //move = 0;
                           }
                         }
                    
                         break;
-
+                        // Initialize "ALIGNING". Changing the steering wheel to the right and parking the car.
                         case ALIGNING: {
                          cout << "ALIGNING" << endl;
                          vc.setSpeed(.4);
@@ -188,15 +192,20 @@ namespace automotive {
                         if(sbd.getValueForKey_MapOfDistances(ULTRASONIC_FRONT_CENTER) < carSize * 2 && sbd.getValueForKey_MapOfDistances(ULTRASONIC_FRONT_CENTER) > 0){
                        
                                  vc.setSteeringWheelAngle(25);
-                                 vc.setSpeed(.4);
-                                 state = STOP;
+                               //  if(move <= 3){
+                                  vc.setSpeed(.4);
+                                 // move++;
+                                // }else if(move > 3){
+                                  state = STOPPING;
+                              //   }
+                              
                           
                         }
                    }
                         break;
                   
-                        case STOP: {
-                        cout << "Mode: STOP" << endl;
+                        case STOPPING: {
+                        cout << "STOPPING" << endl;
                         vc.setSpeed(0);
                    }
                         break;
