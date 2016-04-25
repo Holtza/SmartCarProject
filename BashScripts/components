@@ -1,8 +1,3 @@
 #!/bin/bash
   
-WID=$(xprop -root | grep "_NET_ACTIVE_WINDOW(WINDOW)"| awk '{print $5}')
-xdotool windowfocus $WID
-xdotool key ctrl+shift+t
-wmctrl -i -a $WID
-
-gnome-terminal --tab -e "odsimvehicle --cid=111 --freq=10" --tab -e "odsimirus --cid=111 --freq=10" --tab -e "odsimcamera --cid=111 --freq=10"
+gnome-terminal --tab -e "odsimvehicle --cid=111 --freq=10" --tab -e "odsimirus --cid=111 --freq=10" --tab -e "odsimcamera --cid=111 --freq=10" --tab -e "odcockpit --cid=111"
