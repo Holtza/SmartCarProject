@@ -48,12 +48,13 @@ if not, write to the Free Software
 #define THRESHOLD 120
 #define THRESHOLD_AVG 80
 #define THRESHOLD_LOW 70
-#define CAR_SHARP_TURN_RIGHT 's'
-#define CAR_SHORT_TURN_RIGHT '^'
-#define CAR_AVG_TURN_RIGHT 'f'
-#define CAR_SHARP_TURN_LEFT 'A'
-#define CAR_SHORT_TURN_LEFT 'V'
-#define CAR_AVG_TURN_LEFT 'L'
+#define CAR_SHARP_TURN_RIGHT "s"
+#define CAR_SHORT_TURN_RIGHT "c"
+#define CAR_AVG_TURN_RIGHT "f"
+#define CAR_SHARP_TURN_LEFT "A"
+#define CAR_SHORT_TURN_LEFT "R"
+#define CAR_AVG_TURN_LEFT "L"
+#define CAR_STRAIGHT "Z"
 
 #define KERNEL_SIZE 3
 #define CANNY_LOW_THRESHOLD 50
@@ -146,6 +147,8 @@ namespace  automotive {
         }
 
         void LaneDetector::applyFilter(cv::Mat *img){
+            // Mirror the image.
+            cvFlip(m_image, 0, -1);
             blur(*img, *img, cv::Size(BLUR_RADIUS, BLUR_RADIUS));
             Canny(*img, *img, CANNY_LOW_THRESHOLD, CANNY_HIGH_THRESHOLD, KERNEL_SIZE);
             cv::cvtColor(*img, *img, CV_GRAY2BGR);
@@ -246,7 +249,7 @@ namespace  automotive {
                 desiredSteeringWheelAngle = 0;
                 control.setSteeringWheelAngle(desiredSteeringWheelAngle *
                 cartesian::Constants::DEG2RAD);
-                writeMiddleman(0);
+                writeMiddleman(CAR_STRAIGHT);
                 cerr << "Forward" << endl;
             }
             else if(movingState == SHORT_LEFT){
@@ -323,11 +326,10 @@ namespace  automotive {
             // getConference().send(c);
         }
 
-        void LaneDetector::writeMiddleman(char turn){
+        void LaneDetector::writeMiddleman(const char* turn){
             FILE *file;
-            
             file = fopen("/root/middleman.txt", "w");
-            fprintf(file, turn);
+            fprintf(file, "%s", turn);
             fclose(file);
 
         }
