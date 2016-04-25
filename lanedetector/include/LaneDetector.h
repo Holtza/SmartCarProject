@@ -84,7 +84,7 @@ namespace automotive {
                 bool m_debug;
 
 	            virtual void setUp();
-
+                    void writeMiddleman(char);
 	            virtual void tearDown();
 
                 void processImage();

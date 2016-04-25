@@ -48,6 +48,12 @@ if not, write to the Free Software
 #define THRESHOLD 120
 #define THRESHOLD_AVG 80
 #define THRESHOLD_LOW 70
+#define CAR_SHARP_TURN_RIGHT 's'
+#define CAR_SHORT_TURN_RIGHT '^'
+#define CAR_AVG_TURN_RIGHT 'f'
+#define CAR_SHARP_TURN_LEFT 'A'
+#define CAR_SHORT_TURN_LEFT 'V'
+#define CAR_AVG_TURN_LEFT 'L'
 
 #define KERNEL_SIZE 3
 #define CANNY_LOW_THRESHOLD 50
@@ -155,6 +161,7 @@ namespace  automotive {
             int  blue = 0;
             double  desiredSteeringWheelAngle;
             VehicleControl control;
+            
 
             enum StateMachineMoving {LEFT, RIGHT, FORWARD, SHORT_LEFT, SHORT_RIGHT, LEFT_SHARP, RIGHT_SHARP};
 
@@ -239,6 +246,7 @@ namespace  automotive {
                 desiredSteeringWheelAngle = 0;
                 control.setSteeringWheelAngle(desiredSteeringWheelAngle *
                 cartesian::Constants::DEG2RAD);
+                writeMiddleman(0);
                 cerr << "Forward" << endl;
             }
             else if(movingState == SHORT_LEFT){
@@ -246,6 +254,7 @@ namespace  automotive {
                 desiredSteeringWheelAngle = -TURN_RATE_SHORT;
                 control.setSteeringWheelAngle(desiredSteeringWheelAngle *
                 cartesian::Constants::DEG2RAD);
+                writeMiddleman(CAR_SHORT_TURN_LEFT);
                 cerr << "Left Short" << endl;
             }
             else if(movingState == SHORT_RIGHT){
@@ -253,6 +262,7 @@ namespace  automotive {
                 desiredSteeringWheelAngle = TURN_RATE_SHORT;
                 control.setSteeringWheelAngle(desiredSteeringWheelAngle *
                 cartesian::Constants::DEG2RAD);
+                writeMiddleman(CAR_SHORT_TURN_RIGHT);
                 cerr << "Right Short" << endl;
             }
             else if(movingState == LEFT){
@@ -260,6 +270,7 @@ namespace  automotive {
                 desiredSteeringWheelAngle = -TURN_RATE_AVG;
                 control.setSteeringWheelAngle(desiredSteeringWheelAngle *
                 cartesian::Constants::DEG2RAD);
+                writeMiddleman(CAR_AVG_TURN_LEFT);
                 cerr << "Left" << endl;
             }
             else if(movingState == RIGHT){
@@ -267,6 +278,7 @@ namespace  automotive {
                 desiredSteeringWheelAngle = TURN_RATE_AVG;
                 control.setSteeringWheelAngle(desiredSteeringWheelAngle *
                 cartesian::Constants::DEG2RAD);
+                writeMiddleman(CAR_AVG_TURN_RIGHT);
                 cerr << "Right" << endl;
             }
             else if(movingState == LEFT_SHARP){
@@ -274,6 +286,7 @@ namespace  automotive {
                 desiredSteeringWheelAngle = -TURN_RATE_SHARP;
                 control.setSteeringWheelAngle(desiredSteeringWheelAngle *
                 cartesian::Constants::DEG2RAD);
+                writeMiddleman(CAR_SHARP_TURN_LEFT);
                 cerr << "Left Sharp" << endl;
             }
             else if(movingState == RIGHT_SHARP){
@@ -281,6 +294,7 @@ namespace  automotive {
                 desiredSteeringWheelAngle = TURN_RATE_SHARP;
                 control.setSteeringWheelAngle(desiredSteeringWheelAngle *
                 cartesian::Constants::DEG2RAD);
+                writeMiddleman(CAR_SHARP_TURN_RIGHT);
                 cerr << "Right Sharp" << endl;
             }
             
@@ -307,6 +321,15 @@ namespace  automotive {
             // Container c(sd);
             // Send container.
             // getConference().send(c);
+        }
+
+        void LaneDetector::writeMiddleman(char turn){
+            FILE *file;
+            
+            file = fopen("/root/middleman.txt", "w");
+            fprintf(file, turn);
+            fclose(file);
+
         }
 
         // This method will do the main data processing job.
