@@ -1,5 +1,5 @@
 #!/bin/bash  
 echo "Starting ODV"  
 cd CarProject
-odsupercomponent --cid=111 --verbose=1
+gnome-terminal --tab -e "odsupercomponent --cid=111 --verbose=1"
 
