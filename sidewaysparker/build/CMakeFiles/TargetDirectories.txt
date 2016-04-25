@@ -1,0 +1,3 @@
+/home/danielle/OpenDaVINCI/automotive/miniature/sidewaysparker/build/CMakeFiles/SidewaysParkerTestSuite.h-TestSuite.dir
+/home/danielle/OpenDaVINCI/automotive/miniature/sidewaysparker/build/CMakeFiles/sidewaysparker.dir
+/home/danielle/OpenDaVINCI/automotive/miniature/sidewaysparker/build/CMakeFiles/sidewaysparkerlib-static.dir

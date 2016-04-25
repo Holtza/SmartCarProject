@@ -1,0 +1,2 @@
+/usr/bin/ar cr libsidewaysparkerlib-static.a  CMakeFiles/sidewaysparkerlib-static.dir/src/SidewaysParker.cpp.o
+/usr/bin/ranlib libsidewaysparkerlib-static.a
