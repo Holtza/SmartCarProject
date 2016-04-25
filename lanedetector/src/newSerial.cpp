@@ -1,18 +1,21 @@
 #include "SerialConnection.h"
 #include <signal.h>
+
+using namespace std;
+
     void sigint_handler(int sig);
     volatile bool STOP = false;
 
-    ofstream output("/dev/ttyACM3");
-    ifstream input("/dev/ttyACM3");
+    ofstream output("/dev/ttyACM0");
+    ifstream input("/dev/ttyACM0");
     FILE *file;
 SerialConnection::SerialConnection(){
-    system("stty -F /dev/ttyACM3 cs8 9600 ignbrk -brkint -icrnl -imaxbel -opost -onlcr -isig -icanon -iexten -echo -echoe -echok -echoctl -echoke noflsh -ixon -crtscts");
+    system("stty -F /dev/ttyACM0 cs8 9600 ignbrk -brkint -icrnl -imaxbel -opost -onlcr -isig -icanon -iexten -echo -echoe -echok -echoctl -echoke noflsh -ixon -crtscts");
 }
 
 void SerialConnection::write(char const *str){
 
-    file = fopen("/dev/ttyACM3", "w");
+    file = fopen("/dev/ttyACM0", "w");
     cout << str << endl;
   //  fwrite(str, 1, 1, file);
     fprintf(file, "%s", str);
@@ -31,15 +34,15 @@ string SerialConnection::read(){
     return s;
 }
 
-int main(int argc, char** args){
+int main(){
     SerialConnection s;
     char buffer;
     signal(SIGINT, sigint_handler);
     s.write("w");
     while(!STOP){
-        std::ifstream file("/root/middleman.txt");
+        std::ifstream sFile("/root/middleman.txt");
         std::string str; 
-        while (std::getline(file, str)){
+        while (std::getline(sFile, str)){
             const char *cstr = str.c_str();
             if(buffer != *cstr){
                 s.write(cstr);
@@ -56,4 +59,8 @@ void sigint_handler(int sig) {
     SerialConnection s;
     s.write("x");
     STOP = true;
+
+    if(sig != 0){
+        printf("Unknown error code");
+    }
 }
