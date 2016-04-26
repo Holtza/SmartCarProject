@@ -1,8 +1,5 @@
 #include "SerialConnection.h"
 #include <signal.h>
-
-using namespace std;
-
     void sigint_handler(int sig);
     volatile bool STOP = false;
 
@@ -22,27 +19,18 @@ void SerialConnection::write(char const *str){
     fclose(file);
 }
 
-string SerialConnection::read(){
-    string s = "";
-    char voltage;
-    while(!input.eof() || voltage == '?'){
-        cout << ":)" << endl;
-        input>>voltage;
-        cout << voltage << endl;
-        s += voltage;
-    }
-    return s;
-}
 
-int main(){
+int main(int argc, char** args){
     SerialConnection s;
     char buffer;
     signal(SIGINT, sigint_handler);
     s.write("w");
+    usleep(2000);
+    s.write("w");
     while(!STOP){
-        std::ifstream sFile("/root/middleman.txt");
+        std::ifstream file("/root/middleman.txt");
         std::string str; 
-        while (std::getline(sFile, str)){
+        while (std::getline(file, str)){
             const char *cstr = str.c_str();
             if(buffer != *cstr){
                 s.write(cstr);
@@ -59,8 +47,4 @@ void sigint_handler(int sig) {
     SerialConnection s;
     s.write("x");
     STOP = true;
-
-    if(sig != 0){
-        printf("Unknown error code");
-    }
 }

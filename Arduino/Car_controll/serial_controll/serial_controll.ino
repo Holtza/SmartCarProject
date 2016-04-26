@@ -15,17 +15,17 @@
 #define YPIN A4
 #define WHEEL_A 5
 #define WHEEL_B 3
-#define BASE_SPEED 1566
-#define BOOST_SPEED 1600
+#define BASE_SPEED 1294
+#define BOOST_SPEED 1345
 
 Servo esc, Sservo;
 const int motor = 9;
 const int servo = 6;
 int delay_sec = 10;
 
-int neutral = 1500; // //value for making car stand still
+int neutral = 1200; // //value for making car stand still
 int high = 2000;  ////value for making car go forward
-int low = 1000;  //value for making car go backwards
+int low = 800;  //value for making car go backwards
 char buffer;
 
 unsigned long updateSinceChange;
@@ -43,6 +43,7 @@ void setup(){
   pinMode(motor, OUTPUT);
   pinMode(WHEEL_A, INPUT);
   pinMode(WHEEL_B, INPUT);
+  pinMode(41, OUTPUT);
   updateSinceChange = 0;
   
   //end
@@ -62,8 +63,10 @@ void setup(){
 }
 
 void loop(){
+  if(stationary)digitalWrite(41, HIGH);
+  else digitalWrite(41, LOW);
   compare = digitalRead(WHEEL_A);
-  if(updateSinceChange >= 100){
+  if(updateSinceChange >= 70){
      stationary = true;
   }
   if(encoder != compare){
@@ -77,8 +80,8 @@ void loop(){
   }else{
      esc.writeMicroseconds(neutral);
   }
-  //Serial.println(stationary);  
-           
+  Serial.println(stationary);  
+  //Serial.println(driving);         
   if(Serial.available() > 0){  // checks if there's any buffered data
     char last_input = Serial.read();  // if so, fetch it
     Serial.print("user input: " + String(last_input) + " - ");
@@ -96,12 +99,12 @@ void loop(){
         
       case 'z': //z
         //back
-        esc.writeMicroseconds(1250);
+        esc.writeMicroseconds(1100);
         break;
         
       case 'x': //x
         driving = false;
-        esc.writeMicroseconds(1500);
+        esc.writeMicroseconds(1200);
         break;       
         
       default:
