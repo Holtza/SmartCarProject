@@ -21,9 +21,13 @@
 #include <cstring>
 #include <cmath>
 #include <iostream>
+#include <math.h>
 
 #include "opendavinci/odcore/base/KeyValueConfiguration.h"
 #include "opendavinci/odcore/data/Container.h"
+#include "opendavinci/odcore/io/conference/ContainerConference.h"
+#include "opendavinci/GeneratedHeaders_OpenDaVINCI.h"
+#include "automotivedata/GeneratedHeaders_AutomotiveData.h"
 #include "opendavinci/odcore/data/TimeStamp.h"
 
 #include "OpenCVCamera.h"
@@ -33,6 +37,15 @@
 #endif
 
 #include "Proxy.h"
+
+#define CAR_SHARP_TURN_RIGHT "s"
+#define CAR_SHORT_TURN_RIGHT "c"
+#define CAR_AVG_TURN_RIGHT "f"
+#define CAR_SHARP_TURN_LEFT "A"
+#define CAR_SHORT_TURN_LEFT "R"
+#define CAR_AVG_TURN_LEFT "L"
+#define CAR_STRAIGHT "Z"
+
 
 namespace automotive {
     namespace miniature {
@@ -117,6 +130,15 @@ namespace automotive {
             getConference().send(c);
         }
 
+        void Proxy::writeMiddleman(const char* turn){
+            FILE *file;
+            file = fopen("/root/middleman.txt", "w");
+            fprintf(file, "%s", turn);
+            fclose(file);
+ 
+        }
+
+
         // This method will do the main data processing job.
         odcore::data::dmcp::ModuleExitCodeMessage::ModuleExitCode Proxy::body() {
             uint32_t captureCounter = 0;
@@ -129,6 +151,24 @@ namespace automotive {
                     distribute(c);
                     captureCounter++;
                 }
+                
+                //Container containerVehicleData = getKeyValueDataStore().get(VehicleData::ID());
+                //VehicleData vd = containerVehicleData.getData<VehicleData> ();
+                Container c = getKeyValueDataStore().get(automotive::VehicleControl::ID());
+                automotive::VehicleControl vc = c.getData<automotive::VehicleControl>();
+                printf("%d\n", (int)(vc.getSteeringWheelAngle()*(180.0/3.14159)));
+                
+                // LEFT = -0.157080
+                // SHORT_LEFT = -0.052360
+                // SHARP_LEFT = -0.244346
+
+                if((int)(vc.getSteeringWheelAngle()*(180.0/3.14159)) == 0)writeMiddleman(CAR_STRAIGHT);
+                else if((int)(vc.getSteeringWheelAngle()*(180.0/3.14159)) == -3)writeMiddleman(CAR_SHORT_TURN_LEFT);
+                else if((int)(vc.getSteeringWheelAngle()*(180.0/3.14159)) == -9)writeMiddleman(CAR_AVG_TURN_LEFT);
+                else if((int)(vc.getSteeringWheelAngle()*(180.0/3.14159)) == -14)writeMiddleman(CAR_SHARP_TURN_LEFT);
+                else if((int)(vc.getSteeringWheelAngle()*(180.0/3.14159)) == 3)writeMiddleman(CAR_SHORT_TURN_RIGHT);
+                else if((int)(vc.getSteeringWheelAngle()*(180.0/3.14159)) == 9)writeMiddleman(CAR_AVG_TURN_RIGHT);
+                else if((int)(vc.getSteeringWheelAngle()*(180.0/3.14159)) == 14)writeMiddleman(CAR_SHARP_TURN_RIGHT);
 
                 // Get sensor data from IR/US.
             }

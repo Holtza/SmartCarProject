@@ -84,10 +84,10 @@ namespace automotive {
                 bool m_debug;
 
 	            virtual void setUp();
-                    void writeMiddleman(char);
+                    //void writeMiddleman(const char*);
 	            virtual void tearDown();
-
-                void processImage();
+                    void applyFilter(cv::Mat *img);
+                    void processImage();
         };
 
     } // miniature

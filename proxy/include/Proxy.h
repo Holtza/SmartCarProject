@@ -81,6 +81,7 @@ namespace automotive {
             private:
                 unique_ptr<odtools::recorder::Recorder> m_recorder;
                 unique_ptr<Camera> m_camera;
+                void writeMiddleman(const char*);
         };
 
     }
