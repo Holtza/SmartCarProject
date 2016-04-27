@@ -4,7 +4,8 @@
  * 'A'(65) --> 'Z'(90) --> 's'(115) = Max left --> Neutral --> Max right
  * 'z' (122) = Reverse
  */
- 
+
+#include <TimerOne.h>
 #include <Servo.h>
 #define LOWER_MESSAGE_ANGLE 'A'
 #define UPPER_MESSAGE_ANGLE 's'
@@ -15,8 +16,11 @@
 #define YPIN A4
 #define WHEEL_A 5
 #define WHEEL_B 3
-#define BASE_SPEED 1294
+#define BASE_SPEED 1293
 #define BOOST_SPEED 1345
+#define HOLE_MIN 1
+#define HOLE_MAX 2
+
 
 Servo esc, Sservo;
 const int motor = 9;
@@ -28,6 +32,7 @@ int high = 2000;  ////value for making car go forward
 int low = 800;  //value for making car go backwards
 char buffer;
 
+int rotation;
 unsigned long updateSinceChange;
 int encoder;
 int compare;
@@ -35,8 +40,10 @@ boolean stationary = true;
 boolean driving = false;
  
 void setup(){
-  //interup for safety, triggered when remote controll is turned on
-  attachInterrupt(digitalPinToInterrupt(3), manualOverride, FALLING); 
+
+  Timer1.initialize(250000); // set timer for 1sec
+  attachInterrupt(digitalPinToInterrupt(WHEEL_B), docount, RISING);  // increase counter when speed sensor pin goes High
+  Timer1.attachInterrupt( timerIsr ); // enable the timer
   
   Serial.begin(9600);
   //Serial1.begin(57600);
@@ -75,12 +82,13 @@ void loop(){
     encoder = compare;
   }
   if(driving){
-    if(stationary)esc.writeMicroseconds(BOOST_SPEED);
-    else esc.writeMicroseconds(BASE_SPEED);
+    if(rotation<HOLE_MIN)esc.writeMicroseconds(BOOST_SPEED);
+    else if(rotation<HOLE_MAX)esc.writeMicroseconds(BASE_SPEED);
+    else esc.writeMicroseconds(neutral);
   }else{
      esc.writeMicroseconds(neutral);
   }
-  Serial.println(stationary);  
+  //Serial.println(stationary);  
   //Serial.println(driving);         
   if(Serial.available() > 0){  // checks if there's any buffered data
     char last_input = Serial.read();  // if so, fetch it
@@ -145,11 +153,6 @@ float voltageToCm(int voltrep){
 }
 
 
-
-void manualOverride(){  //function that runs when the remote controll is turned on
- 
-}
-
 void setWheelAngle(int input){
 
   input -= LOWER_MESSAGE_ANGLE;
@@ -159,4 +162,16 @@ void setWheelAngle(int input){
   Sservo.write(input);
 }
 
+void docount(){
+  rotation++;
+}
+
+void timerIsr(){
+  Timer1.detachInterrupt();  //stop the timer
+  Serial.print("Motor Speed: ");
+  Serial.print(rotation);  
+  Serial.println(" Holes per seconds"); 
+  rotation=0;  //  reset counter to zero
+  Timer1.attachInterrupt( timerIsr );  //enable the timer
+}
 

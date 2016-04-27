@@ -5,22 +5,22 @@
 
     ofstream output("/dev/ttyACM0");
     ifstream input("/dev/ttyACM0");
-    FILE *file;
+    FILE *usbfile;
 SerialConnection::SerialConnection(){
     system("stty -F /dev/ttyACM0 cs8 9600 ignbrk -brkint -icrnl -imaxbel -opost -onlcr -isig -icanon -iexten -echo -echoe -echok -echoctl -echoke noflsh -ixon -crtscts");
 }
 
 void SerialConnection::write(char const *str){
 
-    file = fopen("/dev/ttyACM0", "w");
+    usbfile = fopen("/dev/ttyACM0", "w");
     cout << str << endl;
   //  fwrite(str, 1, 1, file);
-    fprintf(file, "%s", str);
-    fclose(file);
+    fprintf(usbfile, "%s", str);
+    fclose(usbfile);
 }
 
 
-int main(int argc, char** args){
+int main(){
     SerialConnection s;
     char buffer;
     signal(SIGINT, sigint_handler);
@@ -28,9 +28,9 @@ int main(int argc, char** args){
     usleep(2000);
     s.write("w");
     while(!STOP){
-        std::ifstream file("/root/middleman.txt");
+        std::ifstream middleman("/root/middleman.txt");
         std::string str; 
-        while (std::getline(file, str)){
+        while (std::getline(middleman, str) && !STOP){
             const char *cstr = str.c_str();
             if(buffer != *cstr){
                 s.write(cstr);
@@ -39,11 +39,14 @@ int main(int argc, char** args){
         }
         usleep(100000);
     }
-    return 0;
+    return 1;
 }
 
 void sigint_handler(int sig) {
-    printf("\nCTRL-C detected\n");
+    if(sig==0)
+        printf("\nCTRL-C detected\n");
+    else
+        printf("\nProgram Exiting\n");
     SerialConnection s;
     s.write("x");
     STOP = true;
