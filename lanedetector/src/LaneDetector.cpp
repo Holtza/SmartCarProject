@@ -20,6 +20,9 @@ without even the implied warranty of
 if not, write to the Free Software
 * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
 */
+#include <fstream>
+#include <cstdlib>
+#include <unistd.h>
 #include <iostream>
 #include <memory>
 #include <stdio.h>
@@ -38,10 +41,11 @@ if not, write to the Free Software
 #define IMAGE_WIDTH 640
 #define IMAGE_HEIGHT 480
 
-#define CENTER_LINE_X (IMAGE_WIDTH/2 - 85)
-#define MAX_WIDTH (IMAGE_WIDTH/2 + 85)
+#define CENTER_LINE_X (IMAGE_WIDTH/2 - 100)
+#define MAX_WIDTH (IMAGE_WIDTH/2 + 45)
 #define IMAGE_SAMPLE 25
 #define IMAGE_LINE_SPACING IMAGE_HEIGHT/(10/3)/IMAGE_SAMPLE
+<<<<<<< HEAD
 #define TURN_RATE_SHARP 14
 #define TURN_RATE_SHORT 3
 #define TURN_RATE_AVG 9
@@ -55,6 +59,12 @@ if not, write to the Free Software
 #define CAR_SHORT_TURN_LEFT "R"
 #define CAR_AVG_TURN_LEFT "L"
 #define CAR_STRAIGHT "Z"
+=======
+#define TURN_RATE 17
+#define THRESHOLD 70
+#define LEFT_THRESHOLD 4700
+#define RIGHT_THRESHOLD 6000
+>>>>>>> 7a548e40da4b221cf1f935d13cdaa398b043f4a8
 
 #define KERNEL_SIZE 3
 #define CANNY_LOW_THRESHOLD 50
@@ -66,6 +76,13 @@ if not, write to the Free Software
 #define RIGHT_RED 0
 #define RIGHT_GREEN 0.6
 #define RIGHT_BLUE 1
+
+using namespace std;
+
+    ifstream input("/dev/ttyACM0");
+    ofstream output("/dev/ttyACM0");
+    FILE *file;
+    int mySystemFlag = 0;
 
 namespace  automotive {
     namespace  miniature {
@@ -87,6 +104,19 @@ namespace  automotive {
         }
         LaneDetector::~LaneDetector() {
         }
+        
+        void  LaneDetector::write(char const* str){
+            if(mySystemFlag == 0)system("stty -F /dev/ttyACM0 cs8 9600 ignbrk -brkint -icrnl -imaxbel -opost -onlcr -isig -icanon -iexten -echo -echoe -echoctl -echoke noflsh -ixon -crtscts");
+            mySystemFlag = 1;
+           // file = fopen("dickweed.txt", "w");
+            file = fopen("/root/middleman.txt", "w");
+            cout << str << endl;
+            fprintf(file, "%s", str);
+          //  output << str;
+            fclose(file);
+           // usleep(500000);
+        }
+
         void  LaneDetector::setUp() {
             // This method will be called automatically _before_ running
             // body().
@@ -139,7 +169,7 @@ namespace  automotive {
                         si.getBytesPerPixel());
                     }
                     // Mirror the image.
-                    cvFlip(m_image, 0, -1);
+                   // cvFlip(m_image, 0, -1);
                     retVal = true;
                 }
             }
@@ -162,6 +192,9 @@ namespace  automotive {
             int  avgLeft = 0;
             int  avgRight = 0;
             int  blue = 0;
+            char const* turnLeft = "a";
+            char const* turnRight = "d";
+            char const* turnStraight = "s";
             double  desiredSteeringWheelAngle;
             VehicleControl control;
             
@@ -216,6 +249,7 @@ namespace  automotive {
                 }
             }
             avgDirection = avgLeft / IMAGE_SAMPLE - avgRight / IMAGE_SAMPLE;
+<<<<<<< HEAD
 
               
             if (avgDirection >= THRESHOLD) {
@@ -249,7 +283,7 @@ namespace  automotive {
                 desiredSteeringWheelAngle = 0;
                 control.setSteeringWheelAngle(desiredSteeringWheelAngle *
                 cartesian::Constants::DEG2RAD);
-                //writeMiddleman(CAR_STRAIGHT);
+                writeMiddleman(CAR_STRAIGHT);
                 cerr << "Forward" << endl;
             }
             else if(movingState == SHORT_LEFT){
@@ -257,7 +291,7 @@ namespace  automotive {
                 desiredSteeringWheelAngle = -TURN_RATE_SHORT;
                 control.setSteeringWheelAngle(desiredSteeringWheelAngle *
                 cartesian::Constants::DEG2RAD);
-                //writeMiddleman(CAR_SHORT_TURN_LEFT);
+                writeMiddleman(CAR_SHORT_TURN_LEFT);
                 cerr << "Left Short" << endl;
             }
             else if(movingState == SHORT_RIGHT){
@@ -265,7 +299,7 @@ namespace  automotive {
                 desiredSteeringWheelAngle = TURN_RATE_SHORT;
                 control.setSteeringWheelAngle(desiredSteeringWheelAngle *
                 cartesian::Constants::DEG2RAD);
-                //writeMiddleman(CAR_SHORT_TURN_RIGHT);
+                writeMiddleman(CAR_SHORT_TURN_RIGHT);
                 cerr << "Right Short" << endl;
             }
             else if(movingState == LEFT){
@@ -273,7 +307,7 @@ namespace  automotive {
                 desiredSteeringWheelAngle = -TURN_RATE_AVG;
                 control.setSteeringWheelAngle(desiredSteeringWheelAngle *
                 cartesian::Constants::DEG2RAD);
-                //writeMiddleman(CAR_AVG_TURN_LEFT);
+                writeMiddleman(CAR_AVG_TURN_LEFT);
                 cerr << "Left" << endl;
             }
             else if(movingState == RIGHT){
@@ -281,15 +315,35 @@ namespace  automotive {
                 desiredSteeringWheelAngle = TURN_RATE_AVG;
                 control.setSteeringWheelAngle(desiredSteeringWheelAngle *
                 cartesian::Constants::DEG2RAD);
-                //writeMiddleman(CAR_AVG_TURN_RIGHT);
+                writeMiddleman(CAR_AVG_TURN_RIGHT);
+=======
+            control.setSpeed(2);
+            cerr << avgRight+(avgDirection*0)<< " - ";
+            // left
+            if (avgRight <= LEFT_THRESHOLD) {
+                desiredSteeringWheelAngle = -TURN_RATE;
+                control.setSteeringWheelAngle(desiredSteeringWheelAngle *
+                cartesian::Constants::
+                DEG2RAD);
+                write(turnLeft);
+                cerr << "Left" << endl;
+            }
+            else if (avgRight >= RIGHT_THRESHOLD) {
+                desiredSteeringWheelAngle = TURN_RATE;
+                control.setSteeringWheelAngle(desiredSteeringWheelAngle *
+                cartesian::Constants::
+                DEG2RAD);
+                write(turnRight);
+>>>>>>> 7a548e40da4b221cf1f935d13cdaa398b043f4a8
                 cerr << "Right" << endl;
             }
             else if(movingState == LEFT_SHARP){
                 control.setSpeed(0.5);
                 desiredSteeringWheelAngle = -TURN_RATE_SHARP;
                 control.setSteeringWheelAngle(desiredSteeringWheelAngle *
+<<<<<<< HEAD
                 cartesian::Constants::DEG2RAD);
-                //writeMiddleman(CAR_SHARP_TURN_LEFT);
+                writeMiddleman(CAR_SHARP_TURN_LEFT);
                 cerr << "Left Sharp" << endl;
             }
             else if(movingState == RIGHT_SHARP){
@@ -297,8 +351,14 @@ namespace  automotive {
                 desiredSteeringWheelAngle = TURN_RATE_SHARP;
                 control.setSteeringWheelAngle(desiredSteeringWheelAngle *
                 cartesian::Constants::DEG2RAD);
-                //writeMiddleman(CAR_SHARP_TURN_RIGHT);
+                writeMiddleman(CAR_SHARP_TURN_RIGHT);
                 cerr << "Right Sharp" << endl;
+=======
+                cartesian::Constants::
+                DEG2RAD);
+                write(turnStraight);
+                cerr << "Forward" << endl;
+>>>>>>> 7a548e40da4b221cf1f935d13cdaa398b043f4a8
             }
             
             if (m_debug) {
@@ -324,6 +384,14 @@ namespace  automotive {
             // Container c(sd);
             // Send container.
             // getConference().send(c);
+        }
+
+        void LaneDetector::writeMiddleman(const char* turn){
+            FILE *file;
+            file = fopen("/root/middleman.txt", "w");
+            fprintf(file, "%s", turn);
+            fclose(file);
+
         }
 
         // This method will do the main data processing job.
@@ -363,6 +431,7 @@ namespace  automotive {
             while (getModuleStateAndWaitForRemainingTimeInTimeslice() ==
             odcore::data::dmcp::ModuleStateMessage::RUNNING) {
                 bool has_next_frame = false;
+                //char const* goForward = "w";
                 // Use the shared memory image.
                 Container  c;
                 if (player.get() != NULL) {
@@ -381,6 +450,7 @@ namespace  automotive {
                     has_next_frame = readSharedImage(c);
                 }
                 // Process the read image.
+                //write(goForward);
                 if (true == has_next_frame) {
                     processImage();
                 }

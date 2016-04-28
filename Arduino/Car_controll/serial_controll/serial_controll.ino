@@ -17,7 +17,7 @@
 #define WHEEL_A 5
 #define WHEEL_B 3
 #define BASE_SPEED 1293
-#define BOOST_SPEED 1345
+#define BOOST_SPEED 1350
 #define HOLE_MIN 1
 #define HOLE_MAX 2
 
@@ -174,4 +174,3 @@ void timerIsr(){
   rotation=0;  //  reset counter to zero
   Timer1.attachInterrupt( timerIsr );  //enable the timer
 }
-
