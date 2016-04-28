@@ -1,4 +1,4 @@
-#include "SerialConnection.h"
+#include "newSerial.h"
 #include <signal.h>
     void sigint_handler(int sig);
     volatile bool STOP = false;
@@ -24,9 +24,10 @@ int main(){
     SerialConnection s;
     char buffer;
     signal(SIGINT, sigint_handler);
+    usleep(1000000);
     s.write("w");
-    usleep(2000);
-    s.write("w");
+    //usleep(2000);
+    //s.write("w");
     while(!STOP){
         std::ifstream middleman("/root/middleman.txt");
         std::string str; 
