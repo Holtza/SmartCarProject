@@ -1,3 +1,0 @@
-/home/tobias/odavinci/OpenDaVINCI/automotive/miniature/proxy/build/CMakeFiles/ProxyTestSuite.h-TestSuite.dir
-/home/tobias/odavinci/OpenDaVINCI/automotive/miniature/proxy/build/CMakeFiles/proxy.dir
-/home/tobias/odavinci/OpenDaVINCI/automotive/miniature/proxy/build/CMakeFiles/proxylib-static.dir

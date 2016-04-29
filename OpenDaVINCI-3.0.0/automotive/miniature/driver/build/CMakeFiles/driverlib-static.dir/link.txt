@@ -1,2 +1,0 @@
-/usr/bin/ar cq libdriverlib-static.a  CMakeFiles/driverlib-static.dir/src/Driver.cpp.o
-/usr/bin/ranlib libdriverlib-static.a

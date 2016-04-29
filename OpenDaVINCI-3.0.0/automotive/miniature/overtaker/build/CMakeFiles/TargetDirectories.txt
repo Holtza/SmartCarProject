@@ -1,3 +1,0 @@
-/home/kristiyan/OpenDaVINCI/automotive/miniature/overtaker/build/CMakeFiles/overtakerlib-static.dir
-/home/kristiyan/OpenDaVINCI/automotive/miniature/overtaker/build/CMakeFiles/OvertakerTestSuite.h-TestSuite.dir
-/home/kristiyan/OpenDaVINCI/automotive/miniature/overtaker/build/CMakeFiles/overtaker.dir

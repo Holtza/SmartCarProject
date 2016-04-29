@@ -1,3 +1,0 @@
-/home/kristiyan/OpenDaVINCI/automotive/miniature/lanedetector/build/CMakeFiles/lanedetectorlib-static.dir
-/home/kristiyan/OpenDaVINCI/automotive/miniature/lanedetector/build/CMakeFiles/lanedetector.dir
-/home/kristiyan/OpenDaVINCI/automotive/miniature/lanedetector/build/CMakeFiles/LaneDetectorTestSuite.h-TestSuite.dir

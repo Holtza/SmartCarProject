@@ -1,2 +1,0 @@
-/usr/bin/ar cq libovertakerlib-static.a  CMakeFiles/overtakerlib-static.dir/src/Overtaker.cpp.o
-/usr/bin/ranlib libovertakerlib-static.a
