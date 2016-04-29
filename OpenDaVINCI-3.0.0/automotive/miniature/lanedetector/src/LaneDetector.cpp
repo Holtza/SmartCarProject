@@ -91,11 +91,13 @@ namespace  automotive {
             // This method will be called automatically _before_ running
             // body().
             // If in debug mode, display the image from the camera feed.
+/*
 			printf("Setting up Camera settings...");
 			system("gnome-terminal -x sh -c 'v4l2-ctl -d /dev/video0 -c focus_absolute=0;v4l2-ctl -d /dev/video0 -c focus_auto=0'");
 			system("gnome-terminal -x sh -c 'v4l2-ctl -d /dev/video1 -c focus_absolute=0;v4l2-ctl -d /dev/video1 -c focus_auto=0'");
 			system("gnome-terminal -x sh -c 'v4l2-ctl -d /dev/video2 -c focus_absolute=0;v4l2-ctl -d /dev/video2 -c focus_auto=0'");
 			printf("  Done!\n");
+*/
             if (m_debug) {
                 cvNamedWindow("Camera Feed Image", CV_WINDOW_AUTOSIZE);
                 cvMoveWindow("Camera Feed Image", 300, 100);
