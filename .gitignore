@@ -1,0 +1,7 @@
+lanedetector/src/newSerial.cpp~
+.gitignore.swp
+OpenDaVINCI-3.0.0/automotive/miniature/lanedetector/build/*
+OpenDaVINCI-3.0.0/automotive/miniature/proxy/build/*
+OpenDaVINCI-3.0.0/automotive/miniature/sidewaysparker/build/*
+OpenDaVINCI-3.0.0/automotive/miniature/driver/build/*
+OpenDaVINCI-3.0.0/automotive/miniature/overtaker/build/*
