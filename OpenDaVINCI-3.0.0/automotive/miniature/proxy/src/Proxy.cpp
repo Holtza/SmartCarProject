@@ -158,7 +158,14 @@ namespace automotive {
                 Container c = getKeyValueDataStore().get(automotive::VehicleControl::ID());
                 automotive::VehicleControl vc = c.getData<automotive::VehicleControl>();
                 printf("%d\n", (int)(vc.getSteeringWheelAngle()*(180.0/3.14159)));
-                
+
+
+                if(vc.getSpeed() == 3){
+
+                }
+
+
+/*                
                 if(vc.getSpeed() == 1 && ignoreFollower == 0){
                     ignoreFollower = 1;
                         
@@ -182,7 +189,7 @@ namespace automotive {
                     else if((int)(vc.getSteeringWheelAngle()*(180.0/3.14159)) == 3)writeMiddleman(CAR_SHORT_TURN_RIGHT);
                     else if((int)(vc.getSteeringWheelAngle()*(180.0/3.14159)) == 9)writeMiddleman(CAR_AVG_TURN_RIGHT);
                     else if((int)(vc.getSteeringWheelAngle()*(180.0/3.14159)) == 14)writeMiddleman(CAR_SHARP_TURN_RIGHT);
-
+*/
                 // Get sensor data from IR/US.
                 }
                 

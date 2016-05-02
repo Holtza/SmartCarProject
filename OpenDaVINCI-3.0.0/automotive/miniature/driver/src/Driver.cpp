@@ -56,6 +56,7 @@ namespace automotive {
 
         // This method will do the main data processing job.
         odcore::data::dmcp::ModuleExitCodeMessage::ModuleExitCode Driver::body() {
+            int ignoreFollower = 0;
             while (getModuleStateAndWaitForRemainingTimeInTimeslice() == odcore::data::dmcp::ModuleStateMessage::RUNNING) {
                 // In the following, you find example for the various data sources that are available:
 
@@ -79,28 +80,56 @@ namespace automotive {
                 SteeringData sd = containerSteeringData.getData<SteeringData> ();
                 cerr << "Most recent steering data: '" << sd.toString() << "'" << endl;
 
+                Container c = getKeyValueDataStore().get(automotive::VehicleControl::ID());
+                automotive::VehicleControl receivedVC = c.getData<automotive::VehicleControl>();
 
 
-                // Design your control algorithm here depending on the input data from above.
-		
 
                 // Create vehicle control data.
                 VehicleControl vc;
 
-                // With setSpeed you can set a desired speed for the vehicle in the range of -2.0 (backwards) .. 0 (stop) .. +2.0 (forwards)
-                vc.setSpeed(vd.getSpeed());
+                
+                if(receivedVC.getSpeed() == 1 && ignoreFollower == 0){
+                     ignoreFollower = 1;
+ 
+                     if(receivedVC.getSteeringWheelAngle() == OVERTAKER_ANGLE_LEFT)vc.setSteeringWheelAngle(OVERTAKER_ANGLE_LEFT);
+                     else if(receivedVC.getSteeringWheelAngle() == OVERTAKER_ANGLE_RIGHT)vc.setSteeringWheelAngle(OVERTAKER_ANGLE_RIGHT);
+ 
+                }
+                if(receivedVC.getSpeed() == 1.5 && ignoreFollower == 1){
+                     ignoreFollower = 0;
+                }
+ 
+ 
+                // LEFT = -0.157080
+                // SHORT_LEFT = -0.052360
+                // SHARP_LEFT = -0.244346
+                if(receivedVC.getSpeed() == 2 && ignoreFollower == 0){
+                     if((int)(receivedVC.getSteeringWheelAngle()*(180.0/3.14159)) == 0)vc.setSteeringWheelAngle(CAR_STRAIGHT);
+                     else if((int)(receivedVC.getSteeringWheelAngle()*(180.0/3.14159)) == -3)vc.setSteeringWheelAngle(CAR_SHORT_TURN_LEFT);
+                     else if((int)(receivedVC.getSteeringWheelAngle()*(180.0/3.14159)) == -9)vc.setSteeringWheelAndle(CAR_AVG_TURN_LEFT);
+                     else if((int)(receivedVC.getSteeringWheelAngle()*(180.0/3.14159)) == -14)vc.setSteeringWheelAngle(CAR_SHARP_TURN_LEFT);
+                     else if((int)(receivedVC.getSteeringWheelAngle()*(180.0/3.14159)) == 3)vc.setSteeringWheelAngle(CAR_SHORT_TURN_RIGHT);
+                     else if((int)(receivedVC.getSteeringWheelAngle()*(180.0/3.14159)) == 9)vc.setSteeringWheelAngle(CAR_AVG_TURN_RIGHT);
+                     else if((int)(receivedVC.getSteeringWheelAngle()*(180.0/3.14159)) == 14)vc.setSteeringWheelAngle(CAR_SHARP_TURN_RIGHT);
+                }
+
+                vc.setSpeed = 3;
+                // Design your control algorithm here depending on the input data from above.
+		
+
 
                 // With setSteeringWheelAngle, you can steer in the range of -26 (left) .. 0 (straight) .. +25 (right)
    //             double desiredSteeringWheelAngle = 4; // 4 degree but SteeringWheelAngle expects the angle in radians!
    //             vc.setSteeringWheelAngle(desiredSteeringWheelAngle * cartesian::Constants::DEG2RAD);
 
-                double desiredSteeringWheelAngle = vd.getHeading();
-                vc.setSteeringWheelAngle(desiredSteeringWheelAngle * cartesian::Constants::DEG2RAD);
+               // double desiredSteeringWheelAngle = vd.getHeading();
+               // vc.setSteeringWheelAngle(desiredSteeringWheelAngle * cartesian::Constants::DEG2RAD);
 
                 // You can also turn on or off various lights:
-                vc.setBrakeLights(false);
-                vc.setFlashingLightsLeft(false);
-                vc.setFlashingLightsRight(true);
+                //vc.setBrakeLights(false);
+                //vc.setFlashingLightsLeft(false);
+                //vc.setFlashingLightsRight(true);
 
                 // Create container for finally sending the data.
                 Container c(vc);

@@ -250,7 +250,7 @@ namespace automotive {
 	            
                 unit = measureStage(unit);
                 unit = movementStage(unit);
-
+                setSensors();
                 cerr << "State is: " << unit.stageMeasuring << endl;
  
 
