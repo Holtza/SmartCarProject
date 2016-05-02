@@ -22,6 +22,24 @@
 
 #include "opendavinci/odcore/base/module/TimeTriggeredConferenceClientModule.h"
 
+#include "opendavinci/GeneratedHeaders_OpenDaVINCI.h"
+#include "automotivedata/GeneratedHeaders_AutomotiveData.h"
+
+struct ControlUnit{
+
+    enum StateMachineMoving { FORWARD, TO_LEFT_LANE_LEFT_TURN, TO_LEFT_LANE_RIGHT_TURN, CONTINUE_ON_LEFT_LANE, TO_RIGHT_LANE_RIGHT_TURN, TO_RIGHT_LANE_LEFT_TURN };
+    enum StateMachineMeasuring { DISABLE, FIND_OBJECT_INIT, FIND_OBJECT, FIND_OBJECT_PLAUSIBLE, HAVE_BOTH_IR, HAVE_BOTH_IR_SAME_DISTANCE, END_OF_OBJECT };
+
+    StateMachineMoving stageMoving;
+    StateMachineMeasuring stageMeasuring;
+
+    int distanceToObstacle;
+    int distanceToObstacleOld; 
+    int stageToRightLaneLeftTurn; 
+    int stageToRightLaneRightTurn;
+
+};
+
 namespace automotive {
     namespace miniature {
 
@@ -65,6 +83,10 @@ namespace automotive {
                 odcore::data::dmcp::ModuleExitCodeMessage::ModuleExitCode body();
 
             private:
+
+                ControlUnit measureStage(ControlUnit unit);
+                ControlUnit movementStage(ControlUnit unit);
+
                 virtual void setUp();
 
                 virtual void tearDown();
