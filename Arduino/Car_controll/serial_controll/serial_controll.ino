@@ -5,6 +5,7 @@
  * 'z' (122) = Reverse
  */
 
+#include <Wire.h>
 #include <TimerOne.h>
 #include <Servo.h>
 #define LOWER_MESSAGE_ANGLE 'A'
@@ -20,6 +21,12 @@
 #define BOOST_SPEED 1345
 #define HOLE_MIN 1
 #define HOLE_MAX 2
+
+#define IR1 A0 //IR pin
+#define IR2 A1 //IR pin
+#define IR3 A2 //IR pin
+int US1 = 112; //Ultrasonic addresses
+int US2 = 114; //Ultrasonic addresses
 
 
 Servo esc, Sservo;
@@ -62,8 +69,8 @@ void setup(){
   esc.writeMicroseconds(neutral);
   int i = 5;
   
-
-  Serial.println("listening");
+  Wire.begin();
+ // Serial.println("listening");
 
   
 
@@ -118,6 +125,7 @@ void loop(){
       default:
         Serial.println("unknown input?");
     }
+  
   }
   // read accelerometer data
   // print the sensor values:
@@ -139,19 +147,12 @@ void loop(){
   }
   */
   
+  String netstring = readSensors();
+  Serial.println(netstring);
+
+  delay(500);
 
 }
-
-/*
- * Takes the voltage respresenation read from an analog port, transforms it into
- * voltages, and calculates and returns the value in meter
- */
-float voltageToCm(int voltrep){
-  float voltage = voltrep * (5.0 / 1023.0);
-  float value = 12.5 / voltage;
-  return value;
-}
-
 
 void setWheelAngle(int input){
 
@@ -168,10 +169,103 @@ void docount(){
 
 void timerIsr(){
   Timer1.detachInterrupt();  //stop the timer
-  Serial.print("Motor Speed: ");
-  Serial.print(rotation);  
-  Serial.println(" Holes per seconds"); 
+ // Serial.print("Motor Speed: ");
+ // Serial.print(rotation);  
+ // Serial.println(" Holes per seconds"); 
   rotation=0;  //  reset counter to zero
   Timer1.attachInterrupt( timerIsr );  //enable the timer
 }
+
+/*
+ * Reads the sensors and returns a netstring, using helper functions.
+ */
+String readSensors(){
+  int sonar1 = ReadUSSensor(US1); //Read ultrasonic sensors
+  int sonar2 = ReadUSSensor(US2);
+  int inred1 = voltageToCm(analogRead(IR1));  //Read IR sensors
+  int inred2 = voltageToCm(analogRead(IR2));
+  int inred3 = voltageToCm(analogRead(IR3));
+  String valueString = setString(sonar1, sonar2, inred1, inred2, inred3); //Create string containing the sensor values as ints
+  //String encodedString = encodeNetstring(valueString); //Create netstring and return it
+  return valueString;
+}
+
+/*
+ * Function which uses the Wire library to read from an ultrasonic sensor,
+ * given the address of that sensor.
+ */
+int ReadUSSensor(int address){
+  int readValue = 0;
+  
+  Wire.beginTransmission(address);
+  Wire.write(byte(0x00)); //sets register pointer to the command register
+  Wire.write(byte(0x51)); //command sensor to measure in cm
+  Wire.endTransmission(); //stop transmitting
+
+  delay(70); //Wait for readings to happen
+
+  Wire.beginTransmission(address); //transmit to device
+  Wire.write(byte(0x02)); //sets register pointer to echo #1 register (0x02)
+  Wire.endTransmission(); //stop transmitting
+
+  Wire.requestFrom(address, 2); //request two bytes from us1
+
+  //receiver reading from sensor:
+  if(2 <= Wire.available()){ //if 2 bytes were received
+    readValue = Wire.read(); //receive high byte (overwrites previous reading
+    readValue = readValue << 8; //shift high byte as lower 8 bits
+    readValue |= Wire.read(); //receive low byte as lower 8 bits
+  }
+  
+  return readValue; //Return the value
+}
+
+/*
+ * Takes 5 integer values and separate them with spaces in a string
+ */
+String setString(int i_1, int i_2, int i_3, int i_4, int i_5){
+  String s1 = intToString(i_1);
+  String s2 = intToString(i_2);
+  String s3 = intToString(i_3);
+  String s4 = intToString(i_4);
+  String s5 = intToString(i_5);
+
+  String valueS = "<" + s1 + s2 + s3 + s4 + s5 + ">";
+  return valueS;
+}
+
+String intToString(int i_1){
+  if(i_1<-1)i_1 *= -1;
+  if(i_1==-1)return "-01";
+  else if(i_1<100 && i_1>=10){
+    return "0" + String(i_1);
+  }else if(i_1<10){
+    return "00" + String(i_1);
+  }else{
+    return String(i_1);
+  }
+}
+/*
+ * Takes a string as an argument and encodes it as a netstring
+ */
+String encodeNetstring(String string){
+  int len = string.length();
+  if (len <= 0){
+    return "empty";
+  }
+  return String(",") + len + String("," + string);
+}
+
+/*
+ * Takes the voltage respresenation read from an analog port, transforms it into
+ * voltages, and calculates and returns the distance in cm
+ */
+int voltageToCm(int voltrep){
+  float voltage = voltrep * (5.0 / 1023.0);
+  float value = 12.5 / voltage;
+  int i = (int) value;
+  if (value > 45) return -1;
+  return i;
+}
+
 
