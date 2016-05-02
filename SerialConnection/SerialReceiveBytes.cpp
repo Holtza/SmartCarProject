@@ -18,8 +18,11 @@
  */
 
 #include <stdint.h>
+#include <stdio.h>
 #include <iostream>
 #include <string>
+#include <fstream>
+#include <streambuf>
 #include <memory>
 #include <opendavinci/odcore/base/Thread.h>
 #include <opendavinci/odcore/wrapper/SerialPort.h>
@@ -27,40 +30,89 @@
 
 #include "SerialReceiveBytes.hpp"
 
+#define PACKETLENGTH 15 
+
 using namespace std;
-
-void SerialReceiveBytes::nextString(const string &s) {
-    cout << "Received " << s.length() << " bytes containing '" << s << "'" << endl;
-}
-
-// We add some of OpenDaVINCI's namespaces for the sake of readability.
 using namespace odcore;
 using namespace odcore::wrapper;
 
-int32_t main(int32_t argc, char **argv) {
-    const string SERIAL_PORT = "/dev/ttyACM0";
-    const uint32_t BAUD_RATE = 9600;
+void serialConnection(std::string SERIAL_PORT, const std::uint32_t BAUD_RATE);
 
-    // We are using OpenDaVINCI's std::shared_ptr to automatically
-    // release any acquired resources.
-    try {
-        std::shared_ptr<SerialPort>
-            serial(SerialPortFactory::createSerialPort(SERIAL_PORT, BAUD_RATE));
+void SerialReceiveBytes::nextString(const string &s) {
+    FILE *f;
+    f = fopen("/root/serialIn.txt","a");
+    //cout << "Received " << s.length() << " bytes containing '" << s << "'" << endl;
+    fputs(s.c_str(),f);
+    fclose(f);
 
-        // This instance will handle any bytes that are received
-        // from our serial port.
-        SerialReceiveBytes handler;
-        serial->setStringListener(&handler);
+    std::ifstream t("/root/serialIn.txt");
+    std::string str((std::istreambuf_iterator<char>(t)),
+                     std::istreambuf_iterator<char>());
 
-        // Start receiving bytes.
-        serial->start();
+    while(str.length() > 0 && str[0] != '<'){
+        str.erase(0, 1);
+    }
 
-        const uint32_t ONE_SECOND = 1000 * 1000;
+    if(str.length() > PACKETLENGTH+2){
+        if(str[PACKETLENGTH+1] == '>'){
+            std::string dataPacket = str.substr(1, PACKETLENGTH);
+            cout << dataPacket << endl;
+            FILE *f2;
+            f2 = fopen("/root/lastPacket.txt","w");
+            fputs(dataPacket.c_str(),f2);
+            fclose(f2);
+        }
+        str = "";
+    }    
+    f = fopen("/root/serialIn.txt","w");
+    fputs(str.c_str(),f);
+    fclose(f);
+}
+
+// We add some of OpenDaVINCI's namespaces for the sake of readability.
+
+
+void serialConnection(string SERIAL_PORT, const uint32_t BAUD_RATE){ 
+    std::shared_ptr<SerialPort>
+    serial(SerialPortFactory::createSerialPort(SERIAL_PORT, BAUD_RATE));
+
+    // This instance will handle any bytes that are received
+    // from our serial port.
+    SerialReceiveBytes handler;
+    serial->setStringListener(&handler);
+
+    // Start receiving bytes.
+    serial->start();
+
+    const uint32_t ONE_SECOND = 1000 * 1000;
+    while(true)    
         odcore::base::Thread::usleepFor(10 * ONE_SECOND);
 
-        serial-> stop();
-    }
-    catch(string &exception) {
-        cerr << "Error while creating serial port: " << exception << endl;
-    }
+    serial-> stop();
 }
+
+
+int32_t main(int32_t argc, char **argv) {
+    string SERIAL_PORT = "/dev/ttyACM0";
+    const uint32_t BAUD_RATE = 9600;
+    try {
+        serialConnection(SERIAL_PORT, BAUD_RATE);
+    } catch(string &exception) {
+        cerr << "Error while creating serial port: " << exception << endl;
+        SERIAL_PORT = "/dev/ttyACM1";
+        try {
+            serialConnection(SERIAL_PORT, BAUD_RATE);
+        } catch(string &exception) {
+            cerr << "Error on 2nd attempt of serial port: " << exception << endl;
+            SERIAL_PORT = "/dev/ttyACM2";
+            try {
+                serialConnection(SERIAL_PORT, BAUD_RATE);
+            } catch(string &exception) {
+                cerr << "Error on 3rd attempt of serial port: " << exception << endl;
+            }
+        }
+    }
+    // We are using OpenDaVINCI's std::shared_ptr to automatically
+    // release any acquired resources.
+}
+
