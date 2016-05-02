@@ -31,6 +31,8 @@
 #include "Overtaker.h"
 
 #define WHEELEANGLE 25
+#define TURNSPEED 1
+#define FOLLOWSPEED 1.5
 
 namespace automotive {
     namespace miniature {
@@ -157,7 +159,7 @@ namespace automotive {
                 // Moving state machine.
                 if (unit.stageMoving == ControlUnit::FORWARD) {
                     // Go forward.
-                    vc.setSpeed(2);
+                    vc.setSpeed(1.5);
                     vc.setSteeringWheelAngle(0);
 
                     unit.stageToRightLaneLeftTurn = 0;
@@ -185,7 +187,7 @@ namespace automotive {
                 }
                 else if (unit.stageMoving == ControlUnit::CONTINUE_ON_LEFT_LANE) {
                     // Move to the left lane: Passing stage.
-                    vc.setSpeed(2);
+                    vc.setSpeed(1.5);
                     vc.setSteeringWheelAngle(0);
 
                     // Find end of object.
@@ -193,7 +195,7 @@ namespace automotive {
                 }
                 else if (unit.stageMoving == ControlUnit::TO_RIGHT_LANE_RIGHT_TURN) {
                     // Move to the right lane: Turn right part.
-                    vc.setSpeed(1.5);
+                    vc.setSpeed(1);
                     vc.setSteeringWheelAngle(WHEELEANGLE);
 
                     unit.stageToRightLaneRightTurn--;
@@ -203,7 +205,7 @@ namespace automotive {
                 }
                 else if (unit.stageMoving == ControlUnit::TO_RIGHT_LANE_LEFT_TURN) {
                     // Move to the left lane: Turn left part.
-                    vc.setSpeed(.9);
+                    vc.setSpeed(1);
                     vc.setSteeringWheelAngle(-WHEELEANGLE);
 
                     unit.stageToRightLaneLeftTurn--;

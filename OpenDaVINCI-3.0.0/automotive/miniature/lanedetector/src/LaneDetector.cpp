@@ -260,7 +260,7 @@ namespace  automotive {
                 cerr << "Forward" << endl;
             }
             else if(movingState == SHORT_LEFT){
-                control.setSpeed(1.5);
+                control.setSpeed(2);
                 desiredSteeringWheelAngle = -TURN_RATE_SHORT;
                 control.setSteeringWheelAngle(desiredSteeringWheelAngle *
                 cartesian::Constants::DEG2RAD);
@@ -268,7 +268,7 @@ namespace  automotive {
                 cerr << "Left Short" << endl;
             }
             else if(movingState == SHORT_RIGHT){
-                control.setSpeed(1.5);
+                control.setSpeed(2);
                 desiredSteeringWheelAngle = TURN_RATE_SHORT;
                 control.setSteeringWheelAngle(desiredSteeringWheelAngle *
                 cartesian::Constants::DEG2RAD);
@@ -276,7 +276,7 @@ namespace  automotive {
                 cerr << "Right Short" << endl;
             }
             else if(movingState == LEFT){
-                control.setSpeed(1);
+                control.setSpeed(2);
                 desiredSteeringWheelAngle = -TURN_RATE_AVG;
                 control.setSteeringWheelAngle(desiredSteeringWheelAngle *
                 cartesian::Constants::DEG2RAD);
@@ -284,7 +284,7 @@ namespace  automotive {
                 cerr << "Left" << endl;
             }
             else if(movingState == RIGHT){
-                control.setSpeed(1);
+                control.setSpeed(2);
                 desiredSteeringWheelAngle = TURN_RATE_AVG;
                 control.setSteeringWheelAngle(desiredSteeringWheelAngle *
                 cartesian::Constants::DEG2RAD);
@@ -292,7 +292,7 @@ namespace  automotive {
                 cerr << "Right" << endl;
             }
             else if(movingState == LEFT_SHARP){
-                control.setSpeed(0.5);
+                control.setSpeed(2);
                 desiredSteeringWheelAngle = -TURN_RATE_SHARP;
                 control.setSteeringWheelAngle(desiredSteeringWheelAngle *
                 cartesian::Constants::DEG2RAD);
@@ -300,7 +300,7 @@ namespace  automotive {
                 cerr << "Left Sharp" << endl;
             }
             else if(movingState == RIGHT_SHARP){
-                control.setSpeed(0.5);
+                control.setSpeed(2);
                 desiredSteeringWheelAngle = TURN_RATE_SHARP;
                 control.setSteeringWheelAngle(desiredSteeringWheelAngle *
                 cartesian::Constants::DEG2RAD);

@@ -142,6 +142,7 @@ namespace automotive {
         // This method will do the main data processing job.
         odcore::data::dmcp::ModuleExitCodeMessage::ModuleExitCode Proxy::body() {
             uint32_t captureCounter = 0;
+            int ignoreFollower = 0;
             while (getModuleStateAndWaitForRemainingTimeInTimeslice() == odcore::data::dmcp::ModuleStateMessage::RUNNING) {
                 // Capture frame.
                 if (m_camera.get() != NULL) {
@@ -158,20 +159,35 @@ namespace automotive {
                 automotive::VehicleControl vc = c.getData<automotive::VehicleControl>();
                 printf("%d\n", (int)(vc.getSteeringWheelAngle()*(180.0/3.14159)));
                 
+                if(vc.getSpeed() == 1 && ignoreFollower == 0){
+                    ignoreFollower = 1;
+                        
+                    if(vc.getSteeringWheelAngle() == OVERTAKER_ANGLE_LEFT)writeMiddleman(OVERTAKER_ANGLE_LEFT);
+                    else if(vc.getSteeringWheelAngle() == OVERTAKER_ANGLE_RIGHT)writeMiddleman(OVERTAKER_ANGLE_RIGHT);
+
+                }
+                if(vc.getSpeed() == 1.5 && ignoreFollower == 1){
+                    ignoreFollower = 0;
+                }
+
+
                 // LEFT = -0.157080
                 // SHORT_LEFT = -0.052360
                 // SHARP_LEFT = -0.244346
-
-                if((int)(vc.getSteeringWheelAngle()*(180.0/3.14159)) == 0)writeMiddleman(CAR_STRAIGHT);
-                else if((int)(vc.getSteeringWheelAngle()*(180.0/3.14159)) == -3)writeMiddleman(CAR_SHORT_TURN_LEFT);
-                else if((int)(vc.getSteeringWheelAngle()*(180.0/3.14159)) == -9)writeMiddleman(CAR_AVG_TURN_LEFT);
-                else if((int)(vc.getSteeringWheelAngle()*(180.0/3.14159)) == -14)writeMiddleman(CAR_SHARP_TURN_LEFT);
-                else if((int)(vc.getSteeringWheelAngle()*(180.0/3.14159)) == 3)writeMiddleman(CAR_SHORT_TURN_RIGHT);
-                else if((int)(vc.getSteeringWheelAngle()*(180.0/3.14159)) == 9)writeMiddleman(CAR_AVG_TURN_RIGHT);
-                else if((int)(vc.getSteeringWheelAngle()*(180.0/3.14159)) == 14)writeMiddleman(CAR_SHARP_TURN_RIGHT);
+                if(vc.getSpeed() == 2 && ignoreFollower == 0){
+                    if((int)(vc.getSteeringWheelAngle()*(180.0/3.14159)) == 0)writeMiddleman(CAR_STRAIGHT);
+                    else if((int)(vc.getSteeringWheelAngle()*(180.0/3.14159)) == -3)writeMiddleman(CAR_SHORT_TURN_LEFT);
+                    else if((int)(vc.getSteeringWheelAngle()*(180.0/3.14159)) == -9)writeMiddleman(CAR_AVG_TURN_LEFT);
+                    else if((int)(vc.getSteeringWheelAngle()*(180.0/3.14159)) == -14)writeMiddleman(CAR_SHARP_TURN_LEFT);
+                    else if((int)(vc.getSteeringWheelAngle()*(180.0/3.14159)) == 3)writeMiddleman(CAR_SHORT_TURN_RIGHT);
+                    else if((int)(vc.getSteeringWheelAngle()*(180.0/3.14159)) == 9)writeMiddleman(CAR_AVG_TURN_RIGHT);
+                    else if((int)(vc.getSteeringWheelAngle()*(180.0/3.14159)) == 14)writeMiddleman(CAR_SHARP_TURN_RIGHT);
 
                 // Get sensor data from IR/US.
-            }
+                }
+                
+            
+             }
 
             cout << "Proxy: Captured " << captureCounter << " frames." << endl;
 
