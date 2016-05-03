@@ -146,7 +146,7 @@ namespace  automotive {
                         si.getBytesPerPixel());
                     }
                     // Mirror the image.
-                    cvFlip(m_image, 0, -1);
+                   // cvFlip(m_image, 0, -1);
                     retVal = true;
                 }
             }
@@ -249,7 +249,7 @@ namespace  automotive {
                 movingState = FORWARD;
             }
 
-            cerr << avgDirection << " - ";
+            //cerr << avgDirection << " - ";
 
             if(movingState == FORWARD){
                 control.setSpeed(2);
@@ -257,7 +257,7 @@ namespace  automotive {
                 control.setSteeringWheelAngle(desiredSteeringWheelAngle *
                 cartesian::Constants::DEG2RAD);
                 //writeMiddleman(CAR_STRAIGHT);
-                cerr << "Forward" << endl;
+                //cerr << "Forward" << endl;
             }
             else if(movingState == SHORT_LEFT){
                 control.setSpeed(2);
@@ -265,7 +265,7 @@ namespace  automotive {
                 control.setSteeringWheelAngle(desiredSteeringWheelAngle *
                 cartesian::Constants::DEG2RAD);
                 //writeMiddleman(CAR_SHORT_TURN_LEFT);
-                cerr << "Left Short" << endl;
+                //cerr << "Left Short" << endl;
             }
             else if(movingState == SHORT_RIGHT){
                 control.setSpeed(2);
@@ -273,7 +273,7 @@ namespace  automotive {
                 control.setSteeringWheelAngle(desiredSteeringWheelAngle *
                 cartesian::Constants::DEG2RAD);
                 //writeMiddleman(CAR_SHORT_TURN_RIGHT);
-                cerr << "Right Short" << endl;
+                //cerr << "Right Short" << endl;
             }
             else if(movingState == LEFT){
                 control.setSpeed(2);
@@ -281,7 +281,7 @@ namespace  automotive {
                 control.setSteeringWheelAngle(desiredSteeringWheelAngle *
                 cartesian::Constants::DEG2RAD);
                 //writeMiddleman(CAR_AVG_TURN_LEFT);
-                cerr << "Left" << endl;
+                //cerr << "Left" << endl;
             }
             else if(movingState == RIGHT){
                 control.setSpeed(2);
@@ -289,7 +289,7 @@ namespace  automotive {
                 control.setSteeringWheelAngle(desiredSteeringWheelAngle *
                 cartesian::Constants::DEG2RAD);
                 //writeMiddleman(CAR_AVG_TURN_RIGHT);
-                cerr << "Right" << endl;
+                //cerr << "Right" << endl;
             }
             else if(movingState == LEFT_SHARP){
                 control.setSpeed(2);
@@ -297,7 +297,7 @@ namespace  automotive {
                 control.setSteeringWheelAngle(desiredSteeringWheelAngle *
                 cartesian::Constants::DEG2RAD);
                 //writeMiddleman(CAR_SHARP_TURN_LEFT);
-                cerr << "Left Sharp" << endl;
+                //cerr << "Left Sharp" << endl;
             }
             else if(movingState == RIGHT_SHARP){
                 control.setSpeed(2);
@@ -305,7 +305,7 @@ namespace  automotive {
                 control.setSteeringWheelAngle(desiredSteeringWheelAngle *
                 cartesian::Constants::DEG2RAD);
                 //writeMiddleman(CAR_SHARP_TURN_RIGHT);
-                cerr << "Right Sharp" << endl;
+                //cerr << "Right Sharp" << endl;
             }
             
             if (m_debug) {
@@ -325,6 +325,7 @@ namespace  automotive {
             // by a potential component to "drive" the car.
             // SteeringData sd;
             // sd.setExampleData(1234.56);
+            cout<<"Sending 2"<<endl;
             Container  v(control);
             getConference().send(v);
             // Create container for finally sending the data.

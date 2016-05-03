@@ -245,16 +245,7 @@ String intToString(int i_1){
     return String(i_1);
   }
 }
-/*
- * Takes a string as an argument and encodes it as a netstring
- */
-String encodeNetstring(String string){
-  int len = string.length();
-  if (len <= 0){
-    return "empty";
-  }
-  return String(",") + len + String("," + string);
-}
+
 
 /*
  * Takes the voltage respresenation read from an analog port, transforms it into

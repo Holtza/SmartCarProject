@@ -30,6 +30,17 @@
 
 #include "Driver.h"
 
+#define CAR_SHARP_TURN_RIGHT 's'
+#define CAR_SHORT_TURN_RIGHT 'c'
+#define CAR_AVG_TURN_RIGHT 'f'
+#define CAR_SHARP_TURN_LEFT 'A'
+#define CAR_SHORT_TURN_LEFT 'R'
+#define CAR_AVG_TURN_LEFT 'L'
+#define CAR_STRAIGHT 'Z'
+#define OVERTAKER_LEFT 'A'
+#define OVERTAKER_RIGHT 's'
+
+
 namespace automotive {
     namespace miniature {
 
@@ -89,14 +100,14 @@ namespace automotive {
                 VehicleControl vc;
 
                 
-                if(receivedVC.getSpeed() == 1 && ignoreFollower == 0){
+                if((int)receivedVC.getSpeed() == 1 && ignoreFollower == 0){
                      ignoreFollower = 1;
  
-                     if(receivedVC.getSteeringWheelAngle() == OVERTAKER_ANGLE_LEFT)vc.setSteeringWheelAngle(OVERTAKER_ANGLE_LEFT);
-                     else if(receivedVC.getSteeringWheelAngle() == OVERTAKER_ANGLE_RIGHT)vc.setSteeringWheelAngle(OVERTAKER_ANGLE_RIGHT);
+                     if((int)receivedVC.getSteeringWheelAngle() == OVERTAKER_LEFT)vc.setSteeringWheelAngle(OVERTAKER_LEFT);
+                     else if((int)receivedVC.getSteeringWheelAngle() == OVERTAKER_RIGHT)vc.setSteeringWheelAngle(OVERTAKER_RIGHT);
  
                 }
-                if(receivedVC.getSpeed() == 1.5 && ignoreFollower == 1){
+                if(receivedVC.getSpeed() >= 1.45 && receivedVC.getSpeed() <= 1.55 && ignoreFollower == 1){
                      ignoreFollower = 0;
                 }
  
@@ -104,17 +115,17 @@ namespace automotive {
                 // LEFT = -0.157080
                 // SHORT_LEFT = -0.052360
                 // SHARP_LEFT = -0.244346
-                if(receivedVC.getSpeed() == 2 && ignoreFollower == 0){
+                if((int)receivedVC.getSpeed() == 2 && ignoreFollower == 0){
                      if((int)(receivedVC.getSteeringWheelAngle()*(180.0/3.14159)) == 0)vc.setSteeringWheelAngle(CAR_STRAIGHT);
                      else if((int)(receivedVC.getSteeringWheelAngle()*(180.0/3.14159)) == -3)vc.setSteeringWheelAngle(CAR_SHORT_TURN_LEFT);
-                     else if((int)(receivedVC.getSteeringWheelAngle()*(180.0/3.14159)) == -9)vc.setSteeringWheelAndle(CAR_AVG_TURN_LEFT);
+                     else if((int)(receivedVC.getSteeringWheelAngle()*(180.0/3.14159)) == -9)vc.setSteeringWheelAngle(CAR_AVG_TURN_LEFT);
                      else if((int)(receivedVC.getSteeringWheelAngle()*(180.0/3.14159)) == -14)vc.setSteeringWheelAngle(CAR_SHARP_TURN_LEFT);
                      else if((int)(receivedVC.getSteeringWheelAngle()*(180.0/3.14159)) == 3)vc.setSteeringWheelAngle(CAR_SHORT_TURN_RIGHT);
                      else if((int)(receivedVC.getSteeringWheelAngle()*(180.0/3.14159)) == 9)vc.setSteeringWheelAngle(CAR_AVG_TURN_RIGHT);
                      else if((int)(receivedVC.getSteeringWheelAngle()*(180.0/3.14159)) == 14)vc.setSteeringWheelAngle(CAR_SHARP_TURN_RIGHT);
                 }
 
-                vc.setSpeed = 3;
+                vc.setSpeed(3);
                 // Design your control algorithm here depending on the input data from above.
 		
 
@@ -132,9 +143,9 @@ namespace automotive {
                 //vc.setFlashingLightsRight(true);
 
                 // Create container for finally sending the data.
-                Container c(vc);
+                Container cSend(vc);
                 // Send container.
-                getConference().send(c);
+                getConference().send(cSend);
             }
 
             return odcore::data::dmcp::ModuleExitCodeMessage::OKAY;
