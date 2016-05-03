@@ -1,2 +1,2 @@
-g++ -std=c++11 -I /usr/include -c SerialSendBytes.cpp -o SerialSendBytes.o
-g++ -o serialsendbytes SerialSendBytes.o -lopendavinci -lpthread
+g++ -std=c++11 -I /usr/include -c SerialReceiveBytes.cpp -o SerialReceiveBytes.o
+g++ -o serialreceivebytes SerialReceiveBytes.o -lopendavinci -lpthread
