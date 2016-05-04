@@ -139,6 +139,18 @@ namespace automotive {
         }
 
 
+       string readMiddleman(){
+            char sensorValues[50];
+            FILE *file;
+            file = fopen("/root/lastPacket.txt", "r");
+            fscanf(file, "%[^\n]", sensorValues);
+            fprintf(file, "%s", sensorValues);
+            fclose(file);
+            return sensorValues;
+ 
+        }
+
+
         // This method will do the main data processing job.
         odcore::data::dmcp::ModuleExitCodeMessage::ModuleExitCode Proxy::body() {
             uint32_t captureCounter = 0;
@@ -156,12 +168,47 @@ namespace automotive {
                 //VehicleData vd = containerVehicleData.getData<VehicleData> ();
                 Container c = getKeyValueDataStore().get(automotive::VehicleControl::ID());
                 automotive::VehicleControl vc = c.getData<automotive::VehicleControl>();
-                printf("%d\n", (int)(vc.getSteeringWheelAngle()*(180.0/3.14159)));
+               // printf("%d\n", (int)(vc.getSteeringWheelAngle()*(180.0/3.14159)));
                 
                 // LEFT = -0.157080
                 // SHORT_LEFT = -0.052360
                 // SHARP_LEFT = -0.244346
 
+
+                //testing reading sensor values from a file
+                cout << "values: " << readMiddleman() <<endl;
+                 // Get sensor data from IR/US.
+                string sensorData = readMiddleman();
+                int length = sensorData.length();
+
+                // decode
+                if(length == 0 || length < 15 || length > 15){
+                  cout << "error" <<endl;
+ 
+                }else{
+                   string sonarFrontCenter = sensorData.substr(0, 2);
+                   int US_FrontCenter = atoi(sonarFrontCenter.c_str());
+                   cout << "US_FrontCenter: " << US_FrontCenter <<endl;
+
+                   string sonarFrontRight = sensorData.substr(3, 5);
+                   int US_FrontRight = atoi(sonarFrontRight.c_str());
+                   cout << "US_FrontRight: " << US_FrontRight <<endl;
+
+                   string irFrontRight = sensorData.substr(6, 8);
+                   int IR_FrontRight = atoi(irFrontRight.c_str());
+                   cout << "IR_FrontRight: " << IR_FrontRight <<endl;
+
+                   string irRearRight = sensorData.substr(9, 11);
+                   int IR_RearRight = atoi(irRearRight.c_str());
+                   cout << "IR_RearRight: " << IR_RearRight <<endl;
+
+                   string irRear = sensorData.substr(12, 14);
+                   int IR_Rear = atoi(irRear.c_str());
+                   cout << "IR_Rear: " << IR_Rear <<endl;
+
+                }
+
+              
                 if((int)(vc.getSteeringWheelAngle()*(180.0/3.14159)) == 0)writeMiddleman(CAR_STRAIGHT);
                 else if((int)(vc.getSteeringWheelAngle()*(180.0/3.14159)) == -3)writeMiddleman(CAR_SHORT_TURN_LEFT);
                 else if((int)(vc.getSteeringWheelAngle()*(180.0/3.14159)) == -9)writeMiddleman(CAR_AVG_TURN_LEFT);
@@ -170,7 +217,10 @@ namespace automotive {
                 else if((int)(vc.getSteeringWheelAngle()*(180.0/3.14159)) == 9)writeMiddleman(CAR_AVG_TURN_RIGHT);
                 else if((int)(vc.getSteeringWheelAngle()*(180.0/3.14159)) == 14)writeMiddleman(CAR_SHARP_TURN_RIGHT);
 
-                // Get sensor data from IR/US.
+               
+             
+
+   
             }
 
             cout << "Proxy: Captured " << captureCounter << " frames." << endl;
