@@ -30,7 +30,7 @@
 
 #include "SerialReceiveBytes.hpp"
 
-#define PACKETLENGTH 15 
+#define PACKETLENGTH 20 
 
 using namespace std;
 using namespace odcore;

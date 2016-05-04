@@ -1,0 +1,159 @@
+[0412/112421:ERROR:process_info.cc(608)] range at 0xffa0f000, size 0x230 fully unreadable
+[0412/112421:ERROR:process_info.cc(608)] range at 0x0, size 0x24 fully unreadable
+[0412/112421:ERROR:process_reader_win.cc(232)] ReadMemory at 0x0 of 36 bytes failed: Endast delar av en ReadProcessMemory- eller WriteProcessMemory-begäran har slutförts. (0x12B)
+[0412/112421:ERROR:process_snapshot_win.cc(279)] ReadMemory PEB_LDR_DATA
+[0412/112421:ERROR:process_reader_win.cc(232)] ReadMemory at 0x0 of 784 bytes failed: Endast delar av en ReadProcessMemory- eller WriteProcessMemory-begäran har slutförts. (0x12B)
+[0412/112421:ERROR:process_snapshot_win.cc(302)] ReadMemory RTL_USER_PROCESS_PARAMETERS
+[0412/112421:ERROR:process_reader_win.cc(98)] process 6836 not found
+[0412/112421:ERROR:process_reader_win.cc(232)] ReadMemory at 0x8f0000 of 64 bytes failed: Endast delar av en ReadProcessMemory- eller WriteProcessMemory-begäran har slutförts. (0x12B)
+[0412/112421:WARNING:pe_image_reader.cc(280)] could not read dos header from C:\Program Files (x86)\Google\Chrome\Application\chrome.exe
+[0412/112421:ERROR:process_reader_win.cc(232)] ReadMemory at 0x77620000 of 64 bytes failed: Endast delar av en ReadProcessMemory- eller WriteProcessMemory-begäran har slutförts. (0x12B)
+[0412/112421:WARNING:pe_image_reader.cc(280)] could not read dos header from C:\Windows\SYSTEM32\ntdll.dll
+[0412/112421:ERROR:process_reader_win.cc(232)] ReadMemory at 0x74e30000 of 64 bytes failed: Endast delar av en ReadProcessMemory- eller WriteProcessMemory-begäran har slutförts. (0x12B)
+[0412/112421:WARNING:pe_image_reader.cc(280)] could not read dos header from C:\Windows\SYSTEM32\KERNELBASE.dll
+[0412/112421:ERROR:process_reader_win.cc(232)] ReadMemory at 0x77240000 of 64 bytes failed: Endast delar av en ReadProcessMemory- eller WriteProcessMemory-begäran har slutförts. (0x12B)
+[0412/112421:WARNING:pe_image_reader.cc(280)] could not read dos header from C:\Windows\SYSTEM32\KERNEL32.dll
+[0412/112421:ERROR:process_reader_win.cc(232)] ReadMemory at 0x59b10000 of 64 bytes failed: Endast delar av en ReadProcessMemory- eller WriteProcessMemory-begäran har slutförts. (0x12B)
+[0412/112421:WARNING:pe_image_reader.cc(280)] could not read dos header from C:\Program Files\AVAST Software\Avast\snxhk.dll
+[0412/112421:ERROR:process_reader_win.cc(232)] ReadMemory at 0x75950000 of 64 bytes failed: Endast delar av en ReadProcessMemory- eller WriteProcessMemory-begäran har slutförts. (0x12B)
+[0412/112421:WARNING:pe_image_reader.cc(280)] could not read dos header from C:\Windows\SYSTEM32\msvcrt.dll
+[0412/112421:ERROR:process_reader_win.cc(232)] ReadMemory at 0x74da0000 of 64 bytes failed: Endast delar av en ReadProcessMemory- eller WriteProcessMemory-begäran har slutförts. (0x12B)
+[0412/112421:WARNING:pe_image_reader.cc(280)] could not read dos header from C:\Windows\SYSTEM32\bcryptPrimitives.dll
+[0412/112421:ERROR:process_reader_win.cc(232)] ReadMemory at 0x74e00000 of 64 bytes failed: Endast delar av en ReadProcessMemory- eller WriteProcessMemory-begäran har slutförts. (0x12B)
+[0412/112421:WARNING:pe_image_reader.cc(280)] could not read dos header from C:\Windows\SYSTEM32\CRYPTBASE.dll
+[0412/112421:ERROR:process_reader_win.cc(232)] ReadMemory at 0x74e10000 of 64 bytes failed: Endast delar av en ReadProcessMemory- eller WriteProcessMemory-begäran har slutförts. (0x12B)
+[0412/112421:WARNING:pe_image_reader.cc(280)] could not read dos header from C:\Windows\SYSTEM32\SspiCli.dll
+[0412/112421:ERROR:process_reader_win.cc(232)] ReadMemory at 0x75d00000 of 64 bytes failed: Endast delar av en ReadProcessMemory- eller WriteProcessMemory-begäran har slutförts. (0x12B)
+[0412/112421:WARNING:pe_image_reader.cc(280)] could not read dos header from C:\Windows\SYSTEM32\RPCRT4.dll
+[0412/112421:ERROR:process_reader_win.cc(232)] ReadMemory at 0x75c80000 of 64 bytes failed: Endast delar av en ReadProcessMemory- eller WriteProcessMemory-begäran har slutförts. (0x12B)
+[0412/112421:WARNING:pe_image_reader.cc(280)] could not read dos header from C:\Windows\SYSTEM32\sechost.dll
+[0412/112421:ERROR:process_reader_win.cc(232)] ReadMemory at 0x75c00000 of 64 bytes failed: Endast delar av en ReadProcessMemory- eller WriteProcessMemory-begäran har slutförts. (0x12B)
+[0412/112421:WARNING:pe_image_reader.cc(280)] could not read dos header from C:\Windows\SYSTEM32\ADVAPI32.dll
+[0412/112421:ERROR:process_reader_win.cc(232)] ReadMemory at 0x59ae0000 of 64 bytes failed: Endast delar av en ReadProcessMemory- eller WriteProcessMemory-begäran har slutförts. (0x12B)
+[0412/112421:WARNING:pe_image_reader.cc(280)] could not read dos header from C:\Program Files (x86)\Google\Chrome\Application\49.0.2623.110\chrome_elf.dll
+[0412/112421:ERROR:process_reader_win.cc(232)] ReadMemory at 0x75680000 of 64 bytes failed: Endast delar av en ReadProcessMemory- eller WriteProcessMemory-begäran har slutförts. (0x12B)
+[0412/112421:WARNING:pe_image_reader.cc(280)] could not read dos header from C:\Windows\SYSTEM32\combase.dll
+[0412/112421:ERROR:process_reader_win.cc(232)] ReadMemory at 0x745b0000 of 64 bytes failed: Endast delar av en ReadProcessMemory- eller WriteProcessMemory-begäran har slutförts. (0x12B)
+[0412/112421:WARNING:pe_image_reader.cc(280)] could not read dos header from C:\Windows\SYSTEM32\WINHTTP.dll
+[0412/112421:ERROR:process_reader_win.cc(232)] ReadMemory at 0x74860000 of 64 bytes failed: Endast delar av en ReadProcessMemory- eller WriteProcessMemory-begäran har slutförts. (0x12B)
+[0412/112421:WARNING:pe_image_reader.cc(280)] could not read dos header from C:\Windows\SYSTEM32\VERSION.dll
+[0412/112421:ERROR:process_reader_win.cc(232)] ReadMemory at 0x77200000 of 64 bytes failed: Endast delar av en ReadProcessMemory- eller WriteProcessMemory-begäran har slutförts. (0x12B)
+[0412/112421:WARNING:pe_image_reader.cc(280)] could not read dos header from C:\Windows\SYSTEM32\cfgmgr32.dll
+[0412/112421:ERROR:process_reader_win.cc(232)] ReadMemory at 0x74ce0000 of 64 bytes failed: Endast delar av en ReadProcessMemory- eller WriteProcessMemory-begäran har slutförts. (0x12B)
+[0412/112421:WARNING:pe_image_reader.cc(280)] could not read dos header from C:\Windows\SYSTEM32\DEVOBJ.dll
+[0412/112421:ERROR:process_reader_win.cc(232)] ReadMemory at 0x72a50000 of 64 bytes failed: Endast delar av en ReadProcessMemory- eller WriteProcessMemory-begäran har slutförts. (0x12B)
+[0412/112421:WARNING:pe_image_reader.cc(280)] could not read dos header from C:\Windows\SYSTEM32\WINMMBASE.dll
+[0412/112421:ERROR:process_reader_win.cc(232)] ReadMemory at 0x75570000 of 64 bytes failed: Endast delar av en ReadProcessMemory- eller WriteProcessMemory-begäran har slutförts. (0x12B)
+[0412/112421:WARNING:pe_image_reader.cc(280)] could not read dos header from C:\Windows\SYSTEM32\GDI32.dll
+[0412/112421:ERROR:process_reader_win.cc(232)] ReadMemory at 0x74f10000 of 64 bytes failed: Endast delar av en ReadProcessMemory- eller WriteProcessMemory-begäran har slutförts. (0x12B)
+[0412/112421:WARNING:pe_image_reader.cc(280)] could not read dos header from C:\Windows\SYSTEM32\USER32.dll
+[0412/112421:ERROR:process_reader_win.cc(232)] ReadMemory at 0x75070000 of 64 bytes failed: Endast delar av en ReadProcessMemory- eller WriteProcessMemory-begäran har slutförts. (0x12B)
+[0412/112421:WARNING:pe_image_reader.cc(280)] could not read dos header from C:\Windows\SYSTEM32\MSCTF.dll
+[0412/112421:ERROR:process_reader_win.cc(232)] ReadMemory at 0x75cd0000 of 64 bytes failed: Endast delar av en ReadProcessMemory- eller WriteProcessMemory-begäran har slutförts. (0x12B)
+[0412/112421:WARNING:pe_image_reader.cc(280)] could not read dos header from C:\Windows\system32\IMM32.DLL
+[0412/112421:ERROR:process_reader_win.cc(232)] ReadMemory at 0x72a80000 of 64 bytes failed: Endast delar av en ReadProcessMemory- eller WriteProcessMemory-begäran har slutförts. (0x12B)
+[0412/112421:WARNING:pe_image_reader.cc(280)] could not read dos header from C:\Windows\SYSTEM32\WINMM.dll
+[0412/112421:ERROR:process_reader_win.cc(232)] ReadMemory at 0x74d60000 of 64 bytes failed: Endast delar av en ReadProcessMemory- eller WriteProcessMemory-begäran har slutförts. (0x12B)
+[0412/112421:WARNING:pe_image_reader.cc(280)] could not read dos header from C:\Windows\SYSTEM32\profapi.dll
+[0412/112421:ERROR:process_reader_win.cc(232)] ReadMemory at 0x74d80000 of 64 bytes failed: Endast delar av en ReadProcessMemory- eller WriteProcessMemory-begäran har slutförts. (0x12B)
+[0412/112421:WARNING:pe_image_reader.cc(280)] could not read dos header from C:\Windows\SYSTEM32\USERENV.dll
+[0412/112421:ERROR:process_reader_win.cc(232)] ReadMemory at 0x74d70000 of 64 bytes failed: Endast delar av en ReadProcessMemory- eller WriteProcessMemory-begäran har slutförts. (0x12B)
+[0412/112421:WARNING:pe_image_reader.cc(280)] could not read dos header from C:\Windows\SYSTEM32\WTSAPI32.dll
+[0412/112421:ERROR:process_reader_win.cc(232)] ReadMemory at 0x75380000 of 64 bytes failed: Endast delar av en ReadProcessMemory- eller WriteProcessMemory-begäran har slutförts. (0x12B)
+[0412/112421:WARNING:pe_image_reader.cc(280)] could not read dos header from C:\Windows\SYSTEM32\SHLWAPI.dll
+[0412/112421:ERROR:process_reader_win.cc(232)] ReadMemory at 0x75f40000 of 64 bytes failed: Endast delar av en ReadProcessMemory- eller WriteProcessMemory-begäran har slutförts. (0x12B)
+[0412/112421:WARNING:pe_image_reader.cc(280)] could not read dos header from C:\Windows\SYSTEM32\SHELL32.dll
+[0412/112421:ERROR:process_reader_win.cc(232)] ReadMemory at 0x74160000 of 64 bytes failed: Endast delar av en ReadProcessMemory- eller WriteProcessMemory-begäran har slutförts. (0x12B)
+[0412/112421:WARNING:pe_image_reader.cc(280)] could not read dos header from C:\Windows\SYSTEM32\shcore.dll
+[0412/112421:ERROR:process_reader_win.cc(232)] ReadMemory at 0x75800000 of 64 bytes failed: Endast delar av en ReadProcessMemory- eller WriteProcessMemory-begäran har slutförts. (0x12B)
+[0412/112421:WARNING:pe_image_reader.cc(280)] could not read dos header from C:\Windows\SYSTEM32\PSAPI.DLL
+[0412/112421:ERROR:process_reader_win.cc(232)] ReadMemory at 0x6d760000 of 64 bytes failed: Endast delar av en ReadProcessMemory- eller WriteProcessMemory-begäran har slutförts. (0x12B)
+[0412/112421:WARNING:pe_image_reader.cc(280)] could not read dos header from C:\Windows\SYSTEM32\WINSPOOL.DRV
+[0412/112421:ERROR:process_reader_win.cc(232)] ReadMemory at 0x724d0000 of 64 bytes failed: Endast delar av en ReadProcessMemory- eller WriteProcessMemory-begäran har slutförts. (0x12B)
+[0412/112421:WARNING:pe_image_reader.cc(280)] could not read dos header from C:\Windows\WinSxS\x86_microsoft.windows.common-controls_6595b64144ccf1df_6.0.9600.18006_none_a9ec6aab013aafee\COMCTL32.dll
+[0412/112421:ERROR:process_reader_win.cc(232)] ReadMemory at 0x75190000 of 64 bytes failed: Endast delar av en ReadProcessMemory- eller WriteProcessMemory-begäran har slutförts. (0x12B)
+[0412/112421:WARNING:pe_image_reader.cc(280)] could not read dos header from C:\Windows\SYSTEM32\COMDLG32.dll
+[0412/112421:ERROR:process_reader_win.cc(232)] ReadMemory at 0x75820000 of 64 bytes failed: Endast delar av en ReadProcessMemory- eller WriteProcessMemory-begäran har slutförts. (0x12B)
+[0412/112421:WARNING:pe_image_reader.cc(280)] could not read dos header from C:\Windows\SYSTEM32\ole32.dll
+[0412/112421:ERROR:process_reader_win.cc(232)] ReadMemory at 0x754b0000 of 64 bytes failed: Endast delar av en ReadProcessMemory- eller WriteProcessMemory-begäran har slutförts. (0x12B)
+[0412/112421:WARNING:pe_image_reader.cc(280)] could not read dos header from C:\Windows\SYSTEM32\OLEAUT32.dll
+[0412/112421:ERROR:process_reader_win.cc(232)] ReadMemory at 0x75f30000 of 64 bytes failed: Endast delar av en ReadProcessMemory- eller WriteProcessMemory-begäran har slutförts. (0x12B)
+[0412/112421:WARNING:pe_image_reader.cc(280)] could not read dos header from C:\Windows\SYSTEM32\NSI.dll
+[0412/112421:ERROR:process_reader_win.cc(232)] ReadMemory at 0x74220000 of 64 bytes failed: Endast delar av en ReadProcessMemory- eller WriteProcessMemory-begäran har slutförts. (0x12B)
+[0412/112421:WARNING:pe_image_reader.cc(280)] could not read dos header from C:\Windows\SYSTEM32\WINNSI.DLL
+[0412/112421:ERROR:process_reader_win.cc(232)] ReadMemory at 0x74510000 of 64 bytes failed: Endast delar av en ReadProcessMemory- eller WriteProcessMemory-begäran har slutförts. (0x12B)
+[0412/112421:WARNING:pe_image_reader.cc(280)] could not read dos header from C:\Windows\SYSTEM32\IPHLPAPI.DLL
+[0412/112421:ERROR:process_reader_win.cc(232)] ReadMemory at 0x75a20000 of 64 bytes failed: Endast delar av en ReadProcessMemory- eller WriteProcessMemory-begäran har slutförts. (0x12B)
+[0412/112421:WARNING:pe_image_reader.cc(280)] could not read dos header from C:\Windows\SYSTEM32\WS2_32.dll
+[0412/112421:ERROR:process_reader_win.cc(232)] ReadMemory at 0x72760000 of 64 bytes failed: Endast delar av en ReadProcessMemory- eller WriteProcessMemory-begäran har slutförts. (0x12B)
+[0412/112421:WARNING:pe_image_reader.cc(280)] could not read dos header from C:\Windows\SYSTEM32\USP10.dll
+[0412/112421:ERROR:process_reader_win.cc(232)] ReadMemory at 0x75810000 of 64 bytes failed: Endast delar av en ReadProcessMemory- eller WriteProcessMemory-begäran har slutförts. (0x12B)
+[0412/112421:WARNING:pe_image_reader.cc(280)] could not read dos header from C:\Windows\SYSTEM32\MSASN1.dll
+[0412/112421:ERROR:process_reader_win.cc(232)] ReadMemory at 0x75a70000 of 64 bytes failed: Endast delar av en ReadProcessMemory- eller WriteProcessMemory-begäran har slutförts. (0x12B)
+[0412/112421:WARNING:pe_image_reader.cc(280)] could not read dos header from C:\Windows\SYSTEM32\CRYPT32.dll
+[0412/112421:ERROR:process_reader_win.cc(232)] ReadMemory at 0x753d0000 of 64 bytes failed: Endast delar av en ReadProcessMemory- eller WriteProcessMemory-begäran har slutförts. (0x12B)
+[0412/112421:WARNING:pe_image_reader.cc(280)] could not read dos header from C:\Windows\SYSTEM32\WINTRUST.dll
+[0412/112421:ERROR:process_reader_win.cc(232)] ReadMemory at 0x733c0000 of 64 bytes failed: Endast delar av en ReadProcessMemory- eller WriteProcessMemory-begäran har slutförts. (0x12B)
+[0412/112421:WARNING:pe_image_reader.cc(280)] could not read dos header from C:\Windows\SYSTEM32\Secur32.dll
+[0412/112421:ERROR:process_reader_win.cc(232)] ReadMemory at 0x519b0000 of 64 bytes failed: Endast delar av en ReadProcessMemory- eller WriteProcessMemory-begäran har slutförts. (0x12B)
+[0412/112421:WARNING:pe_image_reader.cc(280)] could not read dos header from C:\Program Files (x86)\Google\Chrome\Application\49.0.2623.110\chrome_child.dll
+[0412/112421:ERROR:process_reader_win.cc(232)] ReadMemory at 0x59a70000 of 64 bytes failed: Endast delar av en ReadProcessMemory- eller WriteProcessMemory-begäran har slutförts. (0x12B)
+[0412/112421:WARNING:pe_image_reader.cc(280)] could not read dos header from C:\Program Files\AVAST Software\Avast\aswJsFlt.dll
+[0412/112421:ERROR:process_reader_win.cc(232)] ReadMemory at 0x749f0000 of 64 bytes failed: Endast delar av en ReadProcessMemory- eller WriteProcessMemory-begäran har slutförts. (0x12B)
+[0412/112421:WARNING:pe_image_reader.cc(280)] could not read dos header from C:\Windows\WinSxS\x86_avast.vc110.crt_2036b14a11e83e4a_11.0.60610.1_none_1d37a43bbfe1dc9c\MSVCR110.dll
+[0412/112421:ERROR:process_reader_win.cc(232)] ReadMemory at 0x74990000 of 64 bytes failed: Endast delar av en ReadProcessMemory- eller WriteProcessMemory-begäran har slutförts. (0x12B)
+[0412/112421:WARNING:pe_image_reader.cc(280)] could not read dos header from C:\PROGRA~1\AVASTS~1\Avast\aswCmnIS.dll
+[0412/112421:ERROR:process_reader_win.cc(232)] ReadMemory at 0x74ad0000 of 64 bytes failed: Endast delar av en ReadProcessMemory- eller WriteProcessMemory-begäran har slutförts. (0x12B)
+[0412/112421:WARNING:pe_image_reader.cc(280)] could not read dos header from C:\Windows\WinSxS\x86_avast.vc110.crt_2036b14a11e83e4a_11.0.60610.1_none_1d37a43bbfe1dc9c\MSVCP110.dll
+[0412/112421:ERROR:process_reader_win.cc(232)] ReadMemory at 0x74960000 of 64 bytes failed: Endast delar av en ReadProcessMemory- eller WriteProcessMemory-begäran har slutförts. (0x12B)
+[0412/112421:WARNING:pe_image_reader.cc(280)] could not read dos header from C:\PROGRA~1\AVASTS~1\Avast\aswCmnOS.dll
+[0412/112421:ERROR:process_reader_win.cc(232)] ReadMemory at 0x74c80000 of 64 bytes failed: Endast delar av en ReadProcessMemory- eller WriteProcessMemory-begäran har slutförts. (0x12B)
+[0412/112421:WARNING:pe_image_reader.cc(280)] could not read dos header from C:\PROGRA~1\AVASTS~1\Avast\aswCmnBS.dll
+[0412/112421:ERROR:process_reader_win.cc(232)] ReadMemory at 0x77390000 of 64 bytes failed: Endast delar av en ReadProcessMemory- eller WriteProcessMemory-begäran har slutförts. (0x12B)
+[0412/112421:WARNING:pe_image_reader.cc(280)] could not read dos header from C:\Windows\SYSTEM32\SETUPAPI.dll
+[0412/112421:ERROR:process_reader_win.cc(232)] ReadMemory at 0x736c0000 of 64 bytes failed: Endast delar av en ReadProcessMemory- eller WriteProcessMemory-begäran har slutförts. (0x12B)
+[0412/112421:WARNING:pe_image_reader.cc(280)] could not read dos header from C:\Windows\SYSTEM32\netutils.dll
+[0412/112421:ERROR:process_reader_win.cc(232)] ReadMemory at 0x736a0000 of 64 bytes failed: Endast delar av en ReadProcessMemory- eller WriteProcessMemory-begäran har slutförts. (0x12B)
+[0412/112421:WARNING:pe_image_reader.cc(280)] could not read dos header from C:\Windows\SYSTEM32\srvcli.dll
+[0412/112421:ERROR:process_reader_win.cc(232)] ReadMemory at 0x73680000 of 64 bytes failed: Endast delar av en ReadProcessMemory- eller WriteProcessMemory-begäran har slutförts. (0x12B)
+[0412/112421:WARNING:pe_image_reader.cc(280)] could not read dos header from C:\Windows\SYSTEM32\wkscli.dll
+[0412/112421:ERROR:process_reader_win.cc(232)] ReadMemory at 0x737b0000 of 64 bytes failed: Endast delar av en ReadProcessMemory- eller WriteProcessMemory-begäran har slutförts. (0x12B)
+[0412/112421:WARNING:pe_image_reader.cc(280)] could not read dos header from C:\Windows\SYSTEM32\NETAPI32.dll
+[0412/112421:ERROR:process_reader_win.cc(232)] ReadMemory at 0x74c60000 of 64 bytes failed: Endast delar av en ReadProcessMemory- eller WriteProcessMemory-begäran har slutförts. (0x12B)
+[0412/112421:WARNING:pe_image_reader.cc(280)] could not read dos header from C:\PROGRA~1\AVASTS~1\Avast\log.dll
+[0412/112421:ERROR:process_reader_win.cc(232)] ReadMemory at 0x74530000 of 64 bytes failed: Endast delar av en ReadProcessMemory- eller WriteProcessMemory-begäran har slutförts. (0x12B)
+[0412/112421:WARNING:pe_image_reader.cc(280)] could not read dos header from C:\Windows\SYSTEM32\DNSAPI.dll
+[0412/112421:ERROR:process_reader_win.cc(232)] ReadMemory at 0x748b0000 of 64 bytes failed: Endast delar av en ReadProcessMemory- eller WriteProcessMemory-begäran har slutförts. (0x12B)
+[0412/112421:WARNING:pe_image_reader.cc(280)] could not read dos header from C:\PROGRA~1\AVASTS~1\Avast\commchannel.dll
+[0412/112421:ERROR:process_reader_win.cc(232)] ReadMemory at 0x73bf0000 of 64 bytes failed: Endast delar av en ReadProcessMemory- eller WriteProcessMemory-begäran har slutförts. (0x12B)
+[0412/112421:WARNING:pe_image_reader.cc(280)] could not read dos header from C:\PROGRA~1\AVASTS~1\Avast\JsonRpcServer.dll
+[0412/112421:ERROR:process_reader_win.cc(232)] ReadMemory at 0x741f0000 of 64 bytes failed: Endast delar av en ReadProcessMemory- eller WriteProcessMemory-begäran har slutförts. (0x12B)
+[0412/112421:WARNING:pe_image_reader.cc(280)] could not read dos header from C:\Windows\SYSTEM32\rasman.dll
+[0412/112421:ERROR:process_reader_win.cc(232)] ReadMemory at 0x74470000 of 64 bytes failed: Endast delar av en ReadProcessMemory- eller WriteProcessMemory-begäran har slutförts. (0x12B)
+[0412/112421:WARNING:pe_image_reader.cc(280)] could not read dos header from C:\Windows\SYSTEM32\RASAPI32.dll
+[0412/112421:ERROR:process_reader_win.cc(232)] ReadMemory at 0x74890000 of 64 bytes failed: Endast delar av en ReadProcessMemory- eller WriteProcessMemory-begäran har slutförts. (0x12B)
+[0412/112421:WARNING:pe_image_reader.cc(280)] could not read dos header from C:\PROGRA~1\AVASTS~1\Avast\avastIP.dll
+[0412/112421:ERROR:process_reader_win.cc(232)] ReadMemory at 0x73760000 of 64 bytes failed: Endast delar av en ReadProcessMemory- eller WriteProcessMemory-begäran har slutförts. (0x12B)
+[0412/112421:WARNING:pe_image_reader.cc(280)] could not read dos header from C:\PROGRA~1\AVASTS~1\Avast\AavmRpch.dll
+[0412/112421:ERROR:process_reader_win.cc(232)] ReadMemory at 0x74950000 of 64 bytes failed: Endast delar av en ReadProcessMemory- eller WriteProcessMemory-begäran har slutförts. (0x12B)
+[0412/112421:WARNING:pe_image_reader.cc(280)] could not read dos header from C:\Windows\SYSTEM32\WSOCK32.dll
+[0412/112421:ERROR:process_reader_win.cc(232)] ReadMemory at 0x74870000 of 64 bytes failed: Endast delar av en ReadProcessMemory- eller WriteProcessMemory-begäran har slutförts. (0x12B)
+[0412/112421:WARNING:pe_image_reader.cc(280)] could not read dos header from C:\PROGRA~1\AVASTS~1\Avast\aswEngLdr.dll
+[0412/112421:ERROR:process_reader_win.cc(232)] ReadMemory at 0x74230000 of 64 bytes failed: Endast delar av en ReadProcessMemory- eller WriteProcessMemory-begäran har slutförts. (0x12B)
+[0412/112421:WARNING:pe_image_reader.cc(280)] could not read dos header from C:\Windows\SYSTEM32\iertutil.dll
+[0412/112421:ERROR:process_reader_win.cc(232)] ReadMemory at 0x74650000 of 64 bytes failed: Endast delar av en ReadProcessMemory- eller WriteProcessMemory-begäran har slutförts. (0x12B)
+[0412/112421:WARNING:pe_image_reader.cc(280)] could not read dos header from C:\Windows\SYSTEM32\WININET.dll
+[0412/112421:ERROR:process_reader_win.cc(232)] ReadMemory at 0x74b60000 of 64 bytes failed: Endast delar av en ReadProcessMemory- eller WriteProcessMemory-begäran har slutförts. (0x12B)
+[0412/112421:WARNING:pe_image_reader.cc(280)] could not read dos header from C:\PROGRA~1\AVASTS~1\Avast\ashBase.dll
+[0412/112421:ERROR:process_reader_win.cc(232)] ReadMemory at 0x737d0000 of 64 bytes failed: Endast delar av en ReadProcessMemory- eller WriteProcessMemory-begäran har slutförts. (0x12B)
+[0412/112421:WARNING:pe_image_reader.cc(280)] could not read dos header from C:\PROGRA~1\AVASTS~1\Avast\aswAux.dll
+[0412/112421:ERROR:process_reader_win.cc(232)] ReadMemory at 0x73930000 of 64 bytes failed: Endast delar av en ReadProcessMemory- eller WriteProcessMemory-begäran har slutförts. (0x12B)
+[0412/112421:WARNING:pe_image_reader.cc(280)] could not read dos header from C:\PROGRA~1\AVASTS~1\Avast\ashTask.dll
+[0412/112421:ERROR:process_reader_win.cc(232)] ReadMemory at 0x73a40000 of 64 bytes failed: Endast delar av en ReadProcessMemory- eller WriteProcessMemory-begäran har slutförts. (0x12B)
+[0412/112421:WARNING:pe_image_reader.cc(280)] could not read dos header from C:\PROGRA~1\AVASTS~1\Avast\Aavm4h.dll
+[0412/112421:ERROR:process_reader_win.cc(232)] ReadMemory at 0x6d080000 of 64 bytes failed: Endast delar av en ReadProcessMemory- eller WriteProcessMemory-begäran har slutförts. (0x12B)
+[0412/112421:WARNING:pe_image_reader.cc(280)] could not read dos header from C:\Windows\SYSTEM32\dwrite.dll
+[0412/112421:ERROR:process_reader_win.cc(232)] ReadMemory at 0x99c154 of 12 bytes failed: Endast delar av en ReadProcessMemory- eller WriteProcessMemory-begäran har slutförts. (0x12B)
+[0412/112421:WARNING:process_snapshot_win.cc(89)] ReadMemory ExceptionInformation failed
+[0412/112421:WARNING:crash_report_exception_handler.cc(60)] ProcessSnapshotWin::InitializeException failed
+[0412/112421:ERROR:scoped_process_suspend.cc(38)] NtResumeProcess, ntstatus=-1073741558

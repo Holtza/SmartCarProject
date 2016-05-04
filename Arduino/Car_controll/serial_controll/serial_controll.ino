@@ -40,6 +40,7 @@ int low = 800;  //value for making car go backwards
 char buffer;
 
 int rotation;
+int clicks;
 unsigned long updateSinceChange;
 int encoder;
 int compare;
@@ -165,6 +166,7 @@ void setWheelAngle(int input){
 
 void docount(){
   rotation++;
+  clicks++;
 }
 
 void timerIsr(){
@@ -229,8 +231,10 @@ String setString(int i_1, int i_2, int i_3, int i_4, int i_5){
   String s3 = intToString(i_3);
   String s4 = intToString(i_4);
   String s5 = intToString(i_5);
+  if (clicks > 99999) clicks = 0; //After ~300m 
+  String s6 = clicksToString(clicks); //return wheel encoder data
 
-  String valueS = "<" + s1 + s2 + s3 + s4 + s5 + ">";
+  String valueS = "<" + s1 + s2 + s3 + s4 + s5 + s6 +">";
   return valueS;
 }
 
@@ -244,6 +248,14 @@ String intToString(int i_1){
   }else{
     return String(i_1);
   }
+}
+
+String clicksToString(int i){
+  if(i<10) return "0000" + String(i);
+  else if(i<100 && i>=10) return "000" + String(i);
+  else if(i<1000 && i>=100) return "00" + String(i);
+  else if(i<10000 && i>=1000) return "0" + String(i);
+  else return String(i);
 }
 /*
  * Takes a string as an argument and encodes it as a netstring
