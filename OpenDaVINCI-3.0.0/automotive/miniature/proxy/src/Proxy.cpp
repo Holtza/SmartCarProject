@@ -155,8 +155,8 @@ namespace automotive {
                 
                 //Container containerVehicleData = getKeyValueDataStore().get(VehicleData::ID());
                 //VehicleData vd = containerVehicleData.getData<VehicleData> ();
-                // Container c = getKeyValueDataStore().get(automotive::VehicleControl::ID());
-                // automotive::VehicleControl vc = c.getData<automotive::VehicleControl>();
+                 Container c = getKeyValueDataStore().get(automotive::VehicleControl::ID());
+                 automotive::VehicleControl vc = c.getData<automotive::VehicleControl>();
                 // printf("%d\n", (int)(vc.getSteeringWheelAngle()*(180.0/3.14159)));
 
 
@@ -179,11 +179,7 @@ namespace automotive {
 
                 //if((int)vc.getSpeed() == 3){
                     
-                    
-                    
-                    
-                    
-                    writeMiddleman(setAngle); 
+                writeMiddleman(setAngle); 
                // }
 
 

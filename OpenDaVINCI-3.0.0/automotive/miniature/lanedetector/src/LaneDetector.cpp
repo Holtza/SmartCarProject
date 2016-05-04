@@ -155,7 +155,7 @@ namespace  automotive {
 
         void LaneDetector::applyFilter(cv::Mat *img){
             // Mirror the image.
-            //cvFlip(m_image, 0, -1);
+            cvFlip(m_image, 0, -1);
             blur(*img, *img, cv::Size(BLUR_RADIUS, BLUR_RADIUS));
             Canny(*img, *img, CANNY_LOW_THRESHOLD, CANNY_HIGH_THRESHOLD, KERNEL_SIZE);
             cv::cvtColor(*img, *img, CV_GRAY2BGR);

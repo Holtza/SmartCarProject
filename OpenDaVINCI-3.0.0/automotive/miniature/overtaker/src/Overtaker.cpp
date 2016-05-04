@@ -142,7 +142,7 @@ namespace automotive {
                 }
                 else if (unit.stageMeasuring == ControlUnit::END_OF_OBJECT) {
                     // Find end of object.
-                    unit.distanceToObstacle = sbd.getValueForKey_MapOfDistances(INFRARED_REAR_RIGHT);
+                    unit.distanceToObstacle = sbd.getValueForKey_MapOfDistances(INFRARED_FRONT_RIGHT);
 
                     if (unit.distanceToObstacle < 0) {
                         // Move to right lane again.
@@ -158,6 +158,8 @@ namespace automotive {
 
         ControlUnit Overtaker::movementStage(ControlUnit unit){
 
+                Container followerContainer = getKeyValueDataStore().get(automotive::miniature::SteeringData::ID());
+                SteeringData sd = followerContainer.getData<SteeringData> ();
                 // Create vehicle control data.
                 VehicleControl vc;
 
@@ -165,7 +167,7 @@ namespace automotive {
                 if (unit.stageMoving == ControlUnit::FORWARD) {
                     // Go forward.
                     vc.setSpeed(1.5);
-                    vc.setSteeringWheelAngle(0);
+                    vc.setSteeringWheelAngle(sd.getExampleData());
 
                     unit.stageToRightLaneLeftTurn = 0;
                     unit.stageToRightLaneRightTurn = 0;
@@ -192,8 +194,8 @@ namespace automotive {
                 }
                 else if (unit.stageMoving == ControlUnit::CONTINUE_ON_LEFT_LANE) {
                     // Move to the left lane: Passing stage.
-                    vc.setSpeed(1);
-                    vc.setSteeringWheelAngle(0);
+                    vc.setSpeed(1.5);
+                    vc.setSteeringWheelAngle(sd.getExampleData());
 
                     // Find end of object.
                     unit.stageMeasuring = ControlUnit::END_OF_OBJECT;
@@ -226,9 +228,11 @@ namespace automotive {
 
                 // Create container for finally sending the data.
                 printf("Writing %f\n", vc.getSpeed());
-                Container c(vc);
-                // Send container.
-                getConference().send(c);
+                
+               
+                    Container c(vc);
+                    // Send container.
+                    getConference().send(c);
 
                 return unit;
 
