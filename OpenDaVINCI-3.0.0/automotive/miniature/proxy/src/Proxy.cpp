@@ -1,3 +1,4 @@
+
 /**
  * proxy - Sample application to encapsulate HW/SW interfacing with embedded systems.
  * Copyright (C) 2012 - 2015 Christian Berger
@@ -205,38 +206,41 @@ namespace automotive {
                   cout << "error" <<endl;
  
                 }else{
-                   string sonarFrontCenter = sensorData.substr(0, 2);
+                   string sonarFrontCenter = sensorData.substr(0, 3);
                    US_FrontCenter = atoi(sonarFrontCenter.c_str());
+                  // cout << "string US FrontCenter: " << sonarFrontCenter <<endl;
                    cout << "US_FrontCenter: " << US_FrontCenter <<endl;
 
-                   string sonarFrontRight = sensorData.substr(3, 5);
+                   string sonarFrontRight = sensorData.substr(3, 3);
                    US_FrontRight = atoi(sonarFrontRight.c_str());
+                  // cout << "string US FrontRight: " << sonarFrontRight <<endl;
                    cout << "US_FrontRight: " << US_FrontRight <<endl;
 
-                   string irFrontRight = sensorData.substr(6, 8);
-                   IR_FrontRight = atoi(irFrontRight.c_str());
-                   cout << "IR_FrontRight: " << IR_FrontRight <<endl;
+                   string irRear = sensorData.substr(6, 3);
+                   IR_Rear = atoi(irRear.c_str());
+                  // cout <<"string IR Rear: " << irRear <<endl;
+                   cout << "IR_Rear: " << IR_Rear <<endl;
 
-                   string irRearRight = sensorData.substr(9, 11);
+                   string irRearRight = sensorData.substr(9, 3);
                    IR_RearRight = atoi(irRearRight.c_str());
+                  // cout <<"string IR Rear Right: " << irRearRight <<endl;
                    cout << "IR_RearRight: " << IR_RearRight <<endl;
 
-                   string irRear = sensorData.substr(12, 14);
-                   IR_Rear = atoi(irRear.c_str());
-                   cout << "IR_Rear: " << IR_Rear <<endl;
+                   string irFrontRight = sensorData.substr(12, 3);
+                   IR_FrontRight = atoi(irFrontRight.c_str());
+                  // cout <<"string IR Front Right: " << irFrontRight <<endl;
+                   cout << "IR_FrontRight: " << IR_FrontRight <<endl;
+
 
                 }
 
                 // map 
                 sbd.putTo_MapOfDistances(0, US_FrontCenter); 
                 sbd.putTo_MapOfDistances(1, US_FrontRight);
-                sbd.putTo_MapOfDistances(2, IR_FrontRight);
+                sbd.putTo_MapOfDistances(2, IR_Rear);
                 sbd.putTo_MapOfDistances(3, IR_RearRight);
-                sbd.putTo_MapOfDistances(4, IR_Rear); 
+                sbd.putTo_MapOfDistances(4, IR_FrontRight); 
 
-              
-                
-               
                 Container container(sbd);
                 getConference().send(container);
 
@@ -250,4 +254,3 @@ namespace automotive {
 
     }
 } // automotive::miniature
-
