@@ -67,7 +67,7 @@ namespace automotive {
 
         // This method will do the main data processing job.
         odcore::data::dmcp::ModuleExitCodeMessage::ModuleExitCode Driver::body() {
-            int ignoreFollower = 0;
+            //int ignoreFollower = 0;
             while (getModuleStateAndWaitForRemainingTimeInTimeslice() == odcore::data::dmcp::ModuleStateMessage::RUNNING) {
                 // In the following, you find example for the various data sources that are available:
 
@@ -98,8 +98,8 @@ namespace automotive {
 
                 // Create vehicle control data.
                 VehicleControl vc;
-
                 
+                /*
                 if((int)receivedVC.getSpeed() == 1 && ignoreFollower == 0){
                      ignoreFollower = 1;
  
@@ -109,8 +109,7 @@ namespace automotive {
                 }
                 if(receivedVC.getSpeed() >= 1.45 && receivedVC.getSpeed() <= 1.55 && ignoreFollower == 1){
                      ignoreFollower = 0;
-                }
- 
+                 
  
                 // LEFT = -0.157080
                 // SHORT_LEFT = -0.052360
@@ -124,8 +123,21 @@ namespace automotive {
                      else if((int)(receivedVC.getSteeringWheelAngle()*(180.0/3.14159)) == 9)vc.setSteeringWheelAngle(CAR_AVG_TURN_RIGHT);
                      else if((int)(receivedVC.getSteeringWheelAngle()*(180.0/3.14159)) == 14)vc.setSteeringWheelAngle(CAR_SHARP_TURN_RIGHT);
                 }
+                */
 
-                vc.setSpeed(3);
+                //if((int)receivedVC.getSpeed() == 2 && ignoreFollower == 0){
+                //      if((int)(sd.getExampleData()*(180.0/3.14159)) == 0)vc.setSteeringWheelAngle(CAR_STRAIGHT);
+                //      else if((int)(sd.getExampleData()*(180.0/3.14159)) == -3)vc.setSteeringWheelAngle(CAR_SHORT_TURN_LEFT);
+                //      else if((int)(sd.getExampleData()*(180.0/3.14159)) == -9)vc.setSteeringWheelAngle(CAR_AVG_TURN_LEFT);
+                //      else if((int)(sd.getExampleData()*(180.0/3.14159)) == -14)vc.setSteeringWheelAngle(CAR_SHARP_TURN_LEFT);
+                //      else if((int)(sd.getExampleData()*(180.0/3.14159)) == 3)vc.setSteeringWheelAngle(CAR_SHORT_TURN_RIGHT);
+                //      else if((int)(sd.getExampleData()*(180.0/3.14159)) == 9)vc.setSteeringWheelAngle(CAR_AVG_TURN_RIGHT);
+                //      else if((int)(sd.getExampleData()*(180.0/3.14159)) == 14)vc.setSteeringWheelAngle(CAR_SHARP_TURN_RIGHT);
+                // //}
+                vc.setSteeringWheelAngle(sd.getExampleData());
+                vc.setSpeed(2);
+
+               
                 // Design your control algorithm here depending on the input data from above.
 		
 
@@ -144,8 +156,10 @@ namespace automotive {
 
                 // Create container for finally sending the data.
                 Container cSend(vc);
+                //Container exCont(sd);
                 // Send container.
                 getConference().send(cSend);
+                //getConference().send(exCont);
             }
 
             return odcore::data::dmcp::ModuleExitCodeMessage::OKAY;

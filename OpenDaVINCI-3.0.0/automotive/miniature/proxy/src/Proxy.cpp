@@ -155,19 +155,36 @@ namespace automotive {
                 
                 //Container containerVehicleData = getKeyValueDataStore().get(VehicleData::ID());
                 //VehicleData vd = containerVehicleData.getData<VehicleData> ();
-                Container c = getKeyValueDataStore().get(automotive::VehicleControl::ID());
-                automotive::VehicleControl vc = c.getData<automotive::VehicleControl>();
-                printf("%d\n", (int)(vc.getSteeringWheelAngle()*(180.0/3.14159)));
+                // Container c = getKeyValueDataStore().get(automotive::VehicleControl::ID());
+                // automotive::VehicleControl vc = c.getData<automotive::VehicleControl>();
+                // printf("%d\n", (int)(vc.getSteeringWheelAngle()*(180.0/3.14159)));
 
 
-                if((int)vc.getSpeed() == 3){
-                    char ch = (int)vc.getSteeringWheelAngle();
+
+                Container containerSteeringData = getKeyValueDataStore().get(automotive::miniature::SteeringData::ID());
+                SteeringData sd = containerSteeringData.getData<SteeringData> ();
+                cerr << "Most recent steering data: '" << sd.toString() << "'" << endl;
+
+                const char* setAngle;
+
+                if((int)(sd.getExampleData()*(180.0/3.14159)) == 0)setAngle = CAR_STRAIGHT;
+                else if((int)(sd.getExampleData()*(180.0/3.14159)) == -3)setAngle = CAR_SHORT_TURN_LEFT;
+                else if((int)(sd.getExampleData()*(180.0/3.14159)) == -9)setAngle = CAR_AVG_TURN_LEFT;
+                else if((int)(sd.getExampleData()*(180.0/3.14159)) == -14)setAngle = CAR_SHARP_TURN_LEFT;
+                else if((int)(sd.getExampleData()*(180.0/3.14159)) == 3)setAngle = CAR_SHORT_TURN_RIGHT;
+                else if((int)(sd.getExampleData()*(180.0/3.14159)) == 9)setAngle = CAR_AVG_TURN_RIGHT;
+                else if((int)(sd.getExampleData()*(180.0/3.14159)) == 14)setAngle = CAR_SHARP_TURN_RIGHT;
+                
+
+
+                //if((int)vc.getSpeed() == 3){
                     
-                    const char* cchar = &ch;
                     
                     
-                    writeMiddleman(cchar); 
-                }
+                    
+                    
+                    writeMiddleman(setAngle); 
+               // }
 
 
 /*                

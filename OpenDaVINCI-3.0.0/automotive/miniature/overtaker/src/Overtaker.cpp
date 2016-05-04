@@ -30,8 +30,8 @@
 
 #include "Overtaker.h"
 
-#define WHEELEANGLE 'A'
-#define LEFT_WHEELANGLE 's'
+#define WHEELEANGLE 25
+#define LEFT_WHEELANGLE -25
 #define TURNSPEED 1
 #define FOLLOWSPEED 1.5
 
@@ -62,12 +62,12 @@ namespace automotive {
             
             //set sensors
             const int32_t ULTRASONIC_FRONT_CENTER = 3;
-            const int32_t ULTRASONIC_FRONT_RIGHT = 4;
+            //const int32_t ULTRASONIC_FRONT_RIGHT = 4;
             const int32_t INFRARED_FRONT_RIGHT = 0;
             const int32_t INFRARED_REAR_RIGHT = 2;
 
             //measurement variables
-            const double OVERTAKING_DISTANCE = 11;
+            const double OVERTAKING_DISTANCE = 13;
             const double HEADING_PARALLEL = 0.06;
             const int val[] = {12, 11};
 
@@ -101,6 +101,8 @@ namespace automotive {
                 }
                 else if (unit.stageMeasuring == ControlUnit::FIND_OBJECT_PLAUSIBLE) {
                     cout<<"AAAA"<<endl;
+                    cout<<sbd.getValueForKey_MapOfDistances(ULTRASONIC_FRONT_CENTER)<<endl;
+                    cout<<OVERTAKING_DISTANCE<<endl;
                     if (sbd.getValueForKey_MapOfDistances(ULTRASONIC_FRONT_CENTER) < OVERTAKING_DISTANCE) {
                         cout<<"BBBB"<<endl;
                         unit.stageMoving = ControlUnit::TO_LEFT_LANE_LEFT_TURN;
@@ -140,7 +142,7 @@ namespace automotive {
                 }
                 else if (unit.stageMeasuring == ControlUnit::END_OF_OBJECT) {
                     // Find end of object.
-                    unit.distanceToObstacle = sbd.getValueForKey_MapOfDistances(ULTRASONIC_FRONT_RIGHT);
+                    unit.distanceToObstacle = sbd.getValueForKey_MapOfDistances(INFRARED_REAR_RIGHT);
 
                     if (unit.distanceToObstacle < 0) {
                         // Move to right lane again.
@@ -190,7 +192,7 @@ namespace automotive {
                 }
                 else if (unit.stageMoving == ControlUnit::CONTINUE_ON_LEFT_LANE) {
                     // Move to the left lane: Passing stage.
-                    vc.setSpeed(1.5);
+                    vc.setSpeed(1);
                     vc.setSteeringWheelAngle(0);
 
                     // Find end of object.
