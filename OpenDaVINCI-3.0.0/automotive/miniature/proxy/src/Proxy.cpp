@@ -202,7 +202,7 @@ namespace automotive {
                 int length = sensorData.length();
 
                 // decode
-                if(length == 0 || length < 15 || length > 15){
+                if(length == 0 || length < 20 || length > 20){ //Necessary? Length is already checked in SerialConnection!
                   cout << "error" <<endl;
  
                 }else{
@@ -230,6 +230,7 @@ namespace automotive {
                    IR_FrontRight = atoi(irFrontRight.c_str());
                   // cout <<"string IR Front Right: " << irFrontRight <<endl;
                    cout << "IR_FrontRight: " << IR_FrontRight <<endl;
+	  	   
 
 
                 }
