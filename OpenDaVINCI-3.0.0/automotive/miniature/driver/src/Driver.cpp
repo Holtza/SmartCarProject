@@ -56,11 +56,7 @@ namespace automotive {
 
         // This method will do the main data processing job.
         odcore::data::dmcp::ModuleExitCodeMessage::ModuleExitCode Driver::body() {
-           int US_FrontCenter;
-           int US_FrontRight;
-           int IR_Rear;
-           int IR_RearRight;
-           int IR_FrontRight;
+      
  
             while (getModuleStateAndWaitForRemainingTimeInTimeslice() == odcore::data::dmcp::ModuleStateMessage::RUNNING) {
                 // In the following, you find example for the various data sources that are available:
@@ -85,18 +81,6 @@ namespace automotive {
                 SteeringData sd = containerSteeringData.getData<SteeringData> ();
                 cerr << "Most recent steering data: '" << sd.toString() << "'" << endl;
 
-
-                // get the sensor data
-                US_FrontCenter = sbd.getValueForKey_MapOfDistance(0);
-                cout << " US Front Center: " << US_FrontCenter <<endl;
-                US_FrontRight = sbd.getValueForKey_MapOfDistance(1);
-                cout << " US_FrontRight: " << US_FrontRight <<endl;
-                IR_Rear = sbd.getValueForKey_MapOfDistance(2);
-                cout << " IR Rear: " << IR_Rear <<endl;
-                IR_RearRight = sbd.getValueForKey_MapOfDistance(3);
-                cout << " IR Rear Right: " << IR_RearRight <<endl;
-                IR_FrontRight = sbd.getValueForKey_MapOfDistance(4);
-                cout << " IR Front Right: " << IR_FrontRight <<endl;
                 
                 // Design your control algorithm here depending on the input data from above.
                 
