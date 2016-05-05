@@ -234,12 +234,13 @@ namespace automotive {
 
                 }
 
-                // map 
-                sbd.putTo_MapOfDistances(0, US_FrontCenter); 
-                sbd.putTo_MapOfDistances(1, US_FrontRight);
-                sbd.putTo_MapOfDistances(2, IR_Rear);
-                sbd.putTo_MapOfDistances(3, IR_RearRight);
-                sbd.putTo_MapOfDistances(4, IR_FrontRight); 
+                // map the sensor values
+                // the sensor id is the same as in the configuration file
+                sbd.putTo_MapOfDistances(0, IR_FrontRight);  
+                sbd.putTo_MapOfDistances(1, IR_Rear);   
+                sbd.putTo_MapOfDistances(2, IR_RearRight);        
+                sbd.putTo_MapOfDistances(3, US_FrontCenter);    
+                sbd.putTo_MapOfDistances(4, US_FrontRight);   
 
                 Container container(sbd);
                 getConference().send(container);
