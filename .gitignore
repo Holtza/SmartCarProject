@@ -9,3 +9,4 @@ OpenDaVINCI-3.0.0/automotive/miniature/overtaker/build/*
 OpenDaVINCI-3.0.0/automotive/miniature/lanedetector/src/newSerial
 *.o
 SerialConnection/serialreceivebytes
+*.swp
