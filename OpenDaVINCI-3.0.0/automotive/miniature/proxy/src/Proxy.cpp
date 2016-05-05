@@ -200,18 +200,18 @@ namespace automotive {
                  // Get sensor data from IR/US.
                 string sensorData = readMiddleman();
                 int length = sensorData.length();
-
+                cout<<sensorData.length()<<endl;
                 // decode
-                if(length == 0 || length < 15 || length > 15){
+                if(length == 0 || length < 20 || length > 20){
                   cout << "error" <<endl;
  
                 }else{
-                   string sonarFrontCenter = sensorData.substr(0, 3);
+                   string sonarFrontCenter = sensorData.substr(3, 3);
                    US_FrontCenter = atoi(sonarFrontCenter.c_str());
                   // cout << "string US FrontCenter: " << sonarFrontCenter <<endl;
                    cout << "US_FrontCenter: " << US_FrontCenter <<endl;
 
-                   string sonarFrontRight = sensorData.substr(3, 3);
+                   string sonarFrontRight = sensorData.substr(0, 3);
                    US_FrontRight = atoi(sonarFrontRight.c_str());
                   // cout << "string US FrontRight: " << sonarFrontRight <<endl;
                    cout << "US_FrontRight: " << US_FrontRight <<endl;
@@ -241,7 +241,19 @@ namespace automotive {
                 sbd.putTo_MapOfDistances(2, IR_RearRight);        
                 sbd.putTo_MapOfDistances(3, US_FrontCenter);    
                 sbd.putTo_MapOfDistances(4, US_FrontRight);   
+                
 
+                //cout<<"FRONT RIGHT:";
+                //cout<<IR_FrontRight<<endl;
+                //cout<<"REAR:";
+                //cout<<IR_Rear<<endl;
+                //cout<<"REAR RIGHT:";
+                //cout<<IR_RearRight<<endl;
+                //cout<<"US FRONT:";
+                //cout<<US_FrontCenter<<endl;
+                //cout<<"US FRONT RIGHT:";
+                //cout<<US_FrontRight<<endl;    
+    
                 Container container(sbd);
                 getConference().send(container);
 
