@@ -30,6 +30,15 @@
 #include "SidewaysParker.h"
 
 
+#define CAR_SHARP_TURN_RIGHT "s"
+#define CAR_SHORT_TURN_RIGHT "c"
+#define CAR_AVG_TURN_RIGHT "f"
+#define CAR_SHARP_TURN_LEFT "A"
+#define CAR_SHORT_TURN_LEFT "R"
+#define CAR_AVG_TURN_LEFT "L"
+#define CAR_STRAIGHT "Z" 
+
+
 namespace automotive {
     namespace miniature {
 
@@ -53,6 +62,14 @@ namespace automotive {
 
         void SidewaysParker::tearDown() {
             // This method will be call automatically _after_ return from body().
+        }
+
+        void SidewaysParker::writeMiddleman(const char* str){
+            FILE *file;
+            file = fopen("/root/middleman.txt", "w");
+            fprintf(file, "%s", str);
+            fclose(file);
+ 
         }
 
 
@@ -81,7 +98,9 @@ namespace automotive {
             int count;
             int count2;
             //int move;
-            int state = DETECTING_OBSTACLE; // initial state 
+            int state = DETECTING_OBSTACLE; // initial state
+
+            bool flag = false; 
 
 
             while (getModuleStateAndWaitForRemainingTimeInTimeslice() == odcore::data::dmcp::ModuleStateMessage::RUNNING) {
@@ -110,13 +129,23 @@ namespace automotive {
                         // The initial state is "DETECTING_OBSTACLE". Once a gap is found, the state is changed to "MEASURING"
                         case DETECTING_OBSTACLE: {
                         cout << "DETECTING_OBSTACLE" << endl;
-                        vc.setSpeed(1);
+                        vc.setSpeed(2);
                         vc.setSteeringWheelAngle(sd.getExampleData());
-  
-                          if(sbd.getValueForKey_MapOfDistances(IR_FRONT_RIGHT) < 0 && (sbd.getValueForKey_MapOfDistances(ULTRASONIC_FRONT_RIGHT) < 0 || sbd.getValueForKey_MapOfDistances(ULTRASONIC_FRONT_RIGHT) > carSize)){
-                                state = MEASURING;
-                                currentTraveledPath = vd.getAbsTraveledPath();
-                        }
+
+                        if((int)(sd.getExampleData()*(180.0/3.14159)) == 0)writeMiddleman(CAR_STRAIGHT);
+                        else if((int)(sd.getExampleData()*(180.0/3.14159)) == -3)writeMiddleman(CAR_SHORT_TURN_LEFT);
+                        else if((int)(sd.getExampleData()*(180.0/3.14159)) == -9)writeMiddleman(CAR_AVG_TURN_LEFT);
+                        else if((int)(sd.getExampleData()*(180.0/3.14159)) == -14)writeMiddleman(CAR_SHARP_TURN_LEFT);
+                        else if((int)(sd.getExampleData()*(180.0/3.14159)) == 3)writeMiddleman(CAR_SHORT_TURN_RIGHT);
+                        else if((int)(sd.getExampleData()*(180.0/3.14159)) == 9)writeMiddleman(CAR_AVG_TURN_RIGHT);
+                        else if((int)(sd.getExampleData()*(180.0/3.14159)) == 14)writeMiddleman(CAR_SHARP_TURN_RIGHT);
+                          
+                          if(flag != false){
+                              if(sbd.getValueForKey_MapOfDistances(IR_FRONT_RIGHT) < 0 && (sbd.getValueForKey_MapOfDistances(ULTRASONIC_FRONT_RIGHT) < 0 || sbd.getValueForKey_MapOfDistances(ULTRASONIC_FRONT_RIGHT) > carSize)){
+                                  state = MEASURING;
+                                  currentTraveledPath = vd.getAbsTraveledPath();
+                              }
+                          }
                      }
                         break;
                         // Initialize measurement. Here we calculate whether the gap space is big enough for parking. If the gap is at least 2.2 the size of the car, the state is changed to "REVERSING", otherwise change back to "DETECTING_OBSTACLE".
