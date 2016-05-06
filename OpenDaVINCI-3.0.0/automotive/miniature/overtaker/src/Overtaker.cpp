@@ -31,6 +31,9 @@
 #include "Overtaker.h"
 
 #define WHEELEANGLE 25
+#define LEFT_WHEELANGLE -25
+#define TURNSPEED 1
+#define FOLLOWSPEED 1.5
 
 namespace automotive {
     namespace miniature {
@@ -59,12 +62,12 @@ namespace automotive {
             
             //set sensors
             const int32_t ULTRASONIC_FRONT_CENTER = 3;
-            const int32_t ULTRASONIC_FRONT_RIGHT = 4;
+            //const int32_t ULTRASONIC_FRONT_RIGHT = 4;
             const int32_t INFRARED_FRONT_RIGHT = 0;
             const int32_t INFRARED_REAR_RIGHT = 2;
 
             //measurement variables
-            const double OVERTAKING_DISTANCE = 11;
+            const double OVERTAKING_DISTANCE = 13;
             const double HEADING_PARALLEL = 0.06;
             const int val[] = {12, 11};
 
@@ -84,20 +87,24 @@ namespace automotive {
             else if (unit.stageMeasuring == ControlUnit::FIND_OBJECT) {
                 unit.distanceToObstacle = sbd.getValueForKey_MapOfDistances(ULTRASONIC_FRONT_CENTER);
 
-                cerr << "State is changed" << endl;
+               // cerr << "State is changed" << endl;
                 // Approaching an obstacle (stationary or driving slower than us).
                 if ((unit.distanceToObstacleOld == val[0]) && (unit.distanceToObstacle == val[1])) {
                     // Check if overtaking shall be started.
                     unit.stageMeasuring = ControlUnit::FIND_OBJECT_PLAUSIBLE;
 
-                    cerr << "State is FIND_OBJECT_PLAUSIBLE" << endl;
+                    cerr << "State is FIND_OBJECT_PLAUSIBLE THIS IS DIFFERENT" << endl;
                 }
 
                     unit.distanceToObstacleOld = unit.distanceToObstacle;
 
                 }
                 else if (unit.stageMeasuring == ControlUnit::FIND_OBJECT_PLAUSIBLE) {
+                    cout<<"AAAA"<<endl;
+                    cout<<sbd.getValueForKey_MapOfDistances(ULTRASONIC_FRONT_CENTER)<<endl;
+                    cout<<OVERTAKING_DISTANCE<<endl;
                     if (sbd.getValueForKey_MapOfDistances(ULTRASONIC_FRONT_CENTER) < OVERTAKING_DISTANCE) {
+                        cout<<"BBBB"<<endl;
                         unit.stageMoving = ControlUnit::TO_LEFT_LANE_LEFT_TURN;
 
                         cerr << "State is DISABLE" << endl;
@@ -135,7 +142,7 @@ namespace automotive {
                 }
                 else if (unit.stageMeasuring == ControlUnit::END_OF_OBJECT) {
                     // Find end of object.
-                    unit.distanceToObstacle = sbd.getValueForKey_MapOfDistances(ULTRASONIC_FRONT_RIGHT);
+                    unit.distanceToObstacle = sbd.getValueForKey_MapOfDistances(INFRARED_FRONT_RIGHT);
 
                     if (unit.distanceToObstacle < 0) {
                         // Move to right lane again.
@@ -151,14 +158,16 @@ namespace automotive {
 
         ControlUnit Overtaker::movementStage(ControlUnit unit){
 
+                Container followerContainer = getKeyValueDataStore().get(automotive::miniature::SteeringData::ID());
+                SteeringData sd = followerContainer.getData<SteeringData> ();
                 // Create vehicle control data.
                 VehicleControl vc;
 
                 // Moving state machine.
                 if (unit.stageMoving == ControlUnit::FORWARD) {
                     // Go forward.
-                    vc.setSpeed(2);
-                    vc.setSteeringWheelAngle(0);
+                    vc.setSpeed(1.5);
+                    vc.setSteeringWheelAngle(sd.getExampleData());
 
                     unit.stageToRightLaneLeftTurn = 0;
                     unit.stageToRightLaneRightTurn = 0;
@@ -166,7 +175,7 @@ namespace automotive {
                 else if (unit.stageMoving == ControlUnit::TO_LEFT_LANE_LEFT_TURN) {
                     // Move to the left lane: Turn left part until both IRs see something.
                     vc.setSpeed(1);
-                    vc.setSteeringWheelAngle(-WHEELEANGLE);
+                    vc.setSteeringWheelAngle(LEFT_WHEELANGLE);
 
                     // State machine measuring: Both IRs need to see something before leaving this moving state.
                     unit.stageMeasuring = ControlUnit::HAVE_BOTH_IR;
@@ -185,15 +194,15 @@ namespace automotive {
                 }
                 else if (unit.stageMoving == ControlUnit::CONTINUE_ON_LEFT_LANE) {
                     // Move to the left lane: Passing stage.
-                    vc.setSpeed(2);
-                    vc.setSteeringWheelAngle(0);
+                    vc.setSpeed(1.5);
+                    vc.setSteeringWheelAngle(sd.getExampleData());
 
                     // Find end of object.
                     unit.stageMeasuring = ControlUnit::END_OF_OBJECT;
                 }
                 else if (unit.stageMoving == ControlUnit::TO_RIGHT_LANE_RIGHT_TURN) {
                     // Move to the right lane: Turn right part.
-                    vc.setSpeed(1.5);
+                    vc.setSpeed(1);
                     vc.setSteeringWheelAngle(WHEELEANGLE);
 
                     unit.stageToRightLaneRightTurn--;
@@ -203,8 +212,8 @@ namespace automotive {
                 }
                 else if (unit.stageMoving == ControlUnit::TO_RIGHT_LANE_LEFT_TURN) {
                     // Move to the left lane: Turn left part.
-                    vc.setSpeed(.9);
-                    vc.setSteeringWheelAngle(-WHEELEANGLE);
+                    vc.setSpeed(1);
+                    vc.setSteeringWheelAngle(LEFT_WHEELANGLE);
 
                     unit.stageToRightLaneLeftTurn--;
                     if (unit.stageToRightLaneLeftTurn == 0) {
@@ -218,9 +227,12 @@ namespace automotive {
                 }
 
                 // Create container for finally sending the data.
-                Container c(vc);
-                // Send container.
-                getConference().send(c);
+                printf("Writing %f\n", vc.getSpeed());
+                
+               
+                    Container c(vc);
+                    // Send container.
+                    getConference().send(c);
 
                 return unit;
 
@@ -248,7 +260,6 @@ namespace automotive {
 	            
                 unit = measureStage(unit);
                 unit = movementStage(unit);
-
                 cerr << "State is: " << unit.stageMeasuring << endl;
  
 
