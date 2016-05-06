@@ -160,7 +160,7 @@ namespace automotive {
             int IR_FrontRight;
             int IR_RearRight;
             int IR_Rear;
-	    int wheel_encoder;
+	    double wheel_encoder;
 
             //int wheelAngle = 0;
             while (getModuleStateAndWaitForRemainingTimeInTimeslice() == odcore::data::dmcp::ModuleStateMessage::RUNNING) {
@@ -242,8 +242,9 @@ namespace automotive {
                    cout << "IR_FrontRight: " << IR_FrontRight <<endl;
 
 		   string wheelEncoder = sensorData.substr(15, 5);
-		   wheel_encoder = atoi(wheelEncoder.c_str());
-		   cout << "Wheel Encoder: " << wheel_encoder << endl;
+		   int we = atoi(wheelEncoder.c_str());
+		   cout << "Wheel Encoder clicks: " << wheel_encoder << endl;
+		   wheel_encoder = clicksToDistance(we);
 
 	  	   
 
@@ -284,6 +285,19 @@ namespace automotive {
 
             return odcore::data::dmcp::ModuleExitCodeMessage::OKAY;
         }
+
+	double Proxy::clicksToDistance(int clicks){
+
+		//1 click ~3 mm
+		double clickToMm = 3.0;
+		
+		double mm = clicks * clickToMm;
+
+		double dm = mm/100;
+		cerr << "Decimeters: " << dm << endl;
+
+		return dm;
+	}
 
     }
 } // automotive::miniature

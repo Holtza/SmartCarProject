@@ -83,6 +83,7 @@ namespace automotive {
                 unique_ptr<Camera> m_camera;
                 void writeMiddleman(const char*);
                 string readMiddleman();
+		double clicksToDistance(int);
         };
 
     }
