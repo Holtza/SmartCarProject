@@ -34,6 +34,13 @@
 #define LEFT_WHEELANGLE -25
 #define TURNSPEED 1
 #define FOLLOWSPEED 1.5
+#define CAR_SHARP_TURN_RIGHT "s"
+#define CAR_SHORT_TURN_RIGHT "c"
+#define CAR_AVG_TURN_RIGHT "f"
+#define CAR_SHARP_TURN_LEFT "A"
+#define CAR_SHORT_TURN_LEFT "R"
+#define CAR_AVG_TURN_LEFT "L"
+#define CAR_STRAIGHT "Z"
 
 namespace automotive {
     namespace miniature {
@@ -57,6 +64,27 @@ namespace automotive {
         void Overtaker::tearDown() {
             // This method will be call automatically _after_ return from body().
         }
+
+        void Overtaker::writeMiddleman(const char* turn){
+            FILE *file;
+            file = fopen("/root/middleman.txt", "w");
+            fprintf(file, "%s", turn);
+            fclose(file);
+ 
+        }
+
+
+       string Overtaker::readMiddleman(){
+            char sensorValues[50];
+            FILE *file;
+            file = fopen("/root/lastPacket.txt", "r");
+            fscanf(file, "%[^\n]", sensorValues);
+            fprintf(file, "%s", sensorValues);
+            fclose(file);
+            return sensorValues;
+ 
+        }
+
 
         ControlUnit Overtaker::measureStage(ControlUnit unit){
             
@@ -171,6 +199,8 @@ namespace automotive {
 
                     unit.stageToRightLaneLeftTurn = 0;
                     unit.stageToRightLaneRightTurn = 0;
+
+
                 }
                 else if (unit.stageMoving == ControlUnit::TO_LEFT_LANE_LEFT_TURN) {
                     // Move to the left lane: Turn left part until both IRs see something.
@@ -227,9 +257,26 @@ namespace automotive {
                 }
 
                 // Create container for finally sending the data.
-                printf("Writing %f\n", vc.getSpeed());
+                //printf("Writing %f\n", vc.getSpeed());
                 
-               
+                    
+                    const char* setAngle;
+
+                    if((int)(vc.getSteeringWheelAngle()*(180.0/3.14159)) == 0)setAngle = CAR_STRAIGHT;
+                    else if((int)(vc.getSteeringWheelAngle()*(180.0/3.14159)) == -3)setAngle = CAR_SHORT_TURN_LEFT;
+                    else if((int)(vc.getSteeringWheelAngle()*(180.0/3.14159)) == -9)setAngle = CAR_AVG_TURN_LEFT;
+                    else if((int)(vc.getSteeringWheelAngle()*(180.0/3.14159)) == -14)setAngle = CAR_SHARP_TURN_LEFT;
+                    else if((int)(vc.getSteeringWheelAngle()*(180.0/3.14159)) == 3)setAngle = CAR_SHORT_TURN_RIGHT;
+                    else if((int)(vc.getSteeringWheelAngle()*(180.0/3.14159)) == 9)setAngle = CAR_AVG_TURN_RIGHT;
+                    else if((int)(vc.getSteeringWheelAngle()*(180.0/3.14159)) == 14)setAngle = CAR_SHARP_TURN_RIGHT;
+                    else if((int)(vc.getSteeringWheelAngle()) == 25)setAngle = CAR_SHARP_TURN_RIGHT;
+                    else if((int)(vc.getSteeringWheelAngle()) == -25)setAngle = CAR_SHARP_TURN_LEFT;
+                    
+
+                        
+                    writeMiddleman(setAngle);
+
+
                     Container c(vc);
                     // Send container.
                     getConference().send(c);
@@ -240,27 +287,35 @@ namespace automotive {
 
         // This method will do the main data processing job.
         odcore::data::dmcp::ModuleExitCodeMessage::ModuleExitCode Overtaker::body() {
-
+            int usingOvertaker = 0;
             ControlUnit unit;
 
             unit.stageMoving = ControlUnit::FORWARD;
-            unit.stageMeasuring = ControlUnit::FIND_OBJECT_INIT;
 
-            cerr << "FIND_OBJECT_INIT" << endl;
 
-            // State counter for dynamically moving back to right lane.
-            unit.stageToRightLaneRightTurn = 0;
-            unit.stageToRightLaneLeftTurn = 0;
+            if(usingOvertaker == 1){
+                unit.stageMeasuring = ControlUnit::FIND_OBJECT_INIT;
 
-            // Distance variables to ensure we are overtaking only stationary or slowly driving obstacles.
-            unit.distanceToObstacle = 0;
-            unit.distanceToObstacleOld = 0;
+                cerr << "FIND_OBJECT_INIT" << endl;
+
+                // State counter for dynamically moving back to right lane.
+                unit.stageToRightLaneRightTurn = 0;
+                unit.stageToRightLaneLeftTurn = 0;
+
+                // Distance variables to ensure we are overtaking only stationary or slowly driving obstacles.
+                unit.distanceToObstacle = 0;
+                unit.distanceToObstacleOld = 0;
+            }
 
             while (getModuleStateAndWaitForRemainingTimeInTimeslice() == odcore::data::dmcp::ModuleStateMessage::RUNNING) {
 	            
-                unit = measureStage(unit);
+                if(usingOvertaker == 1){
+                    unit = measureStage(unit);
+                }
+
                 unit = movementStage(unit);
-                cerr << "State is: " << unit.stageMeasuring << endl;
+                
+                //cerr << "State is: " << unit.stageMeasuring << endl;
  
 
             }

@@ -131,36 +131,36 @@ namespace automotive {
             getConference().send(c);
         }
 
-        void Proxy::writeMiddleman(const char* turn){
-            FILE *file;
-            file = fopen("/root/middleman.txt", "w");
-            fprintf(file, "%s", turn);
-            fclose(file);
+       //  void Proxy::writeMiddleman(const char* turn){
+       //      FILE *file;
+       //      file = fopen("/root/middleman.txt", "w");
+       //      fprintf(file, "%s", turn);
+       //      fclose(file);
  
-        }
+       //  }
 
 
-       string Proxy::readMiddleman(){
-            char sensorValues[50];
-            FILE *file;
-            file = fopen("/root/lastPacket.txt", "r");
-            fscanf(file, "%[^\n]", sensorValues);
-            fprintf(file, "%s", sensorValues);
-            fclose(file);
-            return sensorValues;
+       // string Proxy::readMiddleman(){
+       //      char sensorValues[50];
+       //      FILE *file;
+       //      file = fopen("/root/lastPacket.txt", "r");
+       //      fscanf(file, "%[^\n]", sensorValues);
+       //      fprintf(file, "%s", sensorValues);
+       //      fclose(file);
+       //      return sensorValues;
  
-        }
+       //  }
 
 
         // This method will do the main data processing job.
         odcore::data::dmcp::ModuleExitCodeMessage::ModuleExitCode Proxy::body() {
-            uint32_t captureCounter = 0;
-            int US_FrontCenter;
-            int US_FrontRight;
-            int IR_FrontRight;
-            int IR_RearRight;
-            int IR_Rear;
-	    double wheel_encoder;
+             uint32_t captureCounter = 0;
+     //        int US_FrontCenter;
+     //        int US_FrontRight;
+     //        int IR_FrontRight;
+     //        int IR_RearRight;
+     //        int IR_Rear;
+	    // double wheel_encoder;
 
             //int wheelAngle = 0;
             while (getModuleStateAndWaitForRemainingTimeInTimeslice() == odcore::data::dmcp::ModuleStateMessage::RUNNING) {
@@ -188,77 +188,77 @@ namespace automotive {
                 SteeringData sd = containerSteeringData.getData<SteeringData> ();
                 cerr << "Most recent steering data: '" << sd.toString() << "'" << endl;
 
-                const char* setAngle;
+                // const char* setAngle;
 
-                if((int)(sd.getExampleData()*(180.0/3.14159)) == 0)setAngle = CAR_STRAIGHT;
-                else if((int)(sd.getExampleData()*(180.0/3.14159)) == -3)setAngle = CAR_SHORT_TURN_LEFT;
-                else if((int)(sd.getExampleData()*(180.0/3.14159)) == -9)setAngle = CAR_AVG_TURN_LEFT;
-                else if((int)(sd.getExampleData()*(180.0/3.14159)) == -14)setAngle = CAR_SHARP_TURN_LEFT;
-                else if((int)(sd.getExampleData()*(180.0/3.14159)) == 3)setAngle = CAR_SHORT_TURN_RIGHT;
-                else if((int)(sd.getExampleData()*(180.0/3.14159)) == 9)setAngle = CAR_AVG_TURN_RIGHT;
-                else if((int)(sd.getExampleData()*(180.0/3.14159)) == 14)setAngle = CAR_SHARP_TURN_RIGHT;
+                // if((int)(sd.getExampleData()*(180.0/3.14159)) == 0)setAngle = CAR_STRAIGHT;
+                // else if((int)(sd.getExampleData()*(180.0/3.14159)) == -3)setAngle = CAR_SHORT_TURN_LEFT;
+                // else if((int)(sd.getExampleData()*(180.0/3.14159)) == -9)setAngle = CAR_AVG_TURN_LEFT;
+                // else if((int)(sd.getExampleData()*(180.0/3.14159)) == -14)setAngle = CAR_SHARP_TURN_LEFT;
+                // else if((int)(sd.getExampleData()*(180.0/3.14159)) == 3)setAngle = CAR_SHORT_TURN_RIGHT;
+                // else if((int)(sd.getExampleData()*(180.0/3.14159)) == 9)setAngle = CAR_AVG_TURN_RIGHT;
+                // else if((int)(sd.getExampleData()*(180.0/3.14159)) == 14)setAngle = CAR_SHARP_TURN_RIGHT;
                 
 
                     
-                writeMiddleman(setAngle);               
+                // writeMiddleman(setAngle);               
 
 
-                //testing reading sensor values from a file
-                cout << "values: " << readMiddleman() <<endl;
-                 // Get sensor data from IR/US.
-                string sensorData = readMiddleman();
-                int length = sensorData.length();
-                cout<<sensorData.length()<<endl;
-                // decode
+     //            //testing reading sensor values from a file
+     //            cout << "values: " << readMiddleman() <<endl;
+     //             // Get sensor data from IR/US.
+     //            string sensorData = readMiddleman();
+     //            int length = sensorData.length();
+     //            cout<<sensorData.length()<<endl;
+     //            // decode
 
-                if(length == 0 || length < 20 || length > 20){ //Necessary? Length is already checked in SerialConnection!
+     //            if(length == 0 || length < 20 || length > 20){ //Necessary? Length is already checked in SerialConnection!
 
-                  cout << "error" <<endl;
+     //              cout << "error" <<endl;
  
-                }else{
-                   string sonarFrontCenter = sensorData.substr(3, 3);
-                   US_FrontCenter = atoi(sonarFrontCenter.c_str());
-                  // cout << "string US FrontCenter: " << sonarFrontCenter <<endl;
-                   cout << "US_FrontCenter: " << US_FrontCenter <<endl;
+     //            }else{
+     //               string sonarFrontCenter = sensorData.substr(3, 3);
+     //               US_FrontCenter = atoi(sonarFrontCenter.c_str());
+     //              // cout << "string US FrontCenter: " << sonarFrontCenter <<endl;
+     //               cout << "US_FrontCenter: " << US_FrontCenter <<endl;
 
-                   string sonarFrontRight = sensorData.substr(0, 3);
-                   US_FrontRight = atoi(sonarFrontRight.c_str());
-                  // cout << "string US FrontRight: " << sonarFrontRight <<endl;
-                   cout << "US_FrontRight: " << US_FrontRight <<endl;
+     //               string sonarFrontRight = sensorData.substr(0, 3);
+     //               US_FrontRight = atoi(sonarFrontRight.c_str());
+     //              // cout << "string US FrontRight: " << sonarFrontRight <<endl;
+     //               cout << "US_FrontRight: " << US_FrontRight <<endl;
 
-                   string irRear = sensorData.substr(6, 3);
-                   IR_Rear = atoi(irRear.c_str());
-                  // cout <<"string IR Rear: " << irRear <<endl;
-                   cout << "IR_Rear: " << IR_Rear <<endl;
+     //               string irRear = sensorData.substr(6, 3);
+     //               IR_Rear = atoi(irRear.c_str());
+     //              // cout <<"string IR Rear: " << irRear <<endl;
+     //               cout << "IR_Rear: " << IR_Rear <<endl;
 
-                   string irRearRight = sensorData.substr(9, 3);
-                   IR_RearRight = atoi(irRearRight.c_str());
-                  // cout <<"string IR Rear Right: " << irRearRight <<endl;
-                   cout << "IR_RearRight: " << IR_RearRight <<endl;
+     //               string irRearRight = sensorData.substr(9, 3);
+     //               IR_RearRight = atoi(irRearRight.c_str());
+     //              // cout <<"string IR Rear Right: " << irRearRight <<endl;
+     //               cout << "IR_RearRight: " << IR_RearRight <<endl;
 
-                   string irFrontRight = sensorData.substr(12, 3);
-                   IR_FrontRight = atoi(irFrontRight.c_str());
-                  // cout <<"string IR Front Right: " << irFrontRight <<endl;
-                   cout << "IR_FrontRight: " << IR_FrontRight <<endl;
+     //               string irFrontRight = sensorData.substr(12, 3);
+     //               IR_FrontRight = atoi(irFrontRight.c_str());
+     //              // cout <<"string IR Front Right: " << irFrontRight <<endl;
+     //               cout << "IR_FrontRight: " << IR_FrontRight <<endl;
 
-		   string wheelEncoder = sensorData.substr(15, 5);
-		   int we = atoi(wheelEncoder.c_str());
-		   cout << "Wheel Encoder clicks: " << wheel_encoder << endl;
-		   wheel_encoder = clicksToDistance(we);
+		   // string wheelEncoder = sensorData.substr(15, 5);
+		   // int we = atoi(wheelEncoder.c_str());
+		   // cout << "Wheel Encoder clicks: " << wheel_encoder << endl;
+		   // wheel_encoder = clicksToDistance(we);
 
 	  	   
 
 
-                }
+     //            }
 
-                // map the sensor values
-                // the sensor id is the same as in the configuration file
-                sbd.putTo_MapOfDistances(0, IR_FrontRight);  
-                sbd.putTo_MapOfDistances(1, IR_Rear);   
-                sbd.putTo_MapOfDistances(2, IR_RearRight);        
-                sbd.putTo_MapOfDistances(3, US_FrontCenter);    
-                sbd.putTo_MapOfDistances(4, US_FrontRight); 
-		sbd.putTo_MapOfDistances(5, wheel_encoder);  
+  //               // map the sensor values
+  //               // the sensor id is the same as in the configuration file
+  //               sbd.putTo_MapOfDistances(0, IR_FrontRight);  
+  //               sbd.putTo_MapOfDistances(1, IR_Rear);   
+  //               sbd.putTo_MapOfDistances(2, IR_RearRight);        
+  //               sbd.putTo_MapOfDistances(3, US_FrontCenter);    
+  //               sbd.putTo_MapOfDistances(4, US_FrontRight); 
+		// sbd.putTo_MapOfDistances(5, wheel_encoder);  
                 
 
                 //cout<<"FRONT RIGHT:";
@@ -272,8 +272,8 @@ namespace automotive {
                 //cout<<"US FRONT RIGHT:";
                 //cout<<US_FrontRight<<endl;    
     
-                Container container(sbd);
-                getConference().send(container);
+                // Container container(sbd);
+                // getConference().send(container);
 
    
                 }
