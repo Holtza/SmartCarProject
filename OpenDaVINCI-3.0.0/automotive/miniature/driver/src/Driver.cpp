@@ -56,6 +56,8 @@ namespace automotive {
 
         // This method will do the main data processing job.
         odcore::data::dmcp::ModuleExitCodeMessage::ModuleExitCode Driver::body() {
+      
+ 
             while (getModuleStateAndWaitForRemainingTimeInTimeslice() == odcore::data::dmcp::ModuleStateMessage::RUNNING) {
                 // In the following, you find example for the various data sources that are available:
 
@@ -79,9 +81,9 @@ namespace automotive {
                 SteeringData sd = containerSteeringData.getData<SteeringData> ();
                 cerr << "Most recent steering data: '" << sd.toString() << "'" << endl;
 
-
-
+                
                 // Design your control algorithm here depending on the input data from above.
+                
 		
 
                 // Create vehicle control data.
