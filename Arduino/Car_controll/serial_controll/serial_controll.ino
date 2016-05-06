@@ -39,6 +39,7 @@ int high = 2000;  ////value for making car go forward
 int low = 800;  //value for making car go backwards
 char buffer;
 
+int lastReset = 0;
 int rotation;
 int clicks;
 unsigned long updateSinceChange;
@@ -49,7 +50,7 @@ boolean driving = false;
  
 void setup(){
 
-  Timer1.initialize(9600); // set timer for 1sec
+  Timer1.initialize(250000); // set timer for 1sec
   attachInterrupt(digitalPinToInterrupt(WHEEL_B), docount, RISING);  // increase counter when speed sensor pin goes High
   Timer1.attachInterrupt( timerIsr ); // enable the timer
   
@@ -100,7 +101,7 @@ void loop(){
   //Serial.println(driving);         
   if(Serial.available() > 0){  // checks if there's any buffered data
     char last_input = Serial.read();  // if so, fetch it
-    Serial.print("user input: " + String(last_input) + " - ");
+    //Serial.print("user input: " + String(last_input) + " - ");
 
     if(last_input >= LOWER_MESSAGE_ANGLE && last_input <= UPPER_MESSAGE_ANGLE){
         setWheelAngle(last_input);
@@ -148,10 +149,12 @@ void loop(){
   }
   */
   
-  String netstring = readSensors();
-  Serial.println(netstring);
-
-  delay(500);
+  if(lastReset == 3){  
+    String netstring = readSensors();
+    Serial.println(netstring);
+    lastReset = 0;
+  }
+  lastReset++;
 
 }
 
