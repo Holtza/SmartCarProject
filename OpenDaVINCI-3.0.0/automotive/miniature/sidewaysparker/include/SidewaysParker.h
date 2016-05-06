@@ -68,6 +68,9 @@ namespace automotive {
                 virtual void setUp();
 
                 virtual void tearDown();
+       
+                void writeMiddleman(const char*);
+
         };
 
     }
