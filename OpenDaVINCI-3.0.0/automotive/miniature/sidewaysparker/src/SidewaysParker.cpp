@@ -102,6 +102,9 @@ namespace automotive {
                 // Create vehicle control data.
                 VehicleControl vc;
 
+		// Set AbsTraveledPath to data from wheel encoder
+		vd.setAbsTraveledPath(getValueForKey_MapOfDistances(5)); //AbsTraveledPath in increments of 10 cm (simulation environment: 1 m)
+
        
                   
         
