@@ -91,9 +91,11 @@ namespace automotive {
                 cerr << "Most recent vehicle data: '" << vd.toString() << "'" << endl;
 
                // 2. Get most recent sensor board data:
-               Container containerSensorBoardData = getKeyValueDataStore().get(automotive::miniature::SensorBoardData::ID());
-               SensorBoardData sbd = containerSensorBoardData.getData<SensorBoardData> ();
+                Container containerSensorBoardData = getKeyValueDataStore().get(automotive::miniature::SensorBoardData::ID());
+                SensorBoardData sbd = containerSensorBoardData.getData<SensorBoardData> ();
               
+                Container followerContainer = getKeyValueDataStore().get(automotive::miniature::SteeringData::ID());
+                SteeringData sd = followerContainer.getData<SteeringData> ();
 
 
 
@@ -108,8 +110,8 @@ namespace automotive {
                         // The initial state is "DETECTING_OBSTACLE". Once a gap is found, the state is changed to "MEASURING"
                         case DETECTING_OBSTACLE: {
                         cout << "DETECTING_OBSTACLE" << endl;
-                        vc.setSpeed(.8);
-                        vc.setSteeringWheelAngle(0);
+                        vc.setSpeed(1);
+                        vc.setSteeringWheelAngle(sd.getExampleData());
   
                           if(sbd.getValueForKey_MapOfDistances(IR_FRONT_RIGHT) < 0 && (sbd.getValueForKey_MapOfDistances(ULTRASONIC_FRONT_RIGHT) < 0 || sbd.getValueForKey_MapOfDistances(ULTRASONIC_FRONT_RIGHT) > carSize)){
                                 state = MEASURING;
@@ -122,7 +124,7 @@ namespace automotive {
                         cout << "MEASURING" << endl;
                         cout << "Gap Space= " << vd.getAbsTraveledPath() - currentTraveledPath << endl;
                         vc.setSpeed(.8);
-                        vc.setSteeringWheelAngle(0);
+                        vc.setSteeringWheelAngle(sd.getExampleData());
                     
                           if((sbd.getValueForKey_MapOfDistances(ULTRASONIC_FRONT_RIGHT) > -1 && vd.getAbsTraveledPath() - currentTraveledPath < carSize * 1.5)){
                                 state = DETECTING_OBSTACLE;
@@ -154,13 +156,13 @@ namespace automotive {
                         cout << "BACKWARDS_RIGHT" << endl;
                         // cout << "IR_Rear= " << sbd.getValueForKey_MapOfDistances(INFRARED_REAR) << endl;
                 
-                        if(count2 <= 40){
+                        if(count2 <= 75){
                          vc.setSpeed(-1.6);
                          vc.setSteeringWheelAngle(25);
                         }
                        count2++;
                  
-                          if(count2 > 40){
+                          if(count2 > 75){
                                vc.setSpeed(0);
                                state = BACKWARDS_LEFT;
                         }

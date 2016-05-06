@@ -30,7 +30,7 @@
 
 #include "SerialReceiveBytes.hpp"
 
-#define PACKETLENGTH 20 
+#define PACKETLENGTH 20
 
 using namespace std;
 using namespace odcore;
@@ -52,7 +52,9 @@ void SerialReceiveBytes::nextString(const string &s) {
     while(str.length() > 0 && str[0] != '<'){
         str.erase(0, 1);
     }
-
+    
+    //cout << str << endl;
+    
     if(str.length() > PACKETLENGTH+2){
         if(str[PACKETLENGTH+1] == '>'){
             std::string dataPacket = str.substr(1, PACKETLENGTH);

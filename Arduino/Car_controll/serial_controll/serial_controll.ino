@@ -49,7 +49,7 @@ boolean driving = false;
  
 void setup(){
 
-  Timer1.initialize(250000); // set timer for 1sec
+  Timer1.initialize(9600); // set timer for 1sec
   attachInterrupt(digitalPinToInterrupt(WHEEL_B), docount, RISING);  // increase counter when speed sensor pin goes High
   Timer1.attachInterrupt( timerIsr ); // enable the timer
   
@@ -235,6 +235,7 @@ String setString(int i_1, int i_2, int i_3, int i_4, int i_5){
   String s6 = clicksToString(clicks); //return wheel encoder data
 
   String valueS = "<" + s1 + s2 + s3 + s4 + s5 + s6 +">";
+
   return valueS;
 }
 

@@ -162,6 +162,7 @@ namespace automotive {
             int IR_Rear;
 	    int wheel_encoder;
 
+            //int wheelAngle = 0;
             while (getModuleStateAndWaitForRemainingTimeInTimeslice() == odcore::data::dmcp::ModuleStateMessage::RUNNING) {
                 // Capture frame.
                 if (m_camera.get() != NULL) {
@@ -181,21 +182,27 @@ namespace automotive {
                 Container containerSensorBoardData = getKeyValueDataStore().get(automotive::miniature::SensorBoardData::ID());
                 SensorBoardData sbd = containerSensorBoardData.getData<SensorBoardData> ();
                 cerr << "Most recent sensor board data: '" << sbd.toString() << "'" << endl;
-               // printf("%d\n", (int)(vc.getSteeringWheelAngle()*(180.0/3.14159)));
-                
-                // LEFT = -0.157080
-                // SHORT_LEFT = -0.052360
-                // SHARP_LEFT = -0.244346
+               
 
-              
-                if((int)(vc.getSteeringWheelAngle()*(180.0/3.14159)) == 0)writeMiddleman(CAR_STRAIGHT);
-                else if((int)(vc.getSteeringWheelAngle()*(180.0/3.14159)) == -3)writeMiddleman(CAR_SHORT_TURN_LEFT);
-                else if((int)(vc.getSteeringWheelAngle()*(180.0/3.14159)) == -9)writeMiddleman(CAR_AVG_TURN_LEFT);
-                else if((int)(vc.getSteeringWheelAngle()*(180.0/3.14159)) == -14)writeMiddleman(CAR_SHARP_TURN_LEFT);
-                else if((int)(vc.getSteeringWheelAngle()*(180.0/3.14159)) == 3)writeMiddleman(CAR_SHORT_TURN_RIGHT);
-                else if((int)(vc.getSteeringWheelAngle()*(180.0/3.14159)) == 9)writeMiddleman(CAR_AVG_TURN_RIGHT);
-                else if((int)(vc.getSteeringWheelAngle()*(180.0/3.14159)) == 14)writeMiddleman(CAR_SHARP_TURN_RIGHT);
+                Container containerSteeringData = getKeyValueDataStore().get(automotive::miniature::SteeringData::ID());
+                SteeringData sd = containerSteeringData.getData<SteeringData> ();
+                cerr << "Most recent steering data: '" << sd.toString() << "'" << endl;
+
+                const char* setAngle;
+
+                if((int)(sd.getExampleData()*(180.0/3.14159)) == 0)setAngle = CAR_STRAIGHT;
+                else if((int)(sd.getExampleData()*(180.0/3.14159)) == -3)setAngle = CAR_SHORT_TURN_LEFT;
+                else if((int)(sd.getExampleData()*(180.0/3.14159)) == -9)setAngle = CAR_AVG_TURN_LEFT;
+                else if((int)(sd.getExampleData()*(180.0/3.14159)) == -14)setAngle = CAR_SHARP_TURN_LEFT;
+                else if((int)(sd.getExampleData()*(180.0/3.14159)) == 3)setAngle = CAR_SHORT_TURN_RIGHT;
+                else if((int)(sd.getExampleData()*(180.0/3.14159)) == 9)setAngle = CAR_AVG_TURN_RIGHT;
+                else if((int)(sd.getExampleData()*(180.0/3.14159)) == 14)setAngle = CAR_SHARP_TURN_RIGHT;
                 
+
+                    
+                writeMiddleman(setAngle);               
+
+
                 //testing reading sensor values from a file
                 cout << "values: " << readMiddleman() <<endl;
                  // Get sensor data from IR/US.
@@ -268,7 +275,10 @@ namespace automotive {
                 getConference().send(container);
 
    
-            }
+                }
+              
+            
+            
 
             cout << "Proxy: Captured " << captureCounter << " frames." << endl;
 
