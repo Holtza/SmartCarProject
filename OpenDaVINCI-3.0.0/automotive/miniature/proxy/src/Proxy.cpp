@@ -160,6 +160,7 @@ namespace automotive {
             int IR_FrontRight;
             int IR_RearRight;
             int IR_Rear;
+	    int wheel_encoder;
 
             while (getModuleStateAndWaitForRemainingTimeInTimeslice() == odcore::data::dmcp::ModuleStateMessage::RUNNING) {
                 // Capture frame.
@@ -232,6 +233,11 @@ namespace automotive {
                    IR_FrontRight = atoi(irFrontRight.c_str());
                   // cout <<"string IR Front Right: " << irFrontRight <<endl;
                    cout << "IR_FrontRight: " << IR_FrontRight <<endl;
+
+		   string wheelEncoder = sensorData.substr(15, 5);
+		   wheel_encoder = atoi(wheelEncoder.c_str());
+		   cout << "Wheel Encoder: " << wheel_encoder << endl;
+
 	  	   
 
 
@@ -243,7 +249,8 @@ namespace automotive {
                 sbd.putTo_MapOfDistances(1, IR_Rear);   
                 sbd.putTo_MapOfDistances(2, IR_RearRight);        
                 sbd.putTo_MapOfDistances(3, US_FrontCenter);    
-                sbd.putTo_MapOfDistances(4, US_FrontRight);   
+                sbd.putTo_MapOfDistances(4, US_FrontRight); 
+		sbd.putTo_MapOfDistances(5, wheel_encoder);  
                 
 
                 //cout<<"FRONT RIGHT:";
