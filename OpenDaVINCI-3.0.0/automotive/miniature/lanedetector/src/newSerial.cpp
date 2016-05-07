@@ -3,16 +3,16 @@
     void sigint_handler(int sig);
     volatile bool STOP = false;
 
-    ofstream output("/dev/ttyACM0");
-    ifstream input("/dev/ttyACM0");
+    ofstream output("/dev/ttyACM1");
+    ifstream input("/dev/ttyACM1");
     FILE *usbfile;
 SerialConnection::SerialConnection(){
-    system("stty -F /dev/ttyACM0 cs8 9600 ignbrk -brkint -icrnl -imaxbel -opost -onlcr -isig -icanon -iexten -echo -echoe -echok -echoctl -echoke noflsh -ixon -crtscts");
+    system("stty -F /dev/ttyACM1 cs8 9600 ignbrk -brkint -icrnl -imaxbel -opost -onlcr -isig -icanon -iexten -echo -echoe -echok -echoctl -echoke noflsh -ixon -crtscts");
 }
 
 void SerialConnection::write(char const *str){
 
-    usbfile = fopen("/dev/ttyACM0", "w");
+    usbfile = fopen("/dev/ttyACM1", "w");
     cout << str << endl;
   //  fwrite(str, 1, 1, file);
     fprintf(usbfile, "%s", str);
