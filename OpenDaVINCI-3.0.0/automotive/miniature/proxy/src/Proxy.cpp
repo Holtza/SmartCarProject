@@ -30,11 +30,13 @@
 #include "opendavinci/GeneratedHeaders_OpenDaVINCI.h"
 #include "automotivedata/GeneratedHeaders_AutomotiveData.h"
 #include "opendavinci/odcore/data/TimeStamp.h"
+#include <opendavinci/odcore/wrapper/SerialPort.h>
+#include <opendavinci/odcore/wrapper/SerialPortFactory.h>
 
 #include "OpenCVCamera.h"
 
 #ifdef HAVE_UEYE
-    #include "uEyeCamera.h"
+#include "uEyeCamera.h"
 #endif
 
 #include "Proxy.h"
@@ -47,162 +49,176 @@
 #define CAR_AVG_TURN_LEFT "L"
 #define CAR_STRAIGHT "Z"
 
-
 namespace automotive {
-    namespace miniature {
+namespace miniature {
 
-        using namespace std;
-        using namespace odcore::base;
-        using namespace odcore::data;
-        using namespace odtools::recorder;
+    using namespace std;
+    using namespace odcore::base;
+    using namespace odcore::data;
+    using namespace odtools::recorder;
 
-        Proxy::Proxy(const int32_t &argc, char **argv) :
-            TimeTriggeredConferenceClientModule(argc, argv, "proxy"),
-            m_recorder(),
-            m_camera()
-        {}
+    Proxy::Proxy(const int32_t& argc, char** argv)
+        : TimeTriggeredConferenceClientModule(argc, argv, "proxy")
+        , m_recorder()
+        , m_camera()
+    {
+    }
 
-        Proxy::~Proxy() {
+    Proxy::~Proxy()
+    {
+    }
+
+    void Proxy::setUp()
+    {
+        // This method will be call automatically _before_ running body().
+        if (getFrequency() < 20) {
+            cerr << endl
+                 << endl
+                 << "Proxy: WARNING! Running proxy with a LOW frequency (consequence: data updates are too seldom and will influence your algorithms in a negative manner!) --> suggestions: --freq=20 or higher! Current frequency: " << getFrequency() << " Hz." << endl
+                 << endl
+                 << endl;
         }
 
-        void Proxy::setUp() {
-            // This method will be call automatically _before_ running body().
-            if (getFrequency() < 20) {
-                cerr << endl << endl << "Proxy: WARNING! Running proxy with a LOW frequency (consequence: data updates are too seldom and will influence your algorithms in a negative manner!) --> suggestions: --freq=20 or higher! Current frequency: " << getFrequency() << " Hz." << endl << endl << endl;
-            }
+        // Get configuration data.
+        KeyValueConfiguration kv = getKeyValueConfiguration();
 
-            // Get configuration data.
-            KeyValueConfiguration kv = getKeyValueConfiguration();
+        // Create built-in recorder.
+        const bool useRecorder = kv.getValue<uint32_t>("proxy.useRecorder") == 1;
+        if (useRecorder) {
+            // URL for storing containers.
+            stringstream recordingURL;
+            recordingURL << "file://"
+                         << "proxy_" << TimeStamp().getYYYYMMDD_HHMMSS() << ".rec";
+            // Size of memory segments.
+            const uint32_t MEMORY_SEGMENT_SIZE = getKeyValueConfiguration().getValue<uint32_t>("global.buffer.memorySegmentSize");
+            // Number of memory segments.
+            const uint32_t NUMBER_OF_SEGMENTS = getKeyValueConfiguration().getValue<uint32_t>("global.buffer.numberOfMemorySegments");
+            // Run recorder in asynchronous mode to allow real-time recording in background.
+            const bool THREADING = true;
+            // Dump shared images and shared data?
+            const bool DUMP_SHARED_DATA = getKeyValueConfiguration().getValue<uint32_t>("proxy.recorder.dumpshareddata") == 1;
 
-            // Create built-in recorder.
-            const bool useRecorder = kv.getValue<uint32_t>("proxy.useRecorder") == 1;
-            if (useRecorder) {
-                // URL for storing containers.
-                stringstream recordingURL;
-                recordingURL << "file://" << "proxy_" << TimeStamp().getYYYYMMDD_HHMMSS() << ".rec";
-                // Size of memory segments.
-                const uint32_t MEMORY_SEGMENT_SIZE = getKeyValueConfiguration().getValue<uint32_t>("global.buffer.memorySegmentSize");
-                // Number of memory segments.
-                const uint32_t NUMBER_OF_SEGMENTS = getKeyValueConfiguration().getValue<uint32_t>("global.buffer.numberOfMemorySegments");
-                // Run recorder in asynchronous mode to allow real-time recording in background.
-                const bool THREADING = true;
-                // Dump shared images and shared data?
-                const bool DUMP_SHARED_DATA = getKeyValueConfiguration().getValue<uint32_t>("proxy.recorder.dumpshareddata") == 1;
+            m_recorder = unique_ptr<Recorder>(new Recorder(recordingURL.str(), MEMORY_SEGMENT_SIZE, NUMBER_OF_SEGMENTS, THREADING, DUMP_SHARED_DATA));
+        }
 
-                m_recorder = unique_ptr<Recorder>(new Recorder(recordingURL.str(), MEMORY_SEGMENT_SIZE, NUMBER_OF_SEGMENTS, THREADING, DUMP_SHARED_DATA));
-            }
+        // Create the camera grabber.
+        const string NAME = getKeyValueConfiguration().getValue<string>("proxy.camera.name");
+        string TYPE = getKeyValueConfiguration().getValue<string>("proxy.camera.type");
+        std::transform(TYPE.begin(), TYPE.end(), TYPE.begin(), ::tolower);
+        const uint32_t ID = getKeyValueConfiguration().getValue<uint32_t>("proxy.camera.id");
+        const uint32_t WIDTH = getKeyValueConfiguration().getValue<uint32_t>("proxy.camera.width");
+        const uint32_t HEIGHT = getKeyValueConfiguration().getValue<uint32_t>("proxy.camera.height");
+        const uint32_t BPP = getKeyValueConfiguration().getValue<uint32_t>("proxy.camera.bpp");
 
-            // Create the camera grabber.
-            const string NAME = getKeyValueConfiguration().getValue<string>("proxy.camera.name");
-            string TYPE = getKeyValueConfiguration().getValue<string>("proxy.camera.type");
-            std::transform(TYPE.begin(), TYPE.end(), TYPE.begin(), ::tolower);
-            const uint32_t ID = getKeyValueConfiguration().getValue<uint32_t>("proxy.camera.id");
-            const uint32_t WIDTH = getKeyValueConfiguration().getValue<uint32_t>("proxy.camera.width");
-            const uint32_t HEIGHT = getKeyValueConfiguration().getValue<uint32_t>("proxy.camera.height");
-            const uint32_t BPP = getKeyValueConfiguration().getValue<uint32_t>("proxy.camera.bpp");
-
-            if (TYPE.compare("opencv") == 0) {
-                m_camera = unique_ptr<Camera>(new OpenCVCamera(NAME, ID, WIDTH, HEIGHT, BPP));
-            }
-            if (TYPE.compare("ueye") == 0) {
+        if (TYPE.compare("opencv") == 0) {
+            m_camera = unique_ptr<Camera>(new OpenCVCamera(NAME, ID, WIDTH, HEIGHT, BPP));
+        }
+        if (TYPE.compare("ueye") == 0) {
 #ifdef HAVE_UEYE
-                m_camera = unique_ptr<Camera>(new uEyeCamera(NAME, ID, WIDTH, HEIGHT, BPP));
+            m_camera = unique_ptr<Camera>(new uEyeCamera(NAME, ID, WIDTH, HEIGHT, BPP));
 #endif
-            }
-
-            if (m_camera.get() == NULL) {
-                cerr << "No valid camera type defined." << endl;
-            }
         }
 
-        void Proxy::tearDown() {
-            // This method will be call automatically _after_ return from body().
+        if (m_camera.get() == NULL) {
+            cerr << "No valid camera type defined." << endl;
+        }
+    }
+
+    void Proxy::tearDown()
+    {
+        // This method will be call automatically _after_ return from body().
+    }
+
+    void Proxy::distribute(Container c)
+    {
+        // Store data to recorder.
+        if (m_recorder.get() != NULL) {
+            // Time stamp data before storing.
+            c.setReceivedTimeStamp(TimeStamp());
+            m_recorder->store(c);
         }
 
-        void Proxy::distribute(Container c) {
-            // Store data to recorder.
-            if (m_recorder.get() != NULL) {
-                // Time stamp data before storing.
-                c.setReceivedTimeStamp(TimeStamp());
-                m_recorder->store(c);
-            }
+        // Share data.
+        getConference().send(c);
+    }
 
-            // Share data.
-            getConference().send(c);
-        }
+    void Proxy::writeMiddleman(const char* turn)
+    {
+        FILE* file;
+        file = fopen("/root/middleman.txt", "w");
+        fprintf(file, "%s", turn);
+        fclose(file);
+    }
 
-        void Proxy::writeMiddleman(const char* turn){
-            FILE *file;
-            file = fopen("/root/middleman.txt", "w");
-            fprintf(file, "%s", turn);
-            fclose(file);
- 
-        }
+    string Proxy::readMiddleman()
+    {
+        char sensorValues[50];
+        FILE* file;
+        file = fopen("/root/lastPacket.txt", "r");
+        fscanf(file, "%[^\n]", sensorValues);
+        fprintf(file, "%s", sensorValues);
+        fclose(file);
+        return sensorValues;
+    }
 
-
-       string Proxy::readMiddleman(){
-            char sensorValues[50];
-            FILE *file;
-            file = fopen("/root/lastPacket.txt", "r");
-            fscanf(file, "%[^\n]", sensorValues);
-            fprintf(file, "%s", sensorValues);
-            fclose(file);
-            return sensorValues;
- 
-        }
-
-
-        // This method will do the main data processing job.
-        odcore::data::dmcp::ModuleExitCodeMessage::ModuleExitCode Proxy::body() {
-            uint32_t captureCounter = 0;
+    // This method will do the main data processing job.
+    odcore::data::dmcp::ModuleExitCodeMessage::ModuleExitCode Proxy::body()
+    {
+        uint32_t captureCounter = 0;
+        /* 
             int US_FrontCenter;
             int US_FrontRight;
             int IR_FrontRight;
             int IR_RearRight;
             int IR_Rear;
-	    double wheel_encoder;
+            double wheel_encoder;
+            */
 
-            //int wheelAngle = 0;
-            while (getModuleStateAndWaitForRemainingTimeInTimeslice() == odcore::data::dmcp::ModuleStateMessage::RUNNING) {
-                // Capture frame.
-                if (m_camera.get() != NULL) {
-                    odcore::data::image::SharedImage si = m_camera->capture();
+        //int wheelAngle = 0;
+        while (getModuleStateAndWaitForRemainingTimeInTimeslice() == odcore::data::dmcp::ModuleStateMessage::RUNNING) {
+            // Capture frame.
+            if (m_camera.get() != NULL) {
+                odcore::data::image::SharedImage si = m_camera->capture();
 
-                    Container c(si);
-                    distribute(c);
-                    captureCounter++;
-                }
-                
-                //Container containerVehicleData = getKeyValueDataStore().get(VehicleData::ID());
-                //VehicleData vd = containerVehicleData.getData<VehicleData> ();
-                Container c = getKeyValueDataStore().get(automotive::VehicleControl::ID());
-                automotive::VehicleControl vc = c.getData<automotive::VehicleControl>();
+                Container c(si);
+                distribute(c);
+                captureCounter++;
+            }
 
-               // Get most recent sensor board data
-                Container containerSensorBoardData = getKeyValueDataStore().get(automotive::miniature::SensorBoardData::ID());
-                SensorBoardData sbd = containerSensorBoardData.getData<SensorBoardData> ();
-                cerr << "Most recent sensor board data: '" << sbd.toString() << "'" << endl;
-               
+            //Container containerVehicleData = getKeyValueDataStore().get(VehicleData::ID());
+            //VehicleData vd = containerVehicleData.getData<VehicleData> ();
+            Container c = getKeyValueDataStore().get(automotive::VehicleControl::ID());
+            automotive::VehicleControl vc = c.getData<automotive::VehicleControl>();
 
-                Container containerSteeringData = getKeyValueDataStore().get(automotive::miniature::SteeringData::ID());
-                SteeringData sd = containerSteeringData.getData<SteeringData> ();
-                cerr << "Most recent steering data: '" << sd.toString() << "'" << endl;
+            // Get most recent sensor board data
+            Container containerSensorBoardData = getKeyValueDataStore().get(automotive::miniature::SensorBoardData::ID());
+            SensorBoardData sbd = containerSensorBoardData.getData<SensorBoardData>();
+            cerr << "Most recent sensor board data: '" << sbd.toString() << "'" << endl;
 
-                const char* setAngle;
+            Container containerSteeringData = getKeyValueDataStore().get(automotive::miniature::SteeringData::ID());
+            SteeringData sd = containerSteeringData.getData<SteeringData>();
+            cerr << "Most recent steering data: '" << sd.toString() << "'" << endl;
 
-                if((int)(sd.getExampleData()*(180.0/3.14159)) == 0)setAngle = CAR_STRAIGHT;
-                else if((int)(sd.getExampleData()*(180.0/3.14159)) == -3)setAngle = CAR_SHORT_TURN_LEFT;
-                else if((int)(sd.getExampleData()*(180.0/3.14159)) == -9)setAngle = CAR_AVG_TURN_LEFT;
-                else if((int)(sd.getExampleData()*(180.0/3.14159)) == -14)setAngle = CAR_SHARP_TURN_LEFT;
-                else if((int)(sd.getExampleData()*(180.0/3.14159)) == 3)setAngle = CAR_SHORT_TURN_RIGHT;
-                else if((int)(sd.getExampleData()*(180.0/3.14159)) == 9)setAngle = CAR_AVG_TURN_RIGHT;
-                else if((int)(sd.getExampleData()*(180.0/3.14159)) == 14)setAngle = CAR_SHARP_TURN_RIGHT;
-                
+            const char* setAngle;
 
-                    
-                writeMiddleman(setAngle);               
+            if ((int)(sd.getExampleData() * (180.0 / 3.14159)) == 0)
+                setAngle = CAR_STRAIGHT;
+            else if ((int)(sd.getExampleData() * (180.0 / 3.14159)) == -3)
+                setAngle = CAR_SHORT_TURN_LEFT;
+            else if ((int)(sd.getExampleData() * (180.0 / 3.14159)) == -9)
+                setAngle = CAR_AVG_TURN_LEFT;
+            else if ((int)(sd.getExampleData() * (180.0 / 3.14159)) == -14)
+                setAngle = CAR_SHARP_TURN_LEFT;
+            else if ((int)(sd.getExampleData() * (180.0 / 3.14159)) == 3)
+                setAngle = CAR_SHORT_TURN_RIGHT;
+            else if ((int)(sd.getExampleData() * (180.0 / 3.14159)) == 9)
+                setAngle = CAR_AVG_TURN_RIGHT;
+            else if ((int)(sd.getExampleData() * (180.0 / 3.14159)) == 14)
+                setAngle = CAR_SHARP_TURN_RIGHT;
 
+            writeMiddleman(setAngle);
 
+            /*            
                 //testing reading sensor values from a file
                 cout << "values: " << readMiddleman() <<endl;
                  // Get sensor data from IR/US.
@@ -241,12 +257,12 @@ namespace automotive {
                   // cout <<"string IR Front Right: " << irFrontRight <<endl;
                    cout << "IR_FrontRight: " << IR_FrontRight <<endl;
 
-		   string wheelEncoder = sensorData.substr(15, 5);
-		   int we = atoi(wheelEncoder.c_str());
-		   cout << "Wheel Encoder clicks: " << wheel_encoder << endl;
-		   wheel_encoder = clicksToDistance(we);
+           string wheelEncoder = sensorData.substr(15, 5);
+           int we = atoi(wheelEncoder.c_str());
+           cout << "Wheel Encoder clicks: " << wheel_encoder << endl;
+           wheel_encoder = clicksToDistance(we);
 
-	  	   
+           
 
 
                 }
@@ -258,7 +274,7 @@ namespace automotive {
                 sbd.putTo_MapOfDistances(2, IR_RearRight);        
                 sbd.putTo_MapOfDistances(3, US_FrontCenter);    
                 sbd.putTo_MapOfDistances(4, US_FrontRight); 
-		sbd.putTo_MapOfDistances(5, wheel_encoder);  
+        sbd.putTo_MapOfDistances(5, wheel_encoder);  
                 
 
                 //cout<<"FRONT RIGHT:";
@@ -275,29 +291,26 @@ namespace automotive {
                 Container container(sbd);
                 getConference().send(container);
 
-   
-                }
-              
-            
-            
-
-            cout << "Proxy: Captured " << captureCounter << " frames." << endl;
-
-            return odcore::data::dmcp::ModuleExitCodeMessage::OKAY;
+   */
         }
 
-	double Proxy::clicksToDistance(int clicks){
+        cout << "Proxy: Captured " << captureCounter << " frames." << endl;
 
-		//1 click ~3 mm
-		double clickToMm = 3.0;
-		
-		double mm = clicks * clickToMm;
-
-		double dm = mm/100;
-		cerr << "Decimeters: " << dm << endl;
-
-		return dm;
-	}
-
+        return odcore::data::dmcp::ModuleExitCodeMessage::OKAY;
     }
+
+    double Proxy::clicksToDistance(int clicks)
+    {
+
+        //1 click ~3 mm
+        double clickToMm = 3.0;
+
+        double mm = clicks * clickToMm;
+
+        double dm = mm / 100;
+        cerr << "Decimeters: " << dm << endl;
+
+        return dm;
+    }
+}
 } // automotive::miniature

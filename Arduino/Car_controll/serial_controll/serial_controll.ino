@@ -148,14 +148,14 @@ void loop(){
      stationary = false;
   }
   */
-  
+/* 
   if(lastReset == 3){  
     String netstring = readSensors();
     Serial.println(netstring);
     lastReset = 0;
   }
   lastReset++;
-
+*/
 }
 
 void setWheelAngle(int input){
