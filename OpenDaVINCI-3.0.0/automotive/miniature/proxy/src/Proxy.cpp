@@ -35,7 +35,6 @@
 #include "opendavinci/GeneratedHeaders_OpenDaVINCI.h"
 #include "automotivedata/GeneratedHeaders_AutomotiveData.h"
 #include "opendavinci/odcore/data/TimeStamp.h"
-#include "Serial.h"
 
 #include "OpenCVCamera.h"
 

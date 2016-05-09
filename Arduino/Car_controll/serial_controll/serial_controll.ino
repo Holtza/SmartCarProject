@@ -138,11 +138,36 @@ void loop(){
 
 void setWheelAngle(int input){
 
-  input -= LOWER_MESSAGE_ANGLE;
-  input *= (UPPER_WHEEL_ANGLE - LOWER_WHEEL_ANGLE);
-  input /= (UPPER_MESSAGE_ANGLE - LOWER_MESSAGE_ANGLE);
-  input += LOWER_WHEEL_ANGLE;
-  Sservo.write(input);
+  switch(input){
+    case 's':
+      Sservo.write(115);
+      break;
+    case 'A':
+      Sservo.write(65);
+      break;
+    case 'Z':
+      Sservo.write(90);
+      break;
+    case 'c':
+      Sservo.write(98);
+      break;
+    case 'f':
+      Sservo.write(109);
+      break;
+    case 'R':
+      Sservo.write(82);
+      break;
+    case 'L':
+      Sservo.write(71);
+      break;
+    default:
+      Serial.println("passed no known angles");    
+  }
+//  input -= LOWER_MESSAGE_ANGLE;
+//  input *= (UPPER_WHEEL_ANGLE - LOWER_WHEEL_ANGLE);
+//  input /= (UPPER_MESSAGE_ANGLE - LOWER_MESSAGE_ANGLE);
+//  input += LOWER_WHEEL_ANGLE;
+//  Sservo.write(input);
 }
 
 void docount(){
