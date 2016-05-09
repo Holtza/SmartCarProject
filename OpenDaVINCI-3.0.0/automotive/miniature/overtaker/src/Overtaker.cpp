@@ -177,7 +177,7 @@ namespace automotive {
                         unit.stageMoving = ControlUnit::TO_RIGHT_LANE_RIGHT_TURN;
 
                         // Disable measuring until requested from moving state machine again.
-                        unit.stageMeasuring = ControlUnit::DISABLE;
+                        unit.stageMeasuring = ControlUnit::FIND_OBJECT_INIT;
                     }
                 }
 
