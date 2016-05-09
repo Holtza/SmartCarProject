@@ -67,9 +67,9 @@ namespace automotive {
             const int32_t INFRARED_REAR_RIGHT = 2;
 
             //measurement variables
-            const double OVERTAKING_DISTANCE = 13;
+            const double OVERTAKING_DISTANCE = 6;
             const double HEADING_PARALLEL = 0.06;
-            const int val[] = {12, 11};
+            const int val[] = {5, 4};
 
             // 2. Get most recent sensor board data:
             Container containerSensorBoardData = getKeyValueDataStore().get(automotive::miniature::SensorBoardData::ID());
@@ -87,7 +87,9 @@ namespace automotive {
             else if (unit.stageMeasuring == ControlUnit::FIND_OBJECT) {
                 unit.distanceToObstacle = sbd.getValueForKey_MapOfDistances(ULTRASONIC_FRONT_CENTER);
 
-               // cerr << "State is changed" << endl;
+                cerr << "Distance to obstacle old: " << unit.distanceToObstacleOld << endl;
+		 cerr << "Distance to obstacle: " << unit.distanceToObstacle << endl;
+
                 // Approaching an obstacle (stationary or driving slower than us).
                 if ((unit.distanceToObstacleOld == val[0]) && (unit.distanceToObstacle == val[1])) {
                     // Check if overtaking shall be started.
