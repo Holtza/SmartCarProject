@@ -1,4 +1,3 @@
-
 /**
  * proxy - Sample application to encapsulate HW/SW interfacing with embedded systems.
  * Copyright (C) 2012 - 2015 Christian Berger
@@ -35,7 +34,6 @@
 #include "opendavinci/GeneratedHeaders_OpenDaVINCI.h"
 #include "automotivedata/GeneratedHeaders_AutomotiveData.h"
 #include "opendavinci/odcore/data/TimeStamp.h"
-#include "Serial.h"
 
 #include "OpenCVCamera.h"
 
@@ -80,7 +78,10 @@ namespace miniature {
 
     void Proxy::setUp()
     {
-
+        std::shared_ptr<SerialPort> serial(SerialPortFactory::createSerialPort(SERIAL_PORT, BAUD_RATE));
+		const char forwardChar= 'w';
+		const char* forwardPtr = &forwardChar;
+		serial->send(forwardPtr);
 
         //cout<<"Opening a Serial Port:"<<endl;
         //serial.Open(2, 9600);
@@ -142,7 +143,10 @@ namespace miniature {
 
     void Proxy::tearDown()
     {
-        // This method will be call automatically _after_ return from body().
+        std::shared_ptr<SerialPort> serial(SerialPortFactory::createSerialPort(SERIAL_PORT, BAUD_RATE));
+		const char forwardChar= 'x';
+		const char* forwardPtr = &forwardChar;
+		serial->send(forwardPtr);
     }
 
     void Proxy::distribute(Container c)
