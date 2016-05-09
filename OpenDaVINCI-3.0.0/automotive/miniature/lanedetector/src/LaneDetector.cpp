@@ -312,8 +312,14 @@ namespace  automotive {
             if (m_debug) {
                 cv::line(m, cvPoint(CENTER_LINE_X, IMAGE_HEIGHT), cvPoint(CENTER_LINE_X, 0), CV_RGB(255, 255, 255), 1, 8, 0);
                 if (image != NULL) {
-                    cvShowImage("Camera Feed Image", image);
-                    cvWaitKey(10);
+                    const char* s = "notodroid.txt";
+                    string strOdroid (s);
+                    if(FILE *file = fopen(strOdroid.c_str(), "r")){
+                        fclose(file);
+                    }else{
+                        cvShowImage("Camera Feed Image", image);
+                        cvWaitKey(10);
+                    }
                 }
             }
 

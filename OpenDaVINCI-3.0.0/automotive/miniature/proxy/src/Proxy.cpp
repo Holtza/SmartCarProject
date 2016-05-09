@@ -54,7 +54,7 @@
 std::string SERIAL_PORT = "/dev/ttyACM0";
 const uint32_t BAUD_RATE = 9600;
 char buff;
-//CSerial serial;
+int firstFlag;
 
 namespace automotive {
 namespace miniature {
@@ -78,11 +78,7 @@ namespace miniature {
 
     void Proxy::setUp()
     {
-        std::shared_ptr<SerialPort> serial(SerialPortFactory::createSerialPort(SERIAL_PORT, BAUD_RATE));
-		const char forwardChar= 'w';
-		const char* forwardPtr = &forwardChar;
-		serial->send(forwardPtr);
-
+        firstFlag = 1;
         //cout<<"Opening a Serial Port:"<<endl;
         //serial.Open(2, 9600);
         //cout<<"Done opening port"<<endl;
@@ -238,23 +234,30 @@ namespace miniature {
                 setAngle = CAR_SHARP_TURN_RIGHT;
 
             //writeMiddleman(setAngle);
-
-            try {
-                
-                std::shared_ptr<SerialPort> serial(SerialPortFactory::createSerialPort(SERIAL_PORT, BAUD_RATE));
-                //SerialPort* serial = SerialPortFactory::createSerialPort(SERIAL_PORT, BAUD_RATE);
-                usleep(25000);
-                if(buff != setAngle){
-                    cout<<"sending ";
-                    cout<<setAngle<<endl;
-                    string str (1, setAngle);
-                    serial->send(str);
-                    buff = setAngle;
+            if(captureCounter > 100){
+                try {
+                    std::shared_ptr<SerialPort> serial(SerialPortFactory::createSerialPort(SERIAL_PORT, BAUD_RATE));
+                    //SerialPort* serial = SerialPortFactory::createSerialPort(SERIAL_PORT, BAUD_RATE);
+                    //usleep(25000);
+                    if(firstFlag == 1){
+                        cout<<"Sending w"<<endl;
+                        string startStr (1, 'w');
+                        serial->send(startStr);
+                        firstFlag = 0;
+                    }
+                    if(buff != setAngle){
+                        cout<<"sending ";
+                        cout<<setAngle<<endl;
+                        string str (1, setAngle);
+                        serial->send(str);
+                        buff = setAngle;
+                    }
+                    //cout<<"Sending K"<<endl;
                 }
-                //cout<<"Sending K"<<endl;
-            }
-            catch(string &exception) {
-                cerr << "Serial port could not be created: " << exception << endl;
+            
+                catch(string &exception) {
+                    cerr << "Serial port could not be created: " << exception << endl;
+                }
             }
 
 

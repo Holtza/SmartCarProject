@@ -18,6 +18,9 @@
  */
 
 #include <iostream>
+#include <stdio.h>
+#include <stdint.h>
+
 
 #include "opencv2/imgproc/imgproc_c.h"
 #include "opencv2/imgproc/imgproc.hpp"
@@ -82,9 +85,14 @@ namespace automotive {
             if ( (dest != NULL) && (size > 0) && (m_image != NULL) ) {
                 ::memcpy(dest, m_image->imageData, size);
 
-                cvShowImage("WindowShowImage", m_image);
-                cvWaitKey(10);
-
+                const char* s = "notodroid.txt";
+                string strOdroid (s);
+                if(FILE *file = fopen(strOdroid.c_str(), "r")){
+                    fclose(file);
+                }else{
+                    cvShowImage("WindowShowImage", m_image);
+                    cvWaitKey(10);
+                }
                 retVal = true;
             }
 
