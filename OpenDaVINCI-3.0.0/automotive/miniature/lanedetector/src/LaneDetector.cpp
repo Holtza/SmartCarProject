@@ -146,7 +146,14 @@ namespace  automotive {
                         si.getBytesPerPixel());
                     }
                     // Mirror the image.
-                    //cvFlip(m_image, 0, -1);
+					if( access("/root/proxy_running.txt", F_OK ) != -1 ) {
+					// file exists
+						cout << "NOT flipping Image" << endl;
+					} else {
+					// file doesn't exist
+                   		cvFlip(m_image, 0, -1);
+						cout << "Flipping Image" << endl;
+					}
                     retVal = true;
                 }
             }
