@@ -146,7 +146,14 @@ namespace  automotive {
                         si.getBytesPerPixel());
                     }
                     // Mirror the image.
-                    //cvFlip(m_image, 0, -1);
+					if( access("/root/proxy_running.txt", F_OK ) != -1 ) {
+					// file exists
+						cout << "NOT flipping Image" << endl;
+					} else {
+					// file doesn't exist
+                   		cvFlip(m_image, 0, -1);
+						cout << "Flipping Image" << endl;
+					}
                     retVal = true;
                 }
             }
@@ -155,7 +162,7 @@ namespace  automotive {
 
         void LaneDetector::applyFilter(cv::Mat *img){
             // Mirror the image.
-            cvFlip(m_image, 0, -1);
+            //cvFlip(m_image, 0, -1);
             blur(*img, *img, cv::Size(BLUR_RADIUS, BLUR_RADIUS));
             Canny(*img, *img, CANNY_LOW_THRESHOLD, CANNY_HIGH_THRESHOLD, KERNEL_SIZE);
             cv::cvtColor(*img, *img, CV_GRAY2BGR);
@@ -315,10 +322,9 @@ namespace  automotive {
                     const char* s = "notodroid.txt";
                     string strOdroid (s);
                     if(FILE *file = fopen(strOdroid.c_str(), "r")){
-                        fclose(file);
-                    }else{
                         cvShowImage("Camera Feed Image", image);
                         cvWaitKey(10);
+                        fclose(file);
                     }
                 }
             }

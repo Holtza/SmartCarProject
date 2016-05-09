@@ -23,6 +23,7 @@
 #include <iostream>
 #include <math.h>
 #include <stdint.h>
+#include <stdio.h>
 #include <string>
 #include <memory>
 #include <opendavinci/odcore/wrapper/SerialPort.h>
@@ -140,9 +141,11 @@ namespace miniature {
     void Proxy::tearDown()
     {
         std::shared_ptr<SerialPort> serial(SerialPortFactory::createSerialPort(SERIAL_PORT, BAUD_RATE));
-		const char forwardChar= 'x';
-		const char* forwardPtr = &forwardChar;
-		serial->send(forwardPtr);
+		const char stopChar = 'x';
+		const char* stopPtr = &stopChar;
+		serial->send(stopPtr);
+		cout << "Deleting Proxy Marker..." << endl;
+		remove("/root/proxy_running.txt");
     }
 
     void Proxy::distribute(Container c)
@@ -244,6 +247,11 @@ namespace miniature {
                         string startStr (1, 'w');
                         serial->send(startStr);
                         firstFlag = 0;
+						FILE *f;
+						f = fopen("/root/proxy_running.txt","a");
+						fprintf(f,"Hi");
+						fclose(f);
+						cout << "Creating Proxy Marker..." << endl;
                     }
                     if(buff != setAngle){
                         cout<<"sending ";
