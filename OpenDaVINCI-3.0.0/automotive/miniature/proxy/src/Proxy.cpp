@@ -140,9 +140,9 @@ namespace miniature {
     void Proxy::tearDown()
     {
         std::shared_ptr<SerialPort> serial(SerialPortFactory::createSerialPort(SERIAL_PORT, BAUD_RATE));
-		const char forwardChar= 'x';
-		const char* forwardPtr = &forwardChar;
-		serial->send(forwardPtr);
+		const char stopChar = 'x';
+		const char* stopPtr = &stopChar;
+		serial->send(stopPtr);
     }
 
     void Proxy::distribute(Container c)
