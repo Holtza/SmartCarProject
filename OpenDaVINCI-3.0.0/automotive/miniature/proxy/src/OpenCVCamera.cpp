@@ -89,7 +89,6 @@ namespace automotive {
                 string strOdroid (s);
                 if(FILE *file = fopen(strOdroid.c_str(), "r")){
                     fclose(file);
-                }else{
                     cvShowImage("WindowShowImage", m_image);
                     cvWaitKey(10);
                 }
