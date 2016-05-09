@@ -23,6 +23,11 @@
 #include <cmath>
 #include <iostream>
 #include <math.h>
+#include <stdint.h>
+#include <string>
+#include <memory>
+#include <opendavinci/odcore/wrapper/SerialPort.h>
+#include <opendavinci/odcore/wrapper/SerialPortFactory.h>
 
 #include "opendavinci/odcore/base/KeyValueConfiguration.h"
 #include "opendavinci/odcore/data/Container.h"
@@ -30,8 +35,7 @@
 #include "opendavinci/GeneratedHeaders_OpenDaVINCI.h"
 #include "automotivedata/GeneratedHeaders_AutomotiveData.h"
 #include "opendavinci/odcore/data/TimeStamp.h"
-#include <opendavinci/odcore/wrapper/SerialPort.h>
-#include <opendavinci/odcore/wrapper/SerialPortFactory.h>
+#include "Serial.h"
 
 #include "OpenCVCamera.h"
 
@@ -41,13 +45,18 @@
 
 #include "Proxy.h"
 
-#define CAR_SHARP_TURN_RIGHT "s"
-#define CAR_SHORT_TURN_RIGHT "c"
-#define CAR_AVG_TURN_RIGHT "f"
-#define CAR_SHARP_TURN_LEFT "A"
-#define CAR_SHORT_TURN_LEFT "R"
-#define CAR_AVG_TURN_LEFT "L"
-#define CAR_STRAIGHT "Z"
+#define CAR_SHARP_TURN_RIGHT 's'
+#define CAR_SHORT_TURN_RIGHT 'c'
+#define CAR_AVG_TURN_RIGHT 'f'
+#define CAR_SHARP_TURN_LEFT 'A'
+#define CAR_SHORT_TURN_LEFT 'R'
+#define CAR_AVG_TURN_LEFT 'L'
+#define CAR_STRAIGHT 'Z'
+
+std::string SERIAL_PORT = "/dev/ttyACM0";
+const uint32_t BAUD_RATE = 9600;
+char buff;
+//CSerial serial;
 
 namespace automotive {
 namespace miniature {
@@ -56,11 +65,12 @@ namespace miniature {
     using namespace odcore::base;
     using namespace odcore::data;
     using namespace odtools::recorder;
+    using namespace odcore::wrapper;
 
-    Proxy::Proxy(const int32_t& argc, char** argv)
-        : TimeTriggeredConferenceClientModule(argc, argv, "proxy")
-        , m_recorder()
-        , m_camera()
+    Proxy::Proxy(const int32_t& argc, char** argv):
+        TimeTriggeredConferenceClientModule(argc, argv, "proxy"),
+        m_recorder(),
+        m_camera()
     {
     }
 
@@ -70,6 +80,12 @@ namespace miniature {
 
     void Proxy::setUp()
     {
+
+
+        //cout<<"Opening a Serial Port:"<<endl;
+        //serial.Open(2, 9600);
+        //cout<<"Done opening port"<<endl;
+
         // This method will be call automatically _before_ running body().
         if (getFrequency() < 20) {
             cerr << endl
@@ -176,6 +192,7 @@ namespace miniature {
 
         //int wheelAngle = 0;
         while (getModuleStateAndWaitForRemainingTimeInTimeslice() == odcore::data::dmcp::ModuleStateMessage::RUNNING) {
+
             // Capture frame.
             if (m_camera.get() != NULL) {
                 odcore::data::image::SharedImage si = m_camera->capture();
@@ -193,13 +210,13 @@ namespace miniature {
             // Get most recent sensor board data
             Container containerSensorBoardData = getKeyValueDataStore().get(automotive::miniature::SensorBoardData::ID());
             SensorBoardData sbd = containerSensorBoardData.getData<SensorBoardData>();
-            cerr << "Most recent sensor board data: '" << sbd.toString() << "'" << endl;
+            //cerr << "Most recent sensor board data: '" << sbd.toString() << "'" << endl;
 
             Container containerSteeringData = getKeyValueDataStore().get(automotive::miniature::SteeringData::ID());
             SteeringData sd = containerSteeringData.getData<SteeringData>();
-            cerr << "Most recent steering data: '" << sd.toString() << "'" << endl;
+            //cerr << "Most recent steering data: '" << sd.toString() << "'" << endl;
 
-            const char* setAngle;
+            char setAngle;
 
             if ((int)(sd.getExampleData() * (180.0 / 3.14159)) == 0)
                 setAngle = CAR_STRAIGHT;
@@ -216,7 +233,26 @@ namespace miniature {
             else if ((int)(sd.getExampleData() * (180.0 / 3.14159)) == 14)
                 setAngle = CAR_SHARP_TURN_RIGHT;
 
-            writeMiddleman(setAngle);
+            //writeMiddleman(setAngle);
+
+            try {
+                
+                std::shared_ptr<SerialPort> serial(SerialPortFactory::createSerialPort(SERIAL_PORT, BAUD_RATE));
+                //SerialPort* serial = SerialPortFactory::createSerialPort(SERIAL_PORT, BAUD_RATE);
+                usleep(25000);
+                if(buff != setAngle){
+                    cout<<"sending ";
+                    cout<<setAngle<<endl;
+                    string str (1, setAngle);
+                    serial->send(str);
+                    buff = setAngle;
+                }
+                //cout<<"Sending K"<<endl;
+            }
+            catch(string &exception) {
+                cerr << "Serial port could not be created: " << exception << endl;
+            }
+
 
             /*            
                 //testing reading sensor values from a file
