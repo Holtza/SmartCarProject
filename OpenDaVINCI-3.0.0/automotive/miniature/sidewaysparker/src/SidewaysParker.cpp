@@ -40,6 +40,7 @@ namespace miniature {
 
 	int pathCounter = 0;
 	double currentTraveledPath;
+	
 
 
 SidewaysParker::SidewaysParker(const int32_t& argc,
@@ -91,7 +92,7 @@ ControlUnit SidewaysParker::measureStage(ControlUnit unit){
 	//Measurement variables go here:
 	const int carSize = 5;
 	const double minSpaceWidth = 5;
-	const double minSpaceLength = carSize * 1.9;
+	const double minSpaceLength = carSize * 2;
 	
 
 	//Get most recent vehicle data:
@@ -145,12 +146,20 @@ ControlUnit SidewaysParker::movementStage(ControlUnit unit){
 
 	Container followerContainer = getKeyValueDataStore().get(automotive::miniature::SteeringData::ID());
         SteeringData sd = followerContainer.getData<SteeringData> ();
+	
+	//Get most recent vehicle data:
+         Container containerVehicleData = getKeyValueDataStore().get(automotive::VehicleData::ID());
+         VehicleData vd = containerVehicleData.getData<VehicleData>();
 
         // Create vehicle control data.
         VehicleControl vc;
 
 	//Measurement variables
 	const double reverseSpeed = -1;
+	const double backRight = 4.0;
+	const double reverse = 2.5;
+	const double backLeft = 4.0;
+	const double align = 1;
 
 	cerr << "Movement state is: " << unit.stageMoving << endl;
 
@@ -167,54 +176,54 @@ ControlUnit SidewaysParker::movementStage(ControlUnit unit){
                 	if (pathCounter >= 30) {
                     		unit.stageMoving = ControlUnit::BACKWARDS_RIGHT;
                     		pathCounter = 0; //reset counter for next use
+				currentTraveledPath = vd.getAbsTraveledPath();
                 	}
 		}break;
 
 		case ControlUnit::BACKWARDS_RIGHT: {
 			pathCounter++;
-			if (pathCounter <= 45) {
+			if (vd.getAbsTraveledPath() - currentTraveledPath <= backRight) {
                     		vc.setSpeed(reverseSpeed);
                     		vc.setSteeringWheelAngle(25);
-                	}else if (pathCounter > 45){
+                	}else{
                     		vc.setSpeed(0);
                     		unit.stageMoving = ControlUnit::REVERSE;
-				pathCounter = 0; //reset counter for next use
+				currentTraveledPath = vd.getAbsTraveledPath();
                 	}
 		}break;
 
 		case ControlUnit::REVERSE: {
 			pathCounter++;
-			if (pathCounter <=25) {
+			if (vd.getAbsTraveledPath() - currentTraveledPath <= reverse) {
 				vc.setSpeed(reverseSpeed);
 				vc.setSteeringWheelAngle(0);
-			}else if (pathCounter > 25){
+			}else{
 				vc.setSpeed(0);
 				unit.stageMoving = ControlUnit::BACKWARDS_LEFT;
-				pathCounter = 0; //retet counter for next use
+				currentTraveledPath = vd.getAbsTraveledPath();
 			}
 		}break;
 
 		case ControlUnit::BACKWARDS_LEFT: {
 			pathCounter++;
 
-                	if (pathCounter <=35) {
+                	if (vd.getAbsTraveledPath() - currentTraveledPath <= backLeft) {
 				vc.setSpeed(reverseSpeed);
                 		vc.setSteeringWheelAngle(-25);
 			}else{
 				unit.stageMoving = ControlUnit::ALIGNING;
-                    		pathCounter = 0; //reset counter for next use
+				currentTraveledPath = vd.getAbsTraveledPath();
 			}
 		}break;
 
 		case ControlUnit::ALIGNING: {
-			pathCounter++;
 
-			if (pathCounter >= 20){
+			if (vd.getAbsTraveledPath() - currentTraveledPath <= align){
 				vc.setSteeringWheelAngle(0);
 				vc.setSpeed(0.5);
 			}else{
 				unit.stageMoving = ControlUnit::STOPPING;
-				pathCounter = 0; //reset of next use
+				currentTraveledPath = vd.getAbsTraveledPath();
 			}
 				
 		}break;
