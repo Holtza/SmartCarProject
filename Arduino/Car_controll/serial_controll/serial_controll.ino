@@ -54,7 +54,7 @@ void setup(){
   attachInterrupt(digitalPinToInterrupt(WHEEL_B), docount, RISING);  // increase counter when speed sensor pin goes High
   Timer1.attachInterrupt( timerIsr ); // enable the timer
   
-  Serial.begin(9600);
+  Serial.begin(19200);
   //Serial1.begin(57600);
   pinMode(motor, OUTPUT);
   pinMode(WHEEL_A, INPUT);
@@ -79,6 +79,8 @@ void setup(){
 }
 
 void loop(){
+  
+  if(lastReset %10 <= 5){
   if(stationary)digitalWrite(41, HIGH);
   else digitalWrite(41, LOW);
   compare = digitalRead(WHEEL_A);
@@ -135,6 +137,8 @@ void loop(){
 
   updateSinceChange++;
 
+  }
+/*
   // read the acceleration on each axis as analog voltage and converts into meter
   float x = voltageToCm(analogRead(XPIN));
   float y = voltageToCm(analogRead(YPIN));
@@ -147,12 +151,10 @@ void loop(){
   }else {
      stationary = false;
   }
-  
-  
-  if(lastReset == 3){  
+*/
+  if(lastReset %10 > 5){  
     String netstring = readSensors();
     Serial.println(netstring);
-    lastReset = 0;
   }
   lastReset++;
 }

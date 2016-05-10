@@ -35,6 +35,8 @@
 #include "automotivedata/GeneratedHeaders_AutomotiveData.h"
 #include "opendavinci/odcore/data/TimeStamp.h"
 
+#include "SerialReceive.hpp"
+
 #include "OpenCVCamera.h"
 
 #ifdef HAVE_UEYE
@@ -74,6 +76,10 @@ namespace miniature {
 
     Proxy::~Proxy()
     {
+    }
+
+    void SerialReceive::nextString(const string &s) {
+        cout << "Received " << s.length() << " bytes containing '" << s << "'" << endl;
     }
 
     void Proxy::setUp()
@@ -181,14 +187,14 @@ namespace miniature {
     odcore::data::dmcp::ModuleExitCodeMessage::ModuleExitCode Proxy::body()
     {
         uint32_t captureCounter = 0;
-        /* 
+        
             int US_FrontCenter;
             int US_FrontRight;
             int IR_FrontRight;
             int IR_RearRight;
             int IR_Rear;
             double wheel_encoder;
-            */
+            
 
         //int wheelAngle = 0;
         while (getModuleStateAndWaitForRemainingTimeInTimeslice() == odcore::data::dmcp::ModuleStateMessage::RUNNING) {
@@ -217,20 +223,34 @@ namespace miniature {
             //cerr << "Most recent steering data: '" << sd.toString() << "'" << endl;
 
             char setAngle;
-
-            if ((int)(sd.getExampleData() * (180.0 / 3.14159)) == 0)
-                setAngle = CAR_STRAIGHT;
-            else if ((int)(sd.getExampleData() * (180.0 / 3.14159)) == -3)
-                setAngle = CAR_SHORT_TURN_LEFT;
-            else if ((int)(sd.getExampleData() * (180.0 / 3.14159)) == -9)
-                setAngle = CAR_AVG_TURN_LEFT;
-            else if ((int)(sd.getExampleData() * (180.0 / 3.14159)) == -14)
+            cout<<vc.getSteeringWheelAngle()<<endl;
+            cout<<vc.getSteeringWheelAngle()<<endl;
+            cout<<vc.getSteeringWheelAngle()<<endl;
+            cout<<vc.getSteeringWheelAngle()<<endl;
+            cout<<vc.getSteeringWheelAngle()<<endl;
+            cout<<vc.getSteeringWheelAngle()<<endl;
+            cout<<vc.getSteeringWheelAngle()<<endl;
+            cout<<vc.getSteeringWheelAngle()<<endl;
+            cout<<vc.getSteeringWheelAngle()<<endl;
+            cout<<vc.getSteeringWheelAngle()<<endl;
+            
+            if(((int)vc.getSteeringWheelAngle()) == 25)
+                setAngle = CAR_SHARP_TURN_RIGHT;
+            else if(((int)vc.getSteeringWheelAngle()) == -25)
                 setAngle = CAR_SHARP_TURN_LEFT;
-            else if ((int)(sd.getExampleData() * (180.0 / 3.14159)) == 3)
+            else if ((int)(vc.getSteeringWheelAngle() * (180.0 / 3.14159)) == 0)
+                setAngle = CAR_STRAIGHT;
+            else if ((int)(vc.getSteeringWheelAngle() * (180.0 / 3.14159)) == -3)
+                setAngle = CAR_SHORT_TURN_LEFT;
+            else if ((int)(vc.getSteeringWheelAngle() * (180.0 / 3.14159)) == -9)
+                setAngle = CAR_AVG_TURN_LEFT;
+            else if ((int)(vc.getSteeringWheelAngle() * (180.0 / 3.14159)) == -14)
+                setAngle = CAR_SHARP_TURN_LEFT;
+            else if ((int)(vc.getSteeringWheelAngle() * (180.0 / 3.14159)) == 3)
                 setAngle = CAR_SHORT_TURN_RIGHT;
-            else if ((int)(sd.getExampleData() * (180.0 / 3.14159)) == 9)
+            else if ((int)(vc.getSteeringWheelAngle() * (180.0 / 3.14159)) == 9)
                 setAngle = CAR_AVG_TURN_RIGHT;
-            else if ((int)(sd.getExampleData() * (180.0 / 3.14159)) == 14)
+            else if ((int)(vc.getSteeringWheelAngle() * (180.0 / 3.14159)) == 14)
                 setAngle = CAR_SHARP_TURN_RIGHT;
 
             //writeMiddleman(setAngle);
@@ -261,7 +281,7 @@ namespace miniature {
             }
 
 
-            /*            
+                        
                 //testing reading sensor values from a file
                 cout << "values: " << readMiddleman() <<endl;
                  // Get sensor data from IR/US.
@@ -300,10 +320,10 @@ namespace miniature {
                   // cout <<"string IR Front Right: " << irFrontRight <<endl;
                    cout << "IR_FrontRight: " << IR_FrontRight <<endl;
 
-           string wheelEncoder = sensorData.substr(15, 5);
-           int we = atoi(wheelEncoder.c_str());
-           cout << "Wheel Encoder clicks: " << wheel_encoder << endl;
-           wheel_encoder = clicksToDistance(we);
+                   string wheelEncoder = sensorData.substr(15, 5);
+                   int we = atoi(wheelEncoder.c_str());
+                   cout << "Wheel Encoder clicks: " << we << endl;
+                   wheel_encoder = clicksToDistance(we);
 
            
 
@@ -317,7 +337,7 @@ namespace miniature {
                 sbd.putTo_MapOfDistances(2, IR_RearRight);        
                 sbd.putTo_MapOfDistances(3, US_FrontCenter);    
                 sbd.putTo_MapOfDistances(4, US_FrontRight); 
-        sbd.putTo_MapOfDistances(5, wheel_encoder);  
+                sbd.putTo_MapOfDistances(5, wheel_encoder);  
                 
 
                 //cout<<"FRONT RIGHT:";
@@ -334,7 +354,7 @@ namespace miniature {
                 Container container(sbd);
                 getConference().send(container);
 
-   */
+   
         }
 
         cout << "Proxy: Captured " << captureCounter << " frames." << endl;

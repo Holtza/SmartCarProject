@@ -96,7 +96,7 @@ void serialConnection(string SERIAL_PORT, const uint32_t BAUD_RATE){
 
 int32_t main(int32_t argc, char **argv) {
     string SERIAL_PORT = "/dev/ttyACM0";
-    const uint32_t BAUD_RATE = 9600;
+    const uint32_t BAUD_RATE = 19200;
     try {
         serialConnection(SERIAL_PORT, BAUD_RATE);
     } catch(string &exception) {
