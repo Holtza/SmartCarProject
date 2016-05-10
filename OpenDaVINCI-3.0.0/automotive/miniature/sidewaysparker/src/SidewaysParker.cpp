@@ -87,6 +87,7 @@ ControlUnit SidewaysParker::measureStage(ControlUnit unit){
 	const int carSize = 5;
 	const double minSpaceWidth = 5;
 	const double minSpaceLength = carSize * 2;
+	const int noiseAllowance = 2;
 	
 
 	//Get most recent vehicle data:
@@ -97,35 +98,36 @@ ControlUnit SidewaysParker::measureStage(ControlUnit unit){
             Container containerSensorBoardData = getKeyValueDataStore().get(automotive::miniature::SensorBoardData::ID());
             SensorBoardData sbd = containerSensorBoardData.getData<SensorBoardData>();
 
-	cerr << "State is: " << unit.stageMeasuring << endl;
-	cerr << "Abs traveled path: " << vd.getAbsTraveledPath() << endl;
 
 	switch(unit.stageMeasuring) {
 
+		//Controlling if there is an obstacle
 		case ControlUnit::DETECT_OBSTACLE: {
-			cerr << "DETECT OBSTACLE" << endl;
-			cerr << "IR_REAR_RIGHT: " << sbd.getValueForKey_MapOfDistances(IR_REAR_RIGHT) << endl;
+			//If no obstacle is detected, start MEASURING stage
 			if (sbd.getValueForKey_MapOfDistances(IR_REAR_RIGHT) < 0 || sbd.getValueForKey_MapOfDistances(IR_REAR_RIGHT) > minSpaceWidth) {
                     		unit.stageMeasuring = ControlUnit::MEASURING;
                     		currentTraveledPath = vd.getAbsTraveledPath();
 			}
 		}break;
 
+		//Measure empty space
 		case ControlUnit::MEASURING: {
-			cerr << "MEASURING" << endl;
-			cerr << "IR_REAR_RIGHT: " << sbd.getValueForKey_MapOfDistances(IR_REAR_RIGHT) << endl;
-			cerr << "Space start: " << currentTraveledPath << endl;
-			cerr << "Space size: " << vd.getAbsTraveledPath() - currentTraveledPath << endl;
-			if ((sbd.getValueForKey_MapOfDistances(IR_REAR_RIGHT) > -1) && (sbd.getValueForKey_MapOfDistances(IR_REAR_RIGHT) < minSpaceWidth)) {
+			//If obstacle is encountered, go back to detecting obstacle state
+			if ((sbd.getValueForKey_MapOfDistances(IR_REAR_RIGHT) > -1 && sbd.getValueForKey_MapOfDistances(IR_REAR_RIGHT) < minSpaceWidth)
+			     && (counter > noiseAllowance)) {
                     		unit.stageMeasuring = ControlUnit::DETECT_OBSTACLE;
-
+			//Account for noise
+			}else if (sbd.getValueForKey_MapOfDistances(IR_REAR_RIGHT) > -1 && sbd.getValueForKey_MapOfDistances(IR_REAR_RIGHT) < minSpaceWidth){
+				counter++;
+			//If the space is big enough
                 	}else if (vd.getAbsTraveledPath() - currentTraveledPath >= minSpaceLength) {
 				unit.stageMeasuring = ControlUnit::DISABLE;
 				unit.stageMoving = ControlUnit::PREP_REVERSE;
-				cerr << "REVERSE" << endl;
+				counter = 0; //reset for next use
 			}
                 }break;
-
+		
+		//Stop measuring
 		case ControlUnit::DISABLE: {
 			//Measuring disabled
 		}
@@ -149,32 +151,36 @@ ControlUnit SidewaysParker::movementStage(ControlUnit unit){
         // Create vehicle control data.
         VehicleControl vc;
 
-	//Measurement variables
+	//Distances moved during the stages
 	const double reverseSpeed = -1;
 	const double backRight = 4.0;
 	const double reverse = 2.5;
 	const double backLeft = 4.0;
 	const double align = 1;
 
-	cerr << "Movement state is: " << unit.stageMoving << endl;
 
 	switch(unit.stageMoving){
 
+		//Go forward while looking for parking space
 		case ControlUnit::FORWARD: {
 			vc.setSpeed(1.5);
                 	vc.setSteeringWheelAngle(sd.getExampleData());
 		}break;
 
+		//Prepare for reverse movement (halt)
 		case ControlUnit::PREP_REVERSE: {
 			counter++;
                 	vc.setSpeed(0);
+			//If enough time has passed, enter next state
                 	if (counter >= 30) {
                     		unit.stageMoving = ControlUnit::BACKWARDS_RIGHT;
 				currentTraveledPath = vd.getAbsTraveledPath();
                 	}
 		}break;
 
+		//Go back right
 		case ControlUnit::BACKWARDS_RIGHT: {
+			//Move until the vehicle has moved the desired distance
 			if (vd.getAbsTraveledPath() - currentTraveledPath <= backRight) {
                     		vc.setSpeed(reverseSpeed);
                     		vc.setSteeringWheelAngle(25);
@@ -185,7 +191,9 @@ ControlUnit SidewaysParker::movementStage(ControlUnit unit){
                 	}
 		}break;
 
+		//Go straight back
 		case ControlUnit::REVERSE: {
+			//Move until the vehicle has moved the desired distance
 			if (vd.getAbsTraveledPath() - currentTraveledPath <= reverse) {
 				vc.setSpeed(reverseSpeed);
 				vc.setSteeringWheelAngle(0);
@@ -196,8 +204,9 @@ ControlUnit SidewaysParker::movementStage(ControlUnit unit){
 			}
 		}break;
 
+		//Go back left
 		case ControlUnit::BACKWARDS_LEFT: {
-
+			//Move until the vehicle has moved the desired distance
                 	if (vd.getAbsTraveledPath() - currentTraveledPath <= backLeft) {
 				vc.setSpeed(reverseSpeed);
                 		vc.setSteeringWheelAngle(-25);
@@ -207,8 +216,10 @@ ControlUnit SidewaysParker::movementStage(ControlUnit unit){
 			}
 		}break;
 
+		//Go forward slightly
 		case ControlUnit::ALIGNING: {
 
+			//Move until the vehicle has moved the desired distance
 			if (vd.getAbsTraveledPath() - currentTraveledPath <= align){
 				vc.setSteeringWheelAngle(0);
 				vc.setSpeed(0.5);
@@ -219,6 +230,7 @@ ControlUnit SidewaysParker::movementStage(ControlUnit unit){
 				
 		}break;
 
+		//Stop
 		case ControlUnit::STOPPING: {
 			vc.setSpeed(0);
 		}break;
