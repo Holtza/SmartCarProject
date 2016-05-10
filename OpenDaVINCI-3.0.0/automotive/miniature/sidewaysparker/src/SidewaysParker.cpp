@@ -41,6 +41,7 @@ namespace miniature {
 	
 	double currentTraveledPath;
 	int counter = 0;
+	const int32_t WHEEL_ENCODER = 5;
 	
 
 
@@ -82,10 +83,9 @@ ControlUnit SidewaysParker::measureStage(ControlUnit unit){
 
 	
         const int32_t IR_REAR_RIGHT = 2;
-	const int32_t WHEEL_ENCODER = 5;
 
 	//Measurement variables go here:
-	const int carSize = 5;
+	const double carSize = 4.8;
 	const double minSpaceWidth = 5;
 	const double minSpaceLength = carSize * 2;
 	const int noiseAllowance = 2;
@@ -101,6 +101,9 @@ ControlUnit SidewaysParker::measureStage(ControlUnit unit){
 
 	//Set AbsTraveledPath data to latest wheel encoder data
 	    vd.setAbsTraveledPath(sbd.getValueForKey_MapOfDistances(WHEEL_ENCODER));
+
+	cerr << "WHEEL ENCODER DATA: " << sbd.getValueForKey_MapOfDistances(WHEEL_ENCODER) << endl;
+	cerr << "ABS_TRAVELED_PATH: " << vd.getAbsTraveledPath() << endl;
 
 
 	switch(unit.stageMeasuring) {
@@ -154,6 +157,15 @@ ControlUnit SidewaysParker::movementStage(ControlUnit unit){
 
         // Create vehicle control data.
         VehicleControl vc;
+
+	//Get most recent sensor board data:
+        Container containerSensorBoardData = getKeyValueDataStore().get(automotive::miniature::SensorBoardData::ID());
+        SensorBoardData sbd = containerSensorBoardData.getData<SensorBoardData>();
+
+	//Set AbsTraveledPath data to latest wheel encoder data
+	vd.setAbsTraveledPath(sbd.getValueForKey_MapOfDistances(WHEEL_ENCODER));
+	cerr << "WHEEL ENCODER DATA: " << sbd.getValueForKey_MapOfDistances(WHEEL_ENCODER) << endl;
+	cerr << "ABS_TRAVELED_PATH: " << vd.getAbsTraveledPath() << endl;
 
 	//Distances moved during the stages
 	const double reverseSpeed = -1;
