@@ -28,6 +28,7 @@
 #include "opendavinci/odtools/recorder/Recorder.h"
 #include <opendavinci/odcore/wrapper/SerialPort.h>
 #include <opendavinci/odcore/wrapper/SerialPortFactory.h>
+#include <opendavinci/odcore/io/StringListener.h>
 
 #include "Camera.h"
 

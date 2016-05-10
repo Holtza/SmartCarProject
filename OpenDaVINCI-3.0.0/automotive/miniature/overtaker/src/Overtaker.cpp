@@ -67,9 +67,9 @@ namespace automotive {
             const int32_t INFRARED_REAR_RIGHT = 2;
 
             //measurement variables
-            const double OVERTAKING_DISTANCE = 6;
-            const double HEADING_PARALLEL = 0.7;
-            const int val[] = {6, 5};
+            const double OVERTAKING_DISTANCE = 40;
+            const double HEADING_PARALLEL = 1.0;
+            const int val[] = {35, 34};
 
             // 2. Get most recent sensor board data:
             Container containerSensorBoardData = getKeyValueDataStore().get(automotive::miniature::SensorBoardData::ID());
@@ -88,10 +88,10 @@ namespace automotive {
                 unit.distanceToObstacle = sbd.getValueForKey_MapOfDistances(ULTRASONIC_FRONT_CENTER);
 
                 cerr << "Distance to obstacle old: " << unit.distanceToObstacleOld << endl;
-		        cerr << "Distance to obstacle: " << unit.distanceToObstacle << endl;
+                cerr << "Distance to obstacle: " << unit.distanceToObstacle << endl;
 
                 // Approaching an obstacle (stationary or driving slower than us).
-                if ((unit.distanceToObstacleOld == val[0]) && (unit.distanceToObstacle == val[1])) {
+                if ((unit.distanceToObstacleOld >= val[0]) && (unit.distanceToObstacle <= val[1])) {
                     // Check if overtaking shall be started.
                     unit.stageMeasuring = ControlUnit::FIND_OBJECT_PLAUSIBLE;
 
@@ -152,7 +152,7 @@ namespace automotive {
                     unit.distanceToObstacle = sbd.getValueForKey_MapOfDistances(INFRARED_REAR_RIGHT);
                     unit.distanceToObstacleOld = sbd.getValueForKey_MapOfDistances(ULTRASONIC_FRONT_RIGHT);
 
-                    if (unit.distanceToObstacle < 0 && unit.distanceToObstacleOld < 0) {
+                    if (unit.distanceToObstacle < 0 && unit.distanceToObstacleOld < 30) {
                         // Move to right lane again.
                         unit.stageMoving = ControlUnit::TO_RIGHT_LANE_RIGHT_TURN;
 
@@ -175,7 +175,7 @@ namespace automotive {
                 if (unit.stageMoving == ControlUnit::FORWARD) {
                     // Go forward.
                     vc.setSpeed(1.5);
-                    vc.setSteeringWheelAngle(sd.getExampleData());
+                    vc.setSteeringWheelAngle(0);
 
                 }
                 else if (unit.stageMoving == ControlUnit::TO_LEFT_LANE_LEFT_TURN) {
@@ -238,7 +238,7 @@ namespace automotive {
                 }
 
                 // Create container for finally sending the data.
-                printf("Writing %f\n", vc.getSpeed());
+                
                 
                
                     Container c(vc);
@@ -268,7 +268,7 @@ namespace automotive {
             unit.distanceToObstacleOld = 0;
 
             while (getModuleStateAndWaitForRemainingTimeInTimeslice() == odcore::data::dmcp::ModuleStateMessage::RUNNING) {
-	            
+                
                 unit = measureStage(unit);
                 unit = movementStage(unit);
                 cerr << "State is: " << unit.stageMeasuring << endl;
@@ -281,4 +281,3 @@ namespace automotive {
 
     }
 } // automotive::miniature
-
