@@ -79,6 +79,14 @@ namespace miniature {
 
     void Proxy::setUp()
     {
+    
+
+	FILE *f;
+	f = fopen("/root/proxy_running.txt","a");
+	fprintf(f,"Hi");
+	fclose(f);
+	cout << "Creating Proxy Marker..." << endl;
+                    
         firstFlag = 1;
         //cout<<"Opening a Serial Port:"<<endl;
         //serial.Open(2, 9600);
@@ -184,14 +192,14 @@ namespace miniature {
     odcore::data::dmcp::ModuleExitCodeMessage::ModuleExitCode Proxy::body()
     {
         uint32_t captureCounter = 0;
-        /* 
+         
             int US_FrontCenter;
             int US_FrontRight;
             int IR_FrontRight;
             int IR_RearRight;
             int IR_Rear;
             double wheel_encoder;
-            */
+            
 
         //int wheelAngle = 0;
         while (getModuleStateAndWaitForRemainingTimeInTimeslice() == odcore::data::dmcp::ModuleStateMessage::RUNNING) {
@@ -247,11 +255,6 @@ namespace miniature {
                         string startStr (1, 'w');
                         serial->send(startStr);
                         firstFlag = 0;
-						FILE *f;
-						f = fopen("/root/proxy_running.txt","a");
-						fprintf(f,"Hi");
-						fclose(f);
-						cout << "Creating Proxy Marker..." << endl;
                     }
                     if(buff != setAngle){
                         cout<<"sending ";
@@ -269,7 +272,7 @@ namespace miniature {
             }
 
 
-            /*            
+                       
                 //testing reading sensor values from a file
                 cout << "values: " << readMiddleman() <<endl;
                  // Get sensor data from IR/US.
@@ -342,7 +345,7 @@ namespace miniature {
                 Container container(sbd);
                 getConference().send(container);
 
-   */
+   
         }
 
         cout << "Proxy: Captured " << captureCounter << " frames." << endl;

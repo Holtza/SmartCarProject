@@ -79,6 +79,8 @@ void setup(){
 }
 
 void loop(){
+  
+  if(lastReset < 5000){
   if(stationary)digitalWrite(41, HIGH);
   else digitalWrite(41, LOW);
   compare = digitalRead(WHEEL_A);
@@ -134,6 +136,29 @@ void loop(){
   //Serial.println(Serial1.read());
 
   updateSinceChange++;
+
+  }
+/*
+  // read the acceleration on each axis as analog voltage and converts into meter
+  float x = voltageToCm(analogRead(XPIN));
+  float y = voltageToCm(analogRead(YPIN));
+  float movement = x*x + y*y;
+  Serial.print(movement);
+  Serial.println();
+  delay(100);
+  if(movement > STATIONARYTHRESHOLD*STATIONARYTHRESHOLD){
+     stationary = true;
+  }else {
+     stationary = false;
+  }
+*/
+  if(lastReset >= 5000){  
+    String netstring = readSensors();
+    Serial.println(netstring);
+    lastReset = 0;
+  }
+  lastReset++;
+  
 }
 
 void setWheelAngle(int input){
