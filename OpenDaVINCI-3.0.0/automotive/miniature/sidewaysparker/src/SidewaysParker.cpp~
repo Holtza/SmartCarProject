@@ -38,8 +38,9 @@ namespace miniature {
     using namespace automotive;
     using namespace automotive::miniature;
 
-	int pathCounter = 0;
+	
 	double currentTraveledPath;
+	int counter = 0;
 	
 
 
@@ -49,15 +50,11 @@ SidewaysParker::SidewaysParker(const int32_t& argc,
     
 SidewaysParker::~SidewaysParker(){}
 
-    void SidewaysParker::setUp(){
-        // This method will be call automatically _before_ running
-        // body().
-    }
+// This method will be call automatically _before_ running body()
+void SidewaysParker::setUp(){}
 
-    void SidewaysParker::tearDown(){
-        // This method will be call automatically _after_ return from
-        // body().
-    }
+// This method will be call automatically _after_ return from body().
+void SidewaysParker::tearDown(){}
 
 
 // This method will do the main data processing job.
@@ -80,14 +77,11 @@ SidewaysParker::body(){
 
 }//end body
 
-
+//Measuring state machine
 ControlUnit SidewaysParker::measureStage(ControlUnit unit){
 
-	//const double IR_FRONT_RIGHT = 0;
-        //const int32_t INFRARED_REAR = 1;
+	
         const int32_t IR_REAR_RIGHT = 2;
-        //const int32_t ULTRASONIC_FRONT_CENTER = 3;
-        //const int32_t ULTRASONIC_FRONT_RIGHT = 4;
 
 	//Measurement variables go here:
 	const int carSize = 5;
@@ -142,6 +136,7 @@ ControlUnit SidewaysParker::measureStage(ControlUnit unit){
 
 }//end measureStage
 
+//Moving state machine
 ControlUnit SidewaysParker::movementStage(ControlUnit unit){
 
 	Container followerContainer = getKeyValueDataStore().get(automotive::miniature::SteeringData::ID());
@@ -171,9 +166,9 @@ ControlUnit SidewaysParker::movementStage(ControlUnit unit){
 		}break;
 
 		case ControlUnit::PREP_REVERSE: {
-			pathCounter++;
+			counter++;
                 	vc.setSpeed(0);
-                	if (pathCounter >= 30) {
+                	if (counter >= 30) {
                     		unit.stageMoving = ControlUnit::BACKWARDS_RIGHT;
                     		pathCounter = 0; //reset counter for next use
 				currentTraveledPath = vd.getAbsTraveledPath();
@@ -212,11 +207,11 @@ ControlUnit SidewaysParker::movementStage(ControlUnit unit){
                 		vc.setSteeringWheelAngle(-25);
 			}else{
 				unit.stageMoving = ControlUnit::ALIGNING;
+				currentTraveledPath = vd.getAbsTraveledPath();
 			}
 		}break;
 
 		case ControlUnit::ALIGNING: {
-			pathCounter++;
 
 			if (vd.getAbsTraveledPath() - currentTraveledPath <= align){
 				vc.setSteeringWheelAngle(0);
