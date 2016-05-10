@@ -54,7 +54,7 @@ void setup(){
   attachInterrupt(digitalPinToInterrupt(WHEEL_B), docount, RISING);  // increase counter when speed sensor pin goes High
   Timer1.attachInterrupt( timerIsr ); // enable the timer
   
-  Serial.begin(19200);
+  Serial.begin(9600);
   //Serial1.begin(57600);
   pinMode(motor, OUTPUT);
   pinMode(WHEEL_A, INPUT);
@@ -164,6 +164,12 @@ void loop(){
 void setWheelAngle(int input){
 
   switch(input){
+    case '@':
+      Sservo.write(40);
+      break;
+    case 'v':
+      Sservo.write(140);
+      break;
     case 's':
       Sservo.write(115);
       break;
