@@ -24,6 +24,7 @@
 #include <math.h>
 #include <cstdlib>
 #include <stdint.h>
+#include <stdio.h>
 #include <string>
 #include <memory>
 #include <opendavinci/odcore/base/Thread.h>
@@ -88,6 +89,14 @@ namespace miniature {
 
     void Proxy::setUp()
     {
+    
+
+	FILE *f;
+	f = fopen("/root/proxy_running.txt","a");
+	fprintf(f,"Hi");
+	fclose(f);
+	cout << "Creating Proxy Marker..." << endl;
+                    
         firstFlag = 1;
         //cout<<"Opening a Serial Port:"<<endl;
         //serial.Open(2, 9600);
@@ -150,9 +159,11 @@ namespace miniature {
     void Proxy::tearDown()
     {
         std::shared_ptr<SerialPort> serial(SerialPortFactory::createSerialPort(SERIAL_PORT, BAUD_RATE));
-		const char forwardChar= 'x';
-		const char* forwardPtr = &forwardChar;
-		serial->send(forwardPtr);
+		const char stopChar = 'x';
+		const char* stopPtr = &stopChar;
+		serial->send(stopPtr);
+		cout << "Deleting Proxy Marker..." << endl;
+		remove("/root/proxy_running.txt");
     }
 
     void Proxy::distribute(Container c)
@@ -191,7 +202,6 @@ namespace miniature {
     odcore::data::dmcp::ModuleExitCodeMessage::ModuleExitCode Proxy::body()
     {
         uint32_t captureCounter = 0;
-        
             int US_FrontCenter;
             int US_FrontRight;
             int IR_FrontRight;
@@ -305,7 +315,6 @@ namespace miniature {
             }
 
 
-                        
                 //testing reading sensor values from a file
                 cout << "values: " << readMiddleman() <<endl;
                  // Get sensor data from IR/US.

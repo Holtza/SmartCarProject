@@ -80,7 +80,7 @@ void setup(){
 
 void loop(){
   
-  if(lastReset %10 <= 5){
+  if(lastReset < 5000){
   if(stationary)digitalWrite(41, HIGH);
   else digitalWrite(41, LOW);
   compare = digitalRead(WHEEL_A);
@@ -152,11 +152,13 @@ void loop(){
      stationary = false;
   }
 */
-  if(lastReset %10 > 5){  
+  if(lastReset >= 5000){  
     String netstring = readSensors();
     Serial.println(netstring);
+    lastReset = 0;
   }
   lastReset++;
+  
 }
 
 void setWheelAngle(int input){
