@@ -22,6 +22,16 @@
 
 #include "opendavinci/odcore/base/module/TimeTriggeredConferenceClientModule.h"
 
+struct ControlUnit{
+
+    enum StateMachineMoving { FORWARD, PREP_REVERSE, BACKWARDS_RIGHT, REVERSE, BACKWARDS_LEFT, ALIGNING, STOPPING };
+    enum StateMachineMeasuring { DETECT_OBSTACLE, MEASURING, DISABLE };
+
+    StateMachineMoving stageMoving;
+    StateMachineMeasuring stageMeasuring;
+
+};
+
 namespace automotive {
     namespace miniature {
 
@@ -65,6 +75,10 @@ namespace automotive {
                 odcore::data::dmcp::ModuleExitCodeMessage::ModuleExitCode body();
 
             private:
+
+		ControlUnit measureStage(ControlUnit unit);
+                ControlUnit movementStage(ControlUnit unit);
+
                 virtual void setUp();
 
                 virtual void tearDown();

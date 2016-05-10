@@ -38,211 +38,201 @@ namespace miniature {
     using namespace automotive;
     using namespace automotive::miniature;
 
-    SidewaysParker::SidewaysParker(const int32_t& argc,
+	int pathCounter = 0;
+	double currentTraveledPath;
+
+
+SidewaysParker::SidewaysParker(const int32_t& argc,
         char** argv)
-        : TimeTriggeredConferenceClientModule(argc, argv, "SidewaysParker")
-    {
-    }
-    SidewaysParker::~SidewaysParker()
-    {
-    }
-    void SidewaysParker::setUp()
-    {
+        : TimeTriggeredConferenceClientModule(argc, argv, "SidewaysParker"){}
+    
+SidewaysParker::~SidewaysParker(){}
+
+    void SidewaysParker::setUp(){
         // This method will be call automatically _before_ running
         // body().
     }
 
-    void SidewaysParker::tearDown()
-    {
+    void SidewaysParker::tearDown(){
         // This method will be call automatically _after_ return from
         // body().
     }
 
-    // This method will do the main data processing job.
-    odcore::data::dmcp::ModuleExitCodeMessage::
-        ModuleExitCode
-        SidewaysParker::body()
-    {
-        /*
-       * sensors ids 
-       */
-        const double IR_FRONT_RIGHT = 0;
-        const double INFRARED_REAR = 1;
-        // const double INFRARED_REAR_RIGHT = 2;
-        const double ULTRASONIC_FRONT_CENTER = 3;
-        const double ULTRASONIC_FRONT_RIGHT = 4;
 
-        /*
-       * states for parking 
-       */
-        const int DETECTING_OBSTACLE = 0;
-        const int MEASURING = 1;
-        const int REVERSING = 2;
-        const int BACKWARDS_RIGHT = 3;
-        const int BACKWARDS_LEFT = 4;
-        const int ALIGNING = 5;
-        const int STOPPING = 6;
+// This method will do the main data processing job.
+odcore::data::dmcp::ModuleExitCodeMessage::ModuleExitCode
+SidewaysParker::body(){
 
-        double carSize = 5.0;
-        double currentTraveledPath;
-        int count;
-        int count2;
-        // int move;
-        int state = DETECTING_OBSTACLE; // initial state
+	ControlUnit unit;
 
-        while (getModuleStateAndWaitForRemainingTimeInTimeslice() == odcore::data::dmcp::ModuleStateMessage::RUNNING) {
-            // 1. Get most recent vehicle data:
+	unit.stageMoving = ControlUnit::FORWARD;
+	unit.stageMeasuring = ControlUnit::DETECT_OBSTACLE;
+	
+	while (getModuleStateAndWaitForRemainingTimeInTimeslice() == odcore::data::dmcp::ModuleStateMessage::RUNNING) {
+	            
+                unit = measureStage(unit);
+                unit = movementStage(unit);
+
+	}
+
+	return odcore::data::dmcp::ModuleExitCodeMessage::OKAY;
+
+}//end body
+
+
+ControlUnit SidewaysParker::measureStage(ControlUnit unit){
+
+	//const double IR_FRONT_RIGHT = 0;
+        //const int32_t INFRARED_REAR = 1;
+        const int32_t IR_REAR_RIGHT = 2;
+        //const int32_t ULTRASONIC_FRONT_CENTER = 3;
+        //const int32_t ULTRASONIC_FRONT_RIGHT = 4;
+
+	//Measurement variables go here:
+	const int carSize = 5;
+	const double minSpaceWidth = 5;
+	const double minSpaceLength = carSize * 1.9;
+	
+
+	//Get most recent vehicle data:
             Container containerVehicleData = getKeyValueDataStore().get(automotive::VehicleData::ID());
             VehicleData vd = containerVehicleData.getData<VehicleData>();
-            cerr << "Most recent vehicle data: '" << vd.toString() << "'" << endl;
 
-            // 2. Get most recent sensor board data:
+	//Get most recent sensor board data:
             Container containerSensorBoardData = getKeyValueDataStore().get(automotive::miniature::SensorBoardData::ID());
             SensorBoardData sbd = containerSensorBoardData.getData<SensorBoardData>();
 
-            Container followerContainer = getKeyValueDataStore().get(automotive::miniature::SteeringData::ID());
-            SteeringData sd = followerContainer.getData<SteeringData>();
+	cerr << "State is: " << unit.stageMeasuring << endl;
+	cerr << "Abs traveled path: " << vd.getAbsTraveledPath() << endl;
 
-            // Create vehicle control data.
-            VehicleControl vc;
+	switch(unit.stageMeasuring) {
 
-            // Set AbsTraveledPath to data from wheel encoder
-            vd.setAbsTraveledPath(getValueForKey_MapOfDistances(5)); // AbsTraveledPath
-            // in
-            // increments
-            // of
-            // 10
-            // cm
-            // (simulation
-            // environment:
-            // 1
-            // m)
+		case ControlUnit::DETECT_OBSTACLE: {
+			cerr << "DETECT OBSTACLE" << endl;
+			cerr << "IR_REAR_RIGHT: " << sbd.getValueForKey_MapOfDistances(IR_REAR_RIGHT) << endl;
+			if (sbd.getValueForKey_MapOfDistances(IR_REAR_RIGHT) < 0 || sbd.getValueForKey_MapOfDistances(IR_REAR_RIGHT) > minSpaceWidth) {
+                    		unit.stageMeasuring = ControlUnit::MEASURING;
+                    		currentTraveledPath = vd.getAbsTraveledPath();
+			}
+		}break;
 
-            switch (state) {
+		case ControlUnit::MEASURING: {
+			cerr << "MEASURING" << endl;
+			cerr << "IR_REAR_RIGHT: " << sbd.getValueForKey_MapOfDistances(IR_REAR_RIGHT) << endl;
+			cerr << "Space start: " << currentTraveledPath << endl;
+			cerr << "Space size: " << vd.getAbsTraveledPath() - currentTraveledPath << endl;
+			if ((sbd.getValueForKey_MapOfDistances(IR_REAR_RIGHT) > -1) && (sbd.getValueForKey_MapOfDistances(IR_REAR_RIGHT) < minSpaceWidth)) {
+                    		unit.stageMeasuring = ControlUnit::DETECT_OBSTACLE;
 
-            // The initial state is "DETECTING_OBSTACLE". Once a
-            // gap is found, the state is changed to "MEASURING"
-            case DETECTING_OBSTACLE: {
-                cout << "DETECTING_OBSTACLE" << endl;
-                vc.setSpeed(1);
-                vc.setSteeringWheelAngle(sd.getExampleData());
+                	}else if (vd.getAbsTraveledPath() - currentTraveledPath >= minSpaceLength) {
+				unit.stageMeasuring = ControlUnit::DISABLE;
+				unit.stageMoving = ControlUnit::PREP_REVERSE;
+				cerr << "REVERSE" << endl;
+			}
+                }break;
 
-                if (sbd.getValueForKey_MapOfDistances(IR_FRONT_RIGHT) < 0
-                    && (sbd.getValueForKey_MapOfDistances(ULTRASONIC_FRONT_RIGHT) < 0
-                           || sbd.getValueForKey_MapOfDistances(ULTRASONIC_FRONT_RIGHT) > carSize)) {
-                    state = MEASURING;
-                    currentTraveledPath = vd.getAbsTraveledPath();
-                }
-            } break;
-            // Initialize measurement. Here we calculate whether
-            // the gap space is big enough for parking. If the gap
-            // is at least 2.2 the size of the car, the state is
-            // changed to "REVERSING", otherwise change back to
-            // "DETECTING_OBSTACLE".
-            case MEASURING: {
-                cout << "MEASURING" << endl;
-                cout << "Gap Space= " << vd.getAbsTraveledPath() - currentTraveledPath << endl;
-                vc.setSpeed(.8);
-                vc.setSteeringWheelAngle(sd.getExampleData());
+		case ControlUnit::DISABLE: {
+			//Measuring disabled
+		}
 
-                if ((sbd.getValueForKey_MapOfDistances(ULTRASONIC_FRONT_RIGHT) > -1
-                        && vd.getAbsTraveledPath() - currentTraveledPath < carSize * 1.5)) {
-                    state = DETECTING_OBSTACLE;
-                }
-                else if (vd.getAbsTraveledPath() - currentTraveledPath >= carSize * 2.2) {
-                    count = 0;
-                    state = REVERSING;
-                    currentTraveledPath = vd.getAbsTraveledPath();
-                }
-            } break;
-            // Here we prepare for backwards maneuver.
-            case REVERSING: {
-                cout << "REVERSING" << endl;
-                ++count;
-                vc.setSpeed(0);
-                if (count >= 30) {
-                    state = BACKWARDS_RIGHT;
-                    currentTraveledPath = vd.getAbsTraveledPath();
-                    count2 = 0;
-                }
-            }
+	}//end switch
 
-            break;
-            // Initialize Backwards maneuver steering wheel to the
-            // right. If the car has traveled enough distance,
-            // change to "BACKWARDS_LEFT".
-            case BACKWARDS_RIGHT: {
+	return unit;
 
-                cout << "BACKWARDS_RIGHT" << endl;
-                // cout << "IR_Rear= " <<
-                // sbd.getValueForKey_MapOfDistances(INFRARED_REAR)
-                // << endl;
+}//end measureStage
 
-                if (count2 <= 75) {
-                    vc.setSpeed(-1.6);
-                    vc.setSteeringWheelAngle(25);
-                }
-                count2++;
+ControlUnit SidewaysParker::movementStage(ControlUnit unit){
 
-                if (count2 > 75) {
-                    vc.setSpeed(0);
-                    state = BACKWARDS_LEFT;
-                }
+	Container followerContainer = getKeyValueDataStore().get(automotive::miniature::SteeringData::ID());
+        SteeringData sd = followerContainer.getData<SteeringData> ();
 
-            } break;
-            // Initialize Backwards maneuver steering wheel to the
-            // left. Continue backwards to the left until the
-            // IR_Rear is < 2, we can change to "ALIGNING" state
-            // so that the car stops parallel to the road
-            case BACKWARDS_LEFT: {
+        // Create vehicle control data.
+        VehicleControl vc;
 
-                cout << "BACKWARDS_LEFT" << endl;
-                vc.setSpeed(-.175);
-                vc.setSteeringWheelAngle(-25);
-                cout << "IR_Rear= " << sbd.getValueForKey_MapOfDistances(INFRARED_REAR) << endl;
+	//Measurement variables
+	const double reverseSpeed = -1;
 
-                if (sbd.getValueForKey_MapOfDistances(INFRARED_REAR) < carSize * 0.4
-                    && sbd.getValueForKey_MapOfDistances(INFRARED_REAR) > 0) {
-                    state = ALIGNING;
-                    // move = 0;
-                }
-            }
+	cerr << "Movement state is: " << unit.stageMoving << endl;
 
-            break;
-            // Initialize "ALIGNING". Changing the steering wheel
-            // to the right and parking the car.
-            case ALIGNING: {
-                cout << "ALIGNING" << endl;
-                vc.setSpeed(.4);
-                vc.setSteeringWheelAngle(25);
-                cout << "US_Front_Center= " << sbd.getValueForKey_MapOfDistances(ULTRASONIC_FRONT_CENTER) << endl;
+	switch(unit.stageMoving){
 
-                if (sbd.getValueForKey_MapOfDistances(ULTRASONIC_FRONT_CENTER) < carSize * 2
-                    && sbd.getValueForKey_MapOfDistances(ULTRASONIC_FRONT_CENTER) > 0) {
+		case ControlUnit::FORWARD: {
+			vc.setSpeed(1.5);
+                	vc.setSteeringWheelAngle(sd.getExampleData());
+		}break;
 
-                    vc.setSteeringWheelAngle(25);
-                    // if(move <= 3){
-                    vc.setSpeed(.4);
-                    // move++;
-                    // }else if(move > 3){
-                    state = STOPPING;
-                    // }
-                }
-            } break;
+		case ControlUnit::PREP_REVERSE: {
+			pathCounter++;
+                	vc.setSpeed(0);
+                	if (pathCounter >= 30) {
+                    		unit.stageMoving = ControlUnit::BACKWARDS_RIGHT;
+                    		pathCounter = 0; //reset counter for next use
+                	}
+		}break;
 
-            case STOPPING: {
-                cout << "STOPPING" << endl;
-                vc.setSpeed(0);
-            } break;
-            }
+		case ControlUnit::BACKWARDS_RIGHT: {
+			pathCounter++;
+			if (pathCounter <= 45) {
+                    		vc.setSpeed(reverseSpeed);
+                    		vc.setSteeringWheelAngle(25);
+                	}else if (pathCounter > 45){
+                    		vc.setSpeed(0);
+                    		unit.stageMoving = ControlUnit::REVERSE;
+				pathCounter = 0; //reset counter for next use
+                	}
+		}break;
 
-            // Create container for finally sending the data.
-            Container c(vc);
-            // Send container.
-            getConference().send(c);
-        }
+		case ControlUnit::REVERSE: {
+			pathCounter++;
+			if (pathCounter <=25) {
+				vc.setSpeed(reverseSpeed);
+				vc.setSteeringWheelAngle(0);
+			}else if (pathCounter > 25){
+				vc.setSpeed(0);
+				unit.stageMoving = ControlUnit::BACKWARDS_LEFT;
+				pathCounter = 0; //retet counter for next use
+			}
+		}break;
 
-        return odcore::data::dmcp::ModuleExitCodeMessage::OKAY;
-    }
-}
-} // automotive::miniature
+		case ControlUnit::BACKWARDS_LEFT: {
+			pathCounter++;
+
+                	if (pathCounter <=35) {
+				vc.setSpeed(reverseSpeed);
+                		vc.setSteeringWheelAngle(-25);
+			}else{
+				unit.stageMoving = ControlUnit::ALIGNING;
+                    		pathCounter = 0; //reset counter for next use
+			}
+		}break;
+
+		case ControlUnit::ALIGNING: {
+			pathCounter++;
+
+			if (pathCounter >= 20){
+				vc.setSteeringWheelAngle(0);
+				vc.setSpeed(0.5);
+			}else{
+				unit.stageMoving = ControlUnit::STOPPING;
+				pathCounter = 0; //reset of next use
+			}
+				
+		}break;
+
+		case ControlUnit::STOPPING: {
+			vc.setSpeed(0);
+		}break;
+
+	}//end switch
+
+	Container c(vc);
+        // Send container.
+        getConference().send(c);
+
+        return unit;
+
+}//end movementStage
+			
+
+}//end miniature
+}//end automotive
