@@ -82,6 +82,7 @@ ControlUnit SidewaysParker::measureStage(ControlUnit unit){
 
 	
         const int32_t IR_REAR_RIGHT = 2;
+	const int32_t WHEEL_ENCODER = 5;
 
 	//Measurement variables go here:
 	const int carSize = 5;
@@ -97,6 +98,9 @@ ControlUnit SidewaysParker::measureStage(ControlUnit unit){
 	//Get most recent sensor board data:
             Container containerSensorBoardData = getKeyValueDataStore().get(automotive::miniature::SensorBoardData::ID());
             SensorBoardData sbd = containerSensorBoardData.getData<SensorBoardData>();
+
+	//Set AbsTraveledPath data to latest wheel encoder data
+	    vd.setAbsTraveledPath(sbd.getValueForKey_MapOfDistances(WHEEL_ENCODER);
 
 
 	switch(unit.stageMeasuring) {
