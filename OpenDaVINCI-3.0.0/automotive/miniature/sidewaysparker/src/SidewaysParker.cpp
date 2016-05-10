@@ -100,7 +100,7 @@ ControlUnit SidewaysParker::measureStage(ControlUnit unit){
             SensorBoardData sbd = containerSensorBoardData.getData<SensorBoardData>();
 
 	//Set AbsTraveledPath data to latest wheel encoder data
-	    vd.setAbsTraveledPath(sbd.getValueForKey_MapOfDistances(WHEEL_ENCODER);
+	    vd.setAbsTraveledPath(sbd.getValueForKey_MapOfDistances(WHEEL_ENCODER));
 
 
 	switch(unit.stageMeasuring) {
