@@ -62,14 +62,14 @@ namespace automotive {
             
             //set sensors
             const int32_t ULTRASONIC_FRONT_CENTER = 3;
-            //const int32_t ULTRASONIC_FRONT_RIGHT = 4;
+            const int32_t ULTRASONIC_FRONT_RIGHT = 4;
             const int32_t INFRARED_FRONT_RIGHT = 0;
             const int32_t INFRARED_REAR_RIGHT = 2;
 
             //measurement variables
             const double OVERTAKING_DISTANCE = 6;
-            const double HEADING_PARALLEL = 0.06;
-            const int val[] = {5, 4};
+            const double HEADING_PARALLEL = 0.7;
+            const int val[] = {6, 5};
 
             // 2. Get most recent sensor board data:
             Container containerSensorBoardData = getKeyValueDataStore().get(automotive::miniature::SensorBoardData::ID());
@@ -88,7 +88,7 @@ namespace automotive {
                 unit.distanceToObstacle = sbd.getValueForKey_MapOfDistances(ULTRASONIC_FRONT_CENTER);
 
                 cerr << "Distance to obstacle old: " << unit.distanceToObstacleOld << endl;
-		 cerr << "Distance to obstacle: " << unit.distanceToObstacle << endl;
+		        cerr << "Distance to obstacle: " << unit.distanceToObstacle << endl;
 
                 // Approaching an obstacle (stationary or driving slower than us).
                 if ((unit.distanceToObstacleOld == val[0]) && (unit.distanceToObstacle == val[1])) {
@@ -102,11 +102,11 @@ namespace automotive {
 
                 }
                 else if (unit.stageMeasuring == ControlUnit::FIND_OBJECT_PLAUSIBLE) {
-                    cout<<"AAAA"<<endl;
+                    
                     cout<<sbd.getValueForKey_MapOfDistances(ULTRASONIC_FRONT_CENTER)<<endl;
-                    cout<<OVERTAKING_DISTANCE<<endl;
+                    
                     if (sbd.getValueForKey_MapOfDistances(ULTRASONIC_FRONT_CENTER) < OVERTAKING_DISTANCE) {
-                        cout<<"BBBB"<<endl;
+                        
                         unit.stageMoving = ControlUnit::TO_LEFT_LANE_LEFT_TURN;
 
                         cerr << "State is DISABLE" << endl;
@@ -130,23 +130,29 @@ namespace automotive {
                     }
                 }
                 else if (unit.stageMeasuring == ControlUnit::HAVE_BOTH_IR_SAME_DISTANCE) {
+
                     // Remain in this stage until both IRs have the similar distance to obstacle (i.e. turn car)
                     // and the driven parts of the turn are plausible.
+
+
                     const double IR_FR = sbd.getValueForKey_MapOfDistances(INFRARED_FRONT_RIGHT);
                     const double IR_RR = sbd.getValueForKey_MapOfDistances(INFRARED_REAR_RIGHT);
 
                     cerr << "vals: " << fabs(IR_FR - IR_RR) << endl;
-
-                    if ((fabs(IR_FR - IR_RR) < HEADING_PARALLEL) && ((unit.stageToRightLaneLeftTurn - unit.stageToRightLaneRightTurn) > 0)) {
+                    cerr << "Counter2: " << (unit.stageToRightLaneLeftTurn - unit.stageToRightLaneRightTurn) << endl;
+                    if ((fabs(IR_FR - IR_RR) < HEADING_PARALLEL) && ((unit.stageToRightLaneLeftTurn - unit.stageToRightLaneRightTurn) > -15)) {
                         // Straight forward again.
-                        unit.stageMoving = ControlUnit::CONTINUE_ON_LEFT_LANE;
+                        //unit.stageMoving = ControlUnit::CONTINUE_ON_LEFT_LANE;
+                        unit.stageMoving = ControlUnit::FORWARD;
+                        unit.stageMeasuring = ControlUnit::END_OF_OBJECT;
                     }
                 }
                 else if (unit.stageMeasuring == ControlUnit::END_OF_OBJECT) {
                     // Find end of object.
-                    unit.distanceToObstacle = sbd.getValueForKey_MapOfDistances(INFRARED_FRONT_RIGHT);
+                    unit.distanceToObstacle = sbd.getValueForKey_MapOfDistances(INFRARED_REAR_RIGHT);
+                    unit.distanceToObstacleOld = sbd.getValueForKey_MapOfDistances(ULTRASONIC_FRONT_RIGHT);
 
-                    if (unit.distanceToObstacle < 0) {
+                    if (unit.distanceToObstacle < 0 && unit.distanceToObstacleOld < 0) {
                         // Move to right lane again.
                         unit.stageMoving = ControlUnit::TO_RIGHT_LANE_RIGHT_TURN;
 
@@ -171,8 +177,6 @@ namespace automotive {
                     vc.setSpeed(1.5);
                     vc.setSteeringWheelAngle(sd.getExampleData());
 
-                    unit.stageToRightLaneLeftTurn = 0;
-                    unit.stageToRightLaneRightTurn = 0;
                 }
                 else if (unit.stageMoving == ControlUnit::TO_LEFT_LANE_LEFT_TURN) {
                     // Move to the left lane: Turn left part until both IRs see something.
@@ -208,7 +212,9 @@ namespace automotive {
                     vc.setSteeringWheelAngle(WHEELEANGLE);
 
                     unit.stageToRightLaneRightTurn--;
-                    if (unit.stageToRightLaneRightTurn == 0) {
+
+                    cerr << "Counter: " << unit.stageToRightLaneRightTurn << endl; 
+                    if (unit.stageToRightLaneRightTurn == 20) {
                         unit.stageMoving = ControlUnit::TO_RIGHT_LANE_LEFT_TURN;
                     }
                 }
@@ -225,6 +231,9 @@ namespace automotive {
 
                         unit.distanceToObstacle = 0;
                         unit.distanceToObstacleOld = 0;
+
+                        unit.stageToRightLaneLeftTurn = 0;
+                        unit.stageToRightLaneRightTurn = 0;
                     }
                 }
 
