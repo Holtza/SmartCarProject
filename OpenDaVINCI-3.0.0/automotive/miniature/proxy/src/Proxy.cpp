@@ -22,11 +22,14 @@
 #include <cmath>
 #include <iostream>
 #include <math.h>
+#include <cstdlib>
 #include <stdint.h>
 #include <string>
 #include <memory>
+#include <opendavinci/odcore/base/Thread.h>
 #include <opendavinci/odcore/wrapper/SerialPort.h>
 #include <opendavinci/odcore/wrapper/SerialPortFactory.h>
+
 
 #include "opendavinci/odcore/base/KeyValueConfiguration.h"
 #include "opendavinci/odcore/data/Container.h"
@@ -35,7 +38,7 @@
 #include "automotivedata/GeneratedHeaders_AutomotiveData.h"
 #include "opendavinci/odcore/data/TimeStamp.h"
 
-#include "SerialReceive.hpp"
+#include "SerialReceiveBytes.hpp"
 
 #include "OpenCVCamera.h"
 
@@ -55,6 +58,7 @@
 
 std::string SERIAL_PORT = "/dev/ttyACM0";
 const uint32_t BAUD_RATE = 9600;
+const uint32_t SENSOR_BAUD_RATE = 19200;
 char buff;
 int firstFlag;
 
@@ -78,7 +82,7 @@ namespace miniature {
     {
     }
 
-    void SerialReceive::nextString(const string &s) {
+    void nextString(const std::string &s) {
         cout << "Received " << s.length() << " bytes containing '" << s << "'" << endl;
     }
 
@@ -221,7 +225,7 @@ namespace miniature {
             Container containerSteeringData = getKeyValueDataStore().get(automotive::miniature::SteeringData::ID());
             SteeringData sd = containerSteeringData.getData<SteeringData>();
             //cerr << "Most recent steering data: '" << sd.toString() << "'" << endl;
-
+/*
             char setAngle;
             cout<<vc.getSteeringWheelAngle()<<endl;
             cout<<vc.getSteeringWheelAngle()<<endl;
@@ -273,11 +277,31 @@ namespace miniature {
                         buff = setAngle;
                     }
                     //cout<<"Sending K"<<endl;
-                }
-            
-                catch(string &exception) {
+                }catch(string &exception) {
                     cerr << "Serial port could not be created: " << exception << endl;
                 }
+                
+            }*/
+
+            try {
+                std::shared_ptr<SerialPort> serial_sensor(SerialPortFactory::createSerialPort(SERIAL_PORT, SENSOR_BAUD_RATE));
+
+                // This instance will handle any bytes that are received
+                // from our serial port.
+                SerialReceiveBytes handler;
+                serial_sensor->setStringListener(&handler);
+
+                // Start receiving bytes.
+                serial_sensor->start();
+
+                const uint32_t ONE_SECOND = 1000 * 1000;
+                odcore::base::Thread::usleepFor(ONE_SECOND);
+
+                // Stop receiving bytes and unregister our handler.
+                serial_sensor->stop();
+                serial_sensor->setStringListener(NULL);
+            }catch(string &exception) {
+                cerr << "Error while creating serial port: " << exception << endl;
             }
 
 
