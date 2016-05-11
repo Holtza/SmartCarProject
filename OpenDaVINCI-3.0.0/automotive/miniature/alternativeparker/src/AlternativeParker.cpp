@@ -104,7 +104,7 @@ ControlUnit AlternativeParker::measureStage(ControlUnit unit){
             SensorBoardData sbd = containerSensorBoardData.getData<SensorBoardData>();
 
 	//Set AbsTraveledPath data to latest wheel encoder data
-	    //vd.setAbsTraveledPath(sbd.getValueForKey_MapOfDistances(WHEEL_ENCODER));
+	    vd.setAbsTraveledPath(sbd.getValueForKey_MapOfDistances(WHEEL_ENCODER));
 
 
 	switch(unit.stageMeasuring) {
@@ -140,6 +140,7 @@ ControlUnit AlternativeParker::measureStage(ControlUnit unit){
 			if (sbd.getValueForKey_MapOfDistances(IR_REAR) <= backSafeDist){
 				unit.stageMoving = ControlUnit::ADJUST;
 				unit.stageMeasuring = ControlUnit::DISABLE;
+				cerr << "OBSTACLE TOO CLOSE, INITIATING FORWARD ADJUSTMENT" << endl;
 			}
 		}break;
 		
@@ -174,7 +175,7 @@ ControlUnit AlternativeParker::movementStage(ControlUnit unit){
         SensorBoardData sbd = containerSensorBoardData.getData<SensorBoardData>();
 
 	//Set AbsTraveledPath data to latest wheel encoder data
-	//vd.setAbsTraveledPath(sbd.getValueForKey_MapOfDistances(WHEEL_ENCODER));
+	vd.setAbsTraveledPath(sbd.getValueForKey_MapOfDistances(WHEEL_ENCODER));
 
 	cerr << "ABS_TRAVELED_PATH: " << vd.getAbsTraveledPath() << endl;
 
