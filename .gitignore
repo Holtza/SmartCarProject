@@ -10,3 +10,4 @@ OpenDaVINCI-3.0.0/automotive/miniature/lanedetector/src/newSerial
 *.o
 SerialConnection/serialreceivebytes
 *.swp
+OpenDaVINCI-3.0.0/automotive/miniature/proxy/src/thisIdOdroid.txt
