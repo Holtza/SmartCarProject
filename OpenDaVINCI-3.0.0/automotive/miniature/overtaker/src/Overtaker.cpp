@@ -67,9 +67,9 @@ namespace automotive {
             const int32_t INFRARED_REAR_RIGHT = 2;
 
             //measurement variables
-            const double OVERTAKING_DISTANCE = 40;
+            const double OVERTAKING_DISTANCE = 50;
             const double HEADING_PARALLEL = 1.0;
-            const int val[] = {35, 34};
+            const int val[] = {43, 42};
 
             // 2. Get most recent sensor board data:
             Container containerSensorBoardData = getKeyValueDataStore().get(automotive::miniature::SensorBoardData::ID());
@@ -79,14 +79,17 @@ namespace automotive {
             //cerr << "State is: " << unit.stageMeasuring << endl;
 
             if (unit.stageMeasuring == ControlUnit::FIND_OBJECT_INIT) {
-                unit.distanceToObstacleOld = sbd.getValueForKey_MapOfDistances(ULTRASONIC_FRONT_CENTER);
+                if(sbd.getValueForKey_MapOfDistances(ULTRASONIC_FRONT_CENTER) > 1){
+                    unit.distanceToObstacleOld = sbd.getValueForKey_MapOfDistances(ULTRASONIC_FRONT_CENTER);
+                }
                 unit.stageMeasuring = ControlUnit::FIND_OBJECT;
 
               //  cerr << "State is FIND_OBJECT" << endl;
             }
             else if (unit.stageMeasuring == ControlUnit::FIND_OBJECT) {
-                unit.distanceToObstacle = sbd.getValueForKey_MapOfDistances(ULTRASONIC_FRONT_CENTER);
-
+                if(sbd.getValueForKey_MapOfDistances(ULTRASONIC_FRONT_CENTER) > 1){
+                    unit.distanceToObstacle = sbd.getValueForKey_MapOfDistances(ULTRASONIC_FRONT_CENTER);
+                }
                 cerr << "Distance to obstacle old: " << unit.distanceToObstacleOld << endl;
                 cerr << "Distance to obstacle: " << unit.distanceToObstacle << endl;
 
@@ -255,6 +258,7 @@ namespace automotive {
             ControlUnit unit;
 
             unit.stageMoving = ControlUnit::FORWARD;
+            //unit.stageMeasuring = ControlUnit::DISABLE;
             unit.stageMeasuring = ControlUnit::FIND_OBJECT_INIT;
 
             cerr << "FIND_OBJECT_INIT" << endl;

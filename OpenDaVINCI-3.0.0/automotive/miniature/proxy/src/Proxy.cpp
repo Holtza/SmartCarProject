@@ -53,15 +53,17 @@
 #define CAR_SHARP_TURN_LEFT 'A'
 #define CAR_SHORT_TURN_LEFT 'R'
 #define CAR_AVG_TURN_LEFT 'L'
+#define CAR_SUPER_TURN_LEFT 'q'
+#define CAR_SUPER_TURN_RIGHT 'r'
 #define CAR_STRAIGHT 'Z'
 #define CAR_STOP 'x'
 #define CAR_REVERSE 'z'
 #define CAR_DRIVE 'w'
 
-std::string SERIAL_PORT = "/dev/ttyACM0";
+std::string SERIAL_PORT = "/dev/ttyACM1";
 const uint32_t BAUD_RATE = 9600;
 const uint32_t SENSOR_BAUD_RATE = 19200;
-char buff;
+char angleBuff;
 char speedBuff;
 int firstFlag;
 
@@ -235,15 +237,15 @@ namespace miniature {
             //cerr << "Most recent steering data: '" << sd.toString() << "'" << endl;
 
             char setAngle;
-            //char setArduinoSpeed;
+            char setArduinoSpeed;
             cout<<vc.getSteeringWheelAngle()<<endl;
             cout<<vc.getSteeringWheelAngle()<<endl;
 
             
             if(((int)vc.getSteeringWheelAngle()) == 25)
-                setAngle = CAR_SHARP_TURN_RIGHT;
+                setAngle = CAR_SUPER_TURN_RIGHT;
             else if(((int)vc.getSteeringWheelAngle()) == -25)
-                setAngle = CAR_SHARP_TURN_LEFT;
+                setAngle = CAR_SUPER_TURN_LEFT;
             else if ((int)(vc.getSteeringWheelAngle() * (180.0 / 3.14159)) == 0)
                 setAngle = CAR_STRAIGHT;
             else if ((int)(vc.getSteeringWheelAngle() * (180.0 / 3.14159)) == -3)
@@ -259,13 +261,13 @@ namespace miniature {
             else if ((int)(vc.getSteeringWheelAngle() * (180.0 / 3.14159)) == 14)
                 setAngle = CAR_SHARP_TURN_RIGHT;
 
-            // if(vc.getSpeed() >= -0.1 && vc.getSpeed() <= 0.1){
-            //     setArduinoSpeed = CAR_STOP;
-            // }else if(vc.getSpeed() >= 1.4 && vc.getSpeed() <= 1.6){
-            //     setArduinoSpeed = CAR_DRIVE;
-            // }else if(vc.getSpeed() >= -1.1 && vc.getSpeed() <= -0.9){
-            //     setArduinoSpeed = CAR_REVERSE;
-            // }
+             if(vc.getSpeed() >= -0.1 && vc.getSpeed() <= 0.1){
+                 setArduinoSpeed = CAR_STOP;
+             }else if(vc.getSpeed() >= 1.4 && vc.getSpeed() <= 1.6){
+                 setArduinoSpeed = CAR_DRIVE;
+             }else if(vc.getSpeed() >= -1.1 && vc.getSpeed() <= -0.9){
+                 setArduinoSpeed = CAR_REVERSE;
+             }
             //writeMiddleman(setAngle);
              if(captureCounter > 100){
                 try {
@@ -279,12 +281,25 @@ namespace miniature {
                         firstFlag = 0;
                         
                     }
-                    if(buff != setAngle){
+                    if(angleBuff != setAngle && speedBuff != setArduinoSpeed){
+                        string str = "";
+                        str += setAngle;
+                        str += setArduinoSpeed;
+                        serial->send(str);
+                        angleBuff = setAngle;
+                        speedBuff = setArduinoSpeed;
+
+                    }else if(angleBuff != setAngle){
                         cout<<"sending ";
                         cout<<setAngle<<endl;
                         string str (1, setAngle);
                         serial->send(str);
-                        buff = setAngle;
+                        angleBuff = setAngle;
+
+                    }else if(speedBuff != setArduinoSpeed){
+                        string str (1, setArduinoSpeed);
+                        serial->send(str);
+                        speedBuff = setArduinoSpeed;
                     }
                     //cout<<"Sending K"<<endl;
                 }
@@ -308,12 +323,12 @@ namespace miniature {
                   cout << "error" <<endl;
  
                 }else{
-                   string sonarFrontCenter = sensorData.substr(3, 3);
+                   string sonarFrontCenter = sensorData.substr(0, 3);
                    US_FrontCenter = atoi(sonarFrontCenter.c_str());
                   // cout << "string US FrontCenter: " << sonarFrontCenter <<endl;
                    cout << "US_FrontCenter: " << US_FrontCenter <<endl;
 
-                   string sonarFrontRight = sensorData.substr(0, 3);
+                   string sonarFrontRight = sensorData.substr(3, 3);
                    US_FrontRight = atoi(sonarFrontRight.c_str());
                   // cout << "string US FrontRight: " << sonarFrontRight <<endl;
                    cout << "US_FrontRight: " << US_FrontRight <<endl;
@@ -336,7 +351,7 @@ namespace miniature {
                    string wheelEncoder = sensorData.substr(15, 5);
                    int we = atoi(wheelEncoder.c_str());
                    cout << "Wheel Encoder clicks: " << we << endl;
-                   wheel_encoder = clicksToDistance(we);
+                   wheel_encoder = we;
 
            
 

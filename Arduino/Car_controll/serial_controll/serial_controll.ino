@@ -17,8 +17,10 @@
 #define YPIN A4
 #define WHEEL_A 5
 #define WHEEL_B 3
-#define BASE_SPEED 1296
-#define BOOST_SPEED 1349
+#define BASE_SPEED 1579
+#define BOOST_SPEED 1585
+#define BOOST_REV_SPEED 1223
+#define BASE_REV_SPEED 1237
 #define HOLE_MIN 1
 #define HOLE_MAX 2
 
@@ -34,9 +36,9 @@ const int motor = 9;
 const int servo = 6;
 int delay_sec = 10;
 
-int neutral = 1200; // //value for making car stand still
+int neutral = 1500; // //value for making car stand still
 int high = 2000;  ////value for making car go forward
-int low = 800;  //value for making car go backwards
+int low = 1000;  //value for making car go backwards
 char buffer;
 
 int lastReset = 0;
@@ -46,7 +48,7 @@ unsigned long updateSinceChange;
 int encoder;
 int compare;
 boolean stationary = true;
-boolean driving = false;
+int driving = 0;
  
 void setup(){
 
@@ -92,13 +94,18 @@ void loop(){
     updateSinceChange = 0;
     encoder = compare;
   }
-  if(driving){
+  
+  if(driving == 1){
     if(rotation<HOLE_MIN)esc.writeMicroseconds(BOOST_SPEED);
     else if(rotation<HOLE_MAX)esc.writeMicroseconds(BASE_SPEED);
     else esc.writeMicroseconds(neutral);
+  }else if(driving == 2){
+     if(rotation<HOLE_MIN)esc.writeMicroseconds(BOOST_REV_SPEED);
+    else if(rotation<HOLE_MAX)esc.writeMicroseconds(BASE_REV_SPEED);
   }else{
-     esc.writeMicroseconds(neutral);
+    esc.writeMicroseconds(neutral);
   }
+  
   //Serial.println(stationary);  
   //Serial.println(driving);         
   if(Serial.available() > 0){  // checks if there's any buffered data
@@ -112,18 +119,20 @@ void loop(){
     switch(last_input){  // check what key was pressed (ASCII)
       case 'w': //w
         //forward
-          driving = true;
+          driving = 1;
           Serial.println("Forward?");
+          //esc.writeMicroseconds(1567);
         break;
         
       case 'z': //z
         //back
-        esc.writeMicroseconds(1100);
+        driving = 2;
+        //esc.writeMicroseconds(1250);
         break;
         
       case 'x': //x
-        driving = false;
-        esc.writeMicroseconds(1200);
+        driving = 0;
+        //esc.writeMicroseconds(1500);
         break;       
         
       default:
@@ -164,11 +173,11 @@ void loop(){
 void setWheelAngle(int input){
 
   switch(input){
-    case '@':
-      Sservo.write(0);
+    case 'q':
+      Sservo.write(20);
       break;
-    case 'v':
-      Sservo.write(180);
+    case 'r':
+      Sservo.write(150);
       break;
     case 's':
       Sservo.write(115);
@@ -208,9 +217,9 @@ void docount(){
 
 void timerIsr(){
   Timer1.detachInterrupt();  //stop the timer
- // Serial.print("Motor Speed: ");
- // Serial.print(rotation);  
- // Serial.println(" Holes per seconds"); 
+  //Serial.print("Motor Speed: ");
+  //Serial.print(rotation);  
+  //Serial.println(" Holes per seconds"); 
   rotation=0;  //  reset counter to zero
   Timer1.attachInterrupt( timerIsr );  //enable the timer
 }

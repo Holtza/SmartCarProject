@@ -88,11 +88,11 @@ ControlUnit AlternativeParker::measureStage(ControlUnit unit){
 	const int32_t IR_REAR = 1;
 
 	//Measurement variables go here:
-	const double carSize = 1.5;
-	const double minSpaceWidth = 25;
-	const double minSpaceLength = carSize * 2;
+	const double carSize = 10;
+	const double minSpaceWidth = 30;
+	const double minSpaceLength = carSize * 1.9;
 	const int noiseAllowance = 2;
-	const int backSafeDist = 3; //in cm (value from IR sensor)
+	const int backSafeDist = 10; //in cm (value from IR sensor)
 	
 
 	//Get most recent vehicle data:
@@ -140,6 +140,7 @@ ControlUnit AlternativeParker::measureStage(ControlUnit unit){
 			if (sbd.getValueForKey_MapOfDistances(IR_REAR) <= backSafeDist && sbd.getValueForKey_MapOfDistances(IR_REAR) > -1){
 				unit.stageMoving = ControlUnit::ADJUST;
 				unit.stageMeasuring = ControlUnit::DISABLE;
+				currentTraveledPath = vd.getAbsTraveledPath();
 				cerr << "OBSTACLE TOO CLOSE, INITIATING FORWARD ADJUSTMENT" << endl;
 			}
 		}break;
@@ -181,11 +182,11 @@ ControlUnit AlternativeParker::movementStage(ControlUnit unit){
 
 	//Measurement variables
 	const double reverseSpeed = -1;
-	const double frontAlign = 2;
-	const double frontLeft = 3;
-	const double reverse = 7;
-	const double backLeft = 3;
-	const double adjust = 1;
+	const double frontAlign = 0;
+	const double frontLeft = 11;
+	const double reverse = 15;
+	const double backLeft = 11;
+	const double adjust = 10;
 
 
 	switch(unit.stageMoving){
@@ -193,7 +194,7 @@ ControlUnit AlternativeParker::movementStage(ControlUnit unit){
 		//Go forward while looking for parking space
 		case ControlUnit::FORWARD: {
 			vc.setSpeed(1.5);
-                	vc.setSteeringWheelAngle(0); //NOT FOLLOWING LANEFOLLOWER
+            vc.setSteeringWheelAngle(0); //NOT FOLLOWING LANEFOLLOWER
 		}break;
 		
 		//Move slightly forward
@@ -201,6 +202,7 @@ ControlUnit AlternativeParker::movementStage(ControlUnit unit){
 			if (vd.getAbsTraveledPath() - currentTraveledPath <= frontAlign) {
 				vc.setSpeed(1.5);
 				vc.setSteeringWheelAngle(0);
+				cout<<"INSIDE FRONT ALIGN NOW"<<endl;
 			}else{
 				vc.setSpeed(0);
 				unit.stageMoving = ControlUnit::FRONT_LEFT;
@@ -210,7 +212,7 @@ ControlUnit AlternativeParker::movementStage(ControlUnit unit){
 
 		case ControlUnit::FRONT_LEFT: {
 			if (vd.getAbsTraveledPath() - currentTraveledPath <= frontLeft) {
-				vc.setSpeed(1);
+				vc.setSpeed(1.5);
 				vc.setSteeringWheelAngle(-25);
 			}else{
 				unit.stageMoving = ControlUnit::PREP_REVERSE;
@@ -223,7 +225,7 @@ ControlUnit AlternativeParker::movementStage(ControlUnit unit){
 			counter++;
                 	vc.setSpeed(0);
 			//If enough time has passed, enter next state
-                	if (counter >= 30) {
+                	if (counter >= 10) {
                     		unit.stageMoving = ControlUnit::REVERSE;
 				currentTraveledPath = vd.getAbsTraveledPath();
 				counter = 0;
@@ -264,9 +266,11 @@ ControlUnit AlternativeParker::movementStage(ControlUnit unit){
 
 			//Move until the vehicle has moved the desired distance
 			if (vd.getAbsTraveledPath() - currentTraveledPath <= adjust){
+				cerr<<"SENDING 25"<<endl;
 				vc.setSteeringWheelAngle(0);
-				vc.setSpeed(0.5);
+				vc.setSpeed(1.5);
 			}else{
+				cerr<<"SENDING STOOOOOOOP"<<endl;
 				unit.stageMoving = ControlUnit::STOP;
 				currentTraveledPath = vd.getAbsTraveledPath();
 			}

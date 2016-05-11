@@ -57,9 +57,9 @@ if not, write to the Free Software
 #define CAR_STRAIGHT "Z"
 
 #define KERNEL_SIZE 3
-#define CANNY_LOW_THRESHOLD 50
-#define CANNY_HIGH_THRESHOLD 170
-#define BLUR_RADIUS 5
+#define CANNY_LOW_THRESHOLD 80
+#define CANNY_HIGH_THRESHOLD 100
+#define BLUR_RADIUS 3
 #define LEFT_RED 1
 #define LEFT_GREEN 0.4
 #define LEFT_BLUE 0
