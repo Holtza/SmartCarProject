@@ -139,7 +139,7 @@ ControlUnit SidewaysParker::measureStage(ControlUnit unit){
                 }break;
 
 		case ControlUnit::MEASURE_BACK: {
-			if (sbd.getValueForKey_MapOfDistances(IR_REAR) <= backSafeDist){
+			if (sbd.getValueForKey_MapOfDistances(IR_REAR) <= backSafeDist && sbd.getValueForKey_MapOfDistances(IR_REAR) > -1){
 				unit.stageMoving = ControlUnit::ALIGNING;
 				unit.stageMeasuring = ControlUnit::DISABLE;
 			}
