@@ -175,7 +175,7 @@ namespace automotive {
                 if (unit.stageMoving == ControlUnit::FORWARD) {
                     // Go forward.
                     vc.setSpeed(1.5);
-                    vc.setSteeringWheelAngle(0);
+                    vc.setSteeringWheelAngle(sd.getExampleData());
 
                 }
                 else if (unit.stageMoving == ControlUnit::TO_LEFT_LANE_LEFT_TURN) {
