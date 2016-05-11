@@ -85,7 +85,7 @@ ControlUnit AlternativeParker::measureStage(ControlUnit unit){
 
 	
         const int32_t IR_REAR_RIGHT = 2;
-	const int32_t IR_REAR = 3;//????
+	const int32_t IR_REAR = 1;
 
 	//Measurement variables go here:
 	const double carSize = 1.5;
