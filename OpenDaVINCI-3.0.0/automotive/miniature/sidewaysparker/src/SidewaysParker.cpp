@@ -81,13 +81,15 @@ SidewaysParker::body(){
 //Measuring state machine
 ControlUnit SidewaysParker::measureStage(ControlUnit unit){
 
+	cerr << "Measure stage: " << unit.stageMeasuring << endl;
+
 	
         const int32_t IR_REAR_RIGHT = 2;
 	const int32_t IR_REAR = 3;//????
 
 	//Measurement variables go here:
-	const double carSize = 4.8;
-	const double minSpaceWidth = 5;
+	const double carSize = 1.5;
+	const double minSpaceWidth = 25;
 	const double minSpaceLength = carSize * 2;
 	const int noiseAllowance = 2;
 	const int backSafeDist = 3; //in cm (value from IR sensor)
@@ -157,6 +159,8 @@ ControlUnit SidewaysParker::measureStage(ControlUnit unit){
 //Moving state machine
 ControlUnit SidewaysParker::movementStage(ControlUnit unit){
 
+	cerr << "Movement stage: " << unit.stageMoving << endl;
+
 	Container followerContainer = getKeyValueDataStore().get(automotive::miniature::SteeringData::ID());
         SteeringData sd = followerContainer.getData<SteeringData> ();
 	
@@ -180,7 +184,7 @@ ControlUnit SidewaysParker::movementStage(ControlUnit unit){
 	const double reverseSpeed = -1;
 	const double backRight = 4.0;
 	const double reverse = 2.5;
-	const double backLeft = 4.0;
+	const double backLeft = 3.2;
 	const double align = 1;
 
 
@@ -189,7 +193,7 @@ ControlUnit SidewaysParker::movementStage(ControlUnit unit){
 		//Go forward while looking for parking space
 		case ControlUnit::FORWARD: {
 			vc.setSpeed(1.5);
-                	vc.setSteeringWheelAngle(sd.getExampleData());
+                	vc.setSteeringWheelAngle(0);
 		}break;
 
 		//Prepare for reverse movement (halt)

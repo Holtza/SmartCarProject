@@ -54,11 +54,15 @@
 #define CAR_SHORT_TURN_LEFT 'R'
 #define CAR_AVG_TURN_LEFT 'L'
 #define CAR_STRAIGHT 'Z'
+#define CAR_STOP 'x'
+#define CAR_REVERSE 'z'
+#define CAR_DRIVE 'w'
 
 std::string SERIAL_PORT = "/dev/ttyACM0";
 const uint32_t BAUD_RATE = 9600;
 const uint32_t SENSOR_BAUD_RATE = 19200;
-char buff;
+char angleBuff;
+char speedBuff;
 int firstFlag;
 
 namespace automotive {
@@ -231,6 +235,7 @@ namespace miniature {
             //cerr << "Most recent steering data: '" << sd.toString() << "'" << endl;
 
             char setAngle;
+            char setArduinoSpeed;
             cout<<vc.getSteeringWheelAngle()<<endl;
             cout<<vc.getSteeringWheelAngle()<<endl;
             cout<<vc.getSteeringWheelAngle()<<endl;
@@ -261,6 +266,14 @@ namespace miniature {
             else if ((int)(vc.getSteeringWheelAngle() * (180.0 / 3.14159)) == 14)
                 setAngle = CAR_SHARP_TURN_RIGHT;
 
+            if(vc.getSpeed() >= -0.1 && vc.getSpeed() <= 0.1){
+                setArduinoSpeed = CAR_STOP;
+            }else if(vc.getSpeed() >= 1.4 && vc.getSpeed() <= 1.6){
+                setArduinoSpeed = CAR_DRIVE;
+            }else if(vc.getSpeed() >= -1.1 && vc.getSpeed() <= -0.9){
+                setArduinoSpeed = CAR_REVERSE;
+            }
+
             //writeMiddleman(setAngle);
             if(captureCounter > 100){
                 try {
@@ -273,12 +286,25 @@ namespace miniature {
                         serial->send(startStr);
                         firstFlag = 0;
                     }
-                    if(buff != setAngle){
+                    if(angleBuff != setAngle && speedBuff != setArduinoSpeed){
+                        string str = "";
+                        str += setAngle;
+                        str += setArduinoSpeed;
+                        serial->send(str);
+                        angleBuff = setAngle;
+                        speedBuff = setArduinoSpeed;
+
+                    }else if(angleBuff != setAngle){
                         cout<<"sending ";
                         cout<<setAngle<<endl;
                         string str (1, setAngle);
                         serial->send(str);
-                        buff = setAngle;
+                        angleBuff = setAngle;
+
+                    }else if(speedBuff != setArduinoSpeed){
+                        string str (1, setArduinoSpeed);
+                        serial->send(str);
+                        speedBuff = setArduinoSpeed;
                     }
                     //cout<<"Sending K"<<endl;
                 }catch(string &exception) {
@@ -376,7 +402,7 @@ namespace miniature {
 
         double mm = clicks * clickToMm;
 
-        double dm = mm / 100;
+        double dm = mm / 190;
         cerr << "Decimeters: " << dm << endl;
 
         return dm;

@@ -164,11 +164,11 @@ void loop(){
 void setWheelAngle(int input){
 
   switch(input){
-    case '@':
-      Sservo.write(40);
+    case '':
+      Sservo.write(0);
       break;
     case 'v':
-      Sservo.write(140);
+      Sservo.write(180);
       break;
     case 's':
       Sservo.write(115);
