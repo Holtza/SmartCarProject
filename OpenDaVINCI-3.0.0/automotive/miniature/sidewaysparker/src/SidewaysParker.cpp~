@@ -231,12 +231,15 @@ ControlUnit SidewaysParker::movementStage(ControlUnit unit){
 
 		//Go back left
 		case ControlUnit::BACKWARDS_LEFT: {
-			//Move until the vehicle has moved the desired distance
+			//Move until the vehicle is close to the back obstacle
+			unit.stageMeasuring = ControlUnit::MEASURE_BACK;
+			//Or until the vehicle has moved the desired distance
                 	if (vd.getAbsTraveledPath() - currentTraveledPath <= backLeft) {
 				vc.setSpeed(reverseSpeed);
                 		vc.setSteeringWheelAngle(-25);
 			}else{
 				unit.stageMoving = ControlUnit::ALIGNING;
+				unit.stageMeasuring = ControlUnit::DISABLE;
 				currentTraveledPath = vd.getAbsTraveledPath();
 			}
 		}break;
