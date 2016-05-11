@@ -26,7 +26,7 @@
 #define IR2 A1 //IR pin
 #define IR3 A2 //IR pin
 int US1 = 112; //Ultrasonic addresses
-int US2 = 114; //Ultrasonic addresses
+int US2 = 115; //Ultrasonic addresses
 
 
 Servo esc, Sservo;
@@ -164,7 +164,7 @@ void loop(){
 void setWheelAngle(int input){
 
   switch(input){
-    case '':
+    case '@':
       Sservo.write(0);
       break;
     case 'v':

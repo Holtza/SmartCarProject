@@ -61,7 +61,7 @@
 std::string SERIAL_PORT = "/dev/ttyACM0";
 const uint32_t BAUD_RATE = 9600;
 const uint32_t SENSOR_BAUD_RATE = 19200;
-char angleBuff;
+char buff;
 char speedBuff;
 int firstFlag;
 
@@ -235,17 +235,10 @@ namespace miniature {
             //cerr << "Most recent steering data: '" << sd.toString() << "'" << endl;
 
             char setAngle;
-            char setArduinoSpeed;
+            //char setArduinoSpeed;
             cout<<vc.getSteeringWheelAngle()<<endl;
             cout<<vc.getSteeringWheelAngle()<<endl;
-            cout<<vc.getSteeringWheelAngle()<<endl;
-            cout<<vc.getSteeringWheelAngle()<<endl;
-            cout<<vc.getSteeringWheelAngle()<<endl;
-            cout<<vc.getSteeringWheelAngle()<<endl;
-            cout<<vc.getSteeringWheelAngle()<<endl;
-            cout<<vc.getSteeringWheelAngle()<<endl;
-            cout<<vc.getSteeringWheelAngle()<<endl;
-            cout<<vc.getSteeringWheelAngle()<<endl;
+
             
             if(((int)vc.getSteeringWheelAngle()) == 25)
                 setAngle = CAR_SHARP_TURN_RIGHT;
@@ -266,16 +259,15 @@ namespace miniature {
             else if ((int)(vc.getSteeringWheelAngle() * (180.0 / 3.14159)) == 14)
                 setAngle = CAR_SHARP_TURN_RIGHT;
 
-            if(vc.getSpeed() >= -0.1 && vc.getSpeed() <= 0.1){
-                setArduinoSpeed = CAR_STOP;
-            }else if(vc.getSpeed() >= 1.4 && vc.getSpeed() <= 1.6){
-                setArduinoSpeed = CAR_DRIVE;
-            }else if(vc.getSpeed() >= -1.1 && vc.getSpeed() <= -0.9){
-                setArduinoSpeed = CAR_REVERSE;
-            }
-
+            // if(vc.getSpeed() >= -0.1 && vc.getSpeed() <= 0.1){
+            //     setArduinoSpeed = CAR_STOP;
+            // }else if(vc.getSpeed() >= 1.4 && vc.getSpeed() <= 1.6){
+            //     setArduinoSpeed = CAR_DRIVE;
+            // }else if(vc.getSpeed() >= -1.1 && vc.getSpeed() <= -0.9){
+            //     setArduinoSpeed = CAR_REVERSE;
+            // }
             //writeMiddleman(setAngle);
-            if(captureCounter > 100){
+             if(captureCounter > 100){
                 try {
                     std::shared_ptr<SerialPort> serial(SerialPortFactory::createSerialPort(SERIAL_PORT, BAUD_RATE));
                     //SerialPort* serial = SerialPortFactory::createSerialPort(SERIAL_PORT, BAUD_RATE);
@@ -285,32 +277,21 @@ namespace miniature {
                         string startStr (1, 'w');
                         serial->send(startStr);
                         firstFlag = 0;
+                        
                     }
-                    if(angleBuff != setAngle && speedBuff != setArduinoSpeed){
-                        string str = "";
-                        str += setAngle;
-                        str += setArduinoSpeed;
-                        serial->send(str);
-                        angleBuff = setAngle;
-                        speedBuff = setArduinoSpeed;
-
-                    }else if(angleBuff != setAngle){
+                    if(buff != setAngle){
                         cout<<"sending ";
                         cout<<setAngle<<endl;
                         string str (1, setAngle);
                         serial->send(str);
-                        angleBuff = setAngle;
-
-                    }else if(speedBuff != setArduinoSpeed){
-                        string str (1, setArduinoSpeed);
-                        serial->send(str);
-                        speedBuff = setArduinoSpeed;
+                        buff = setAngle;
                     }
                     //cout<<"Sending K"<<endl;
-                }catch(string &exception) {
+                }
+            
+                catch(string &exception) {
                     cerr << "Serial port could not be created: " << exception << endl;
                 }
-                
             }
 
 
