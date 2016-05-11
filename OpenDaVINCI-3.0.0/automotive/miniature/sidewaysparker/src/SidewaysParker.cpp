@@ -41,7 +41,7 @@ namespace miniature {
 	
 	double currentTraveledPath;
 	int counter = 0;
-	const int32_t WHEEL_ENCODER = 5;
+	//const int32_t WHEEL_ENCODER = 5;
 	
 
 
@@ -82,17 +82,18 @@ SidewaysParker::body(){
 ControlUnit SidewaysParker::measureStage(ControlUnit unit){
 
 	cerr << "Measure stage: " << unit.stageMeasuring << endl;
+	
 
 	
         const int32_t IR_REAR_RIGHT = 2;
-	const int32_t IR_REAR = 3;//????
+	const int32_t IR_REAR = 1;
 
 	//Measurement variables go here:
-	const double carSize = 1.5;
+	const double carSize = 4;
 	const double minSpaceWidth = 25;
 	const double minSpaceLength = carSize * 2;
 	const int noiseAllowance = 2;
-	const int backSafeDist = 3; //in cm (value from IR sensor)
+	const int backSafeDist = 0.3;
 	
 
 	//Get most recent vehicle data:
@@ -104,10 +105,11 @@ ControlUnit SidewaysParker::measureStage(ControlUnit unit){
             SensorBoardData sbd = containerSensorBoardData.getData<SensorBoardData>();
 
 	//Set AbsTraveledPath data to latest wheel encoder data
-	    vd.setAbsTraveledPath(sbd.getValueForKey_MapOfDistances(WHEEL_ENCODER));
+	    //vd.setAbsTraveledPath(sbd.getValueForKey_MapOfDistances(WHEEL_ENCODER));
 
-	cerr << "WHEEL ENCODER DATA: " << sbd.getValueForKey_MapOfDistances(WHEEL_ENCODER) << endl;
-	cerr << "ABS_TRAVELED_PATH: " << vd.getAbsTraveledPath() << endl;
+	//cerr << "WHEEL ENCODER DATA: " << sbd.getValueForKey_MapOfDistances(WHEEL_ENCODER) << endl;
+	//cerr << "ABS_TRAVELED_PATH: " << vd.getAbsTraveledPath() << endl;
+	cerr << "Current traveled path: " << vd.getAbsTraveledPath() - currentTraveledPath << endl;
 
 
 	switch(unit.stageMeasuring) {
@@ -139,9 +141,10 @@ ControlUnit SidewaysParker::measureStage(ControlUnit unit){
                 }break;
 
 		case ControlUnit::MEASURE_BACK: {
-			if (sbd.getValueForKey_MapOfDistances(IR_REAR) <= backSafeDist){
+			if (sbd.getValueForKey_MapOfDistances(IR_REAR) <= backSafeDist && sbd.getValueForKey_MapOfDistances(IR_REAR) > -1) {
 				unit.stageMoving = ControlUnit::ALIGNING;
 				unit.stageMeasuring = ControlUnit::DISABLE;
+				cerr << "OBSTACLE FOUND!" << endl;
 			}
 		}break;
 		
@@ -176,15 +179,15 @@ ControlUnit SidewaysParker::movementStage(ControlUnit unit){
         SensorBoardData sbd = containerSensorBoardData.getData<SensorBoardData>();
 
 	//Set AbsTraveledPath data to latest wheel encoder data
-	vd.setAbsTraveledPath(sbd.getValueForKey_MapOfDistances(WHEEL_ENCODER));
-	cerr << "WHEEL ENCODER DATA: " << sbd.getValueForKey_MapOfDistances(WHEEL_ENCODER) << endl;
+	//vd.setAbsTraveledPath(sbd.getValueForKey_MapOfDistances(WHEEL_ENCODER));
+	//cerr << "WHEEL ENCODER DATA: " << sbd.getValueForKey_MapOfDistances(WHEEL_ENCODER) << endl;
 	cerr << "ABS_TRAVELED_PATH: " << vd.getAbsTraveledPath() << endl;
 
 	//Distances moved during the stages
 	const double reverseSpeed = -1;
 	const double backRight = 4.0;
 	const double reverse = 2.5;
-	const double backLeft = 3.2;
+	const double backLeft = 4.0;
 	const double align = 1;
 
 
@@ -193,7 +196,7 @@ ControlUnit SidewaysParker::movementStage(ControlUnit unit){
 		//Go forward while looking for parking space
 		case ControlUnit::FORWARD: {
 			vc.setSpeed(1.5);
-                	vc.setSteeringWheelAngle(0);
+                	vc.setSteeringWheelAngle(sd.getExampleData());
 		}break;
 
 		//Prepare for reverse movement (halt)

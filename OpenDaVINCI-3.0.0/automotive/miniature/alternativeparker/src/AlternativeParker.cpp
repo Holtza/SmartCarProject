@@ -41,7 +41,7 @@ namespace miniature {
 	
 	double currentTraveledPath;
 	int counter = 0;
-	const int32_t WHEEL_ENCODER = 5;
+	//const int32_t WHEEL_ENCODER = 5;
 	
 
 
@@ -88,11 +88,11 @@ ControlUnit AlternativeParker::measureStage(ControlUnit unit){
 	const int32_t IR_REAR = 1;
 
 	//Measurement variables go here:
-	const double carSize = 1.5;
+	const double carSize = 4;
 	const double minSpaceWidth = 25;
 	const double minSpaceLength = carSize * 2;
 	const int noiseAllowance = 2;
-	const int backSafeDist = 3; //in cm (value from IR sensor)
+	const int backSafeDist = 0.3;
 	
 
 	//Get most recent vehicle data:
@@ -104,7 +104,7 @@ ControlUnit AlternativeParker::measureStage(ControlUnit unit){
             SensorBoardData sbd = containerSensorBoardData.getData<SensorBoardData>();
 
 	//Set AbsTraveledPath data to latest wheel encoder data
-	    vd.setAbsTraveledPath(sbd.getValueForKey_MapOfDistances(WHEEL_ENCODER));
+	    //vd.setAbsTraveledPath(sbd.getValueForKey_MapOfDistances(WHEEL_ENCODER));
 
 
 	switch(unit.stageMeasuring) {
@@ -137,7 +137,7 @@ ControlUnit AlternativeParker::measureStage(ControlUnit unit){
                 }break;
 
 		case ControlUnit::MEASURE_BACK: {
-			if (sbd.getValueForKey_MapOfDistances(IR_REAR) <= backSafeDist){
+			if (sbd.getValueForKey_MapOfDistances(IR_REAR) <= backSafeDist && sbd.getValueForKey_MapOfDistances(IR_REAR) > -1){
 				unit.stageMoving = ControlUnit::ADJUST;
 				unit.stageMeasuring = ControlUnit::DISABLE;
 				cerr << "OBSTACLE TOO CLOSE, INITIATING FORWARD ADJUSTMENT" << endl;
@@ -175,17 +175,18 @@ ControlUnit AlternativeParker::movementStage(ControlUnit unit){
         SensorBoardData sbd = containerSensorBoardData.getData<SensorBoardData>();
 
 	//Set AbsTraveledPath data to latest wheel encoder data
-	vd.setAbsTraveledPath(sbd.getValueForKey_MapOfDistances(WHEEL_ENCODER));
+	//vd.setAbsTraveledPath(sbd.getValueForKey_MapOfDistances(WHEEL_ENCODER));
 
 	cerr << "ABS_TRAVELED_PATH: " << vd.getAbsTraveledPath() << endl;
+	cerr << "Current traveled path: " << vd.getAbsTraveledPath() - currentTraveledPath << endl;
 
 	//Measurement variables
 	const double reverseSpeed = -1;
-	const double frontAlign = 2;
+	const double frontAlign = 0;
 	const double frontLeft = 3;
 	const double reverse = 7;
 	const double backLeft = 3;
-	const double adjust = 1;
+	const double adjust = 2;
 
 
 	switch(unit.stageMoving){
@@ -193,7 +194,7 @@ ControlUnit AlternativeParker::movementStage(ControlUnit unit){
 		//Go forward while looking for parking space
 		case ControlUnit::FORWARD: {
 			vc.setSpeed(1.5);
-                	vc.setSteeringWheelAngle(0); //NOT FOLLOWING LANEFOLLOWER
+                	vc.setSteeringWheelAngle(sd.getExampleData()); //NOT FOLLOWING LANEFOLLOWER
 		}break;
 		
 		//Move slightly forward
