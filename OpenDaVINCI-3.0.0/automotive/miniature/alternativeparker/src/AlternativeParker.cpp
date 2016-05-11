@@ -41,7 +41,7 @@ namespace miniature {
 	
 	double currentTraveledPath;
 	int counter = 0;
-	//const int32_t WHEEL_ENCODER = 5;
+	const int32_t WHEEL_ENCODER = 5;
 	
 
 
