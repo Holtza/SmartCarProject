@@ -83,13 +83,14 @@ ControlUnit SidewaysParker::measureStage(ControlUnit unit){
 
 	
         const int32_t IR_REAR_RIGHT = 2;
-	const int32_t WHEEL_ENCODER = 5;
+	const int32_t IR_REAR = 3//????
 
 	//Measurement variables go here:
 	const double carSize = 4.8;
 	const double minSpaceWidth = 5;
 	const double minSpaceLength = carSize * 2;
 	const int noiseAllowance = 2;
+	const int backSafeDist = 3; //in cm (value from IR sensor)
 	
 
 	//Get most recent vehicle data:
@@ -134,6 +135,13 @@ ControlUnit SidewaysParker::measureStage(ControlUnit unit){
 				counter = 0; //reset for next use
 			}
                 }break;
+
+		case ControlUnit::MEASURE_BACK: {
+			if (sbd.getValueForKey_MapOfDistances(IR_REAR) <= backSafeDist){
+				unit.stageMoving = ControlUnit::ALIGNING;
+				unit.stageMeasuring = ControlUnit::DISABLE;
+			}
+		}break;
 		
 		//Stop measuring
 		case ControlUnit::DISABLE: {

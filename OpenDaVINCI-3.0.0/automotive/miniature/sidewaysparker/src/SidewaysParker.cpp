@@ -83,12 +83,14 @@ ControlUnit SidewaysParker::measureStage(ControlUnit unit){
 
 	
         const int32_t IR_REAR_RIGHT = 2;
+	const int32_t IR_REAR = 3//????
 
 	//Measurement variables go here:
 	const double carSize = 4.8;
 	const double minSpaceWidth = 5;
 	const double minSpaceLength = carSize * 2;
 	const int noiseAllowance = 2;
+	const int backSafeDist = 3; //in cm (value from IR sensor)
 	
 
 	//Get most recent vehicle data:
@@ -133,6 +135,13 @@ ControlUnit SidewaysParker::measureStage(ControlUnit unit){
 				counter = 0; //reset for next use
 			}
                 }break;
+
+		case ControlUnit::MEASURE_BACK: {
+			if (sbd.getValueForKey_MapOfDistances(IR_REAR) <= backSafeDist){
+				unit.stageMoving = ControlUnit::ALIGNING;
+				unit.stageMeasuring = ControlUnit::DISABLE;
+			}
+		}break;
 		
 		//Stop measuring
 		case ControlUnit::DISABLE: {
@@ -222,12 +231,15 @@ ControlUnit SidewaysParker::movementStage(ControlUnit unit){
 
 		//Go back left
 		case ControlUnit::BACKWARDS_LEFT: {
-			//Move until the vehicle has moved the desired distance
+			//Move until the vehicle is close to the back obstacle
+			unit.stageMeasuring = ControlUnit::MEASURE_BACK;
+			//Or until the vehicle has moved the desired distance
                 	if (vd.getAbsTraveledPath() - currentTraveledPath <= backLeft) {
 				vc.setSpeed(reverseSpeed);
                 		vc.setSteeringWheelAngle(-25);
 			}else{
 				unit.stageMoving = ControlUnit::ALIGNING;
+				unit.stageMeasuring = ControlUnit::DISABLE;
 				currentTraveledPath = vd.getAbsTraveledPath();
 			}
 		}break;

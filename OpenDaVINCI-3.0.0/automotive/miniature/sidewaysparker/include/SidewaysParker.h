@@ -25,7 +25,7 @@
 struct ControlUnit{
 
     enum StateMachineMoving { FORWARD, PREP_REVERSE, BACKWARDS_RIGHT, REVERSE, BACKWARDS_LEFT, ALIGNING, STOPPING };
-    enum StateMachineMeasuring { DETECT_OBSTACLE, MEASURING, DISABLE };
+    enum StateMachineMeasuring { DETECT_OBSTACLE, MEASURING, MEASURE_BACK, DISABLE };
 
     StateMachineMoving stageMoving;
     StateMachineMeasuring stageMeasuring;
