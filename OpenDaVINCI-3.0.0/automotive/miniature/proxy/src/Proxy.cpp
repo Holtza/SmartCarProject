@@ -60,12 +60,18 @@
 #define CAR_REVERSE 'z'
 #define CAR_DRIVE 'w'
 
-std::string SERIAL_PORT = "/dev/ttyACM1";
+std::string SERIAL_PORT = "/dev/ttyACM0";
 const uint32_t BAUD_RATE = 9600;
 const uint32_t SENSOR_BAUD_RATE = 19200;
 char angleBuff;
 char speedBuff;
 int firstFlag;
+int avgCounter;
+int avgUSFC;
+int avgUSFR;
+int avgIRFR;
+int avgIRRR;
+int avgIRR;
 
 namespace automotive {
 namespace miniature {
@@ -89,7 +95,12 @@ namespace miniature {
 
     void Proxy::setUp()
     {
-    
+    avgCounter = 0;
+    avgUSFC = 0;
+    avgUSFR = 0;
+    avgIRFR = 0;
+    avgIRRR = 0;
+    avgIRR = 0;
 
 	FILE *f;
 	f = fopen("/root/proxy_running.txt","a");
@@ -198,6 +209,24 @@ namespace miniature {
         return sensorValues;
     }
 
+    void resetAvg(){
+        avgCounter = 0;
+        avgUSFC = 0;
+        avgUSFR = 0;
+        avgIRFR = 0;
+        avgIRRR = 0;
+        avgIRR = 0;
+    }
+
+    void getAvg(){
+        avgUSFC /= 4;
+        avgUSFR /= 4;
+        avgIRFR /= 4;
+        avgIRRR /= 4;
+        avgIRR /= 4;
+
+    }
+
     // This method will do the main data processing job.
     odcore::data::dmcp::ModuleExitCodeMessage::ModuleExitCode Proxy::body()
     {
@@ -238,8 +267,8 @@ namespace miniature {
 
             char setAngle;
             char setArduinoSpeed;
-            cout<<vc.getSteeringWheelAngle()<<endl;
-            cout<<vc.getSteeringWheelAngle()<<endl;
+            //cout<<vc.getSteeringWheelAngle()<<endl;
+            //cout<<vc.getSteeringWheelAngle()<<endl;
 
             
             if(((int)vc.getSteeringWheelAngle()) == 25)
@@ -311,11 +340,11 @@ namespace miniature {
 
 
                 //testing reading sensor values from a file
-                cout << "values: " << readMiddleman() <<endl;
+                //cout << "values: " << readMiddleman() <<endl;
                  // Get sensor data from IR/US.
                 string sensorData = readMiddleman();
                 int length = sensorData.length();
-                cout<<sensorData.length()<<endl;
+                //cout<<sensorData.length()<<endl;
                 // decode
 
                 if(length == 0 || length < 20 || length > 20){ //Necessary? Length is already checked in SerialConnection!
@@ -326,48 +355,62 @@ namespace miniature {
                    string sonarFrontCenter = sensorData.substr(0, 3);
                    US_FrontCenter = atoi(sonarFrontCenter.c_str());
                   // cout << "string US FrontCenter: " << sonarFrontCenter <<endl;
-                   cout << "US_FrontCenter: " << US_FrontCenter <<endl;
+                   
 
                    string sonarFrontRight = sensorData.substr(3, 3);
                    US_FrontRight = atoi(sonarFrontRight.c_str());
                   // cout << "string US FrontRight: " << sonarFrontRight <<endl;
-                   cout << "US_FrontRight: " << US_FrontRight <<endl;
+                   
 
                    string irRear = sensorData.substr(6, 3);
                    IR_Rear = atoi(irRear.c_str());
                   // cout <<"string IR Rear: " << irRear <<endl;
-                   cout << "IR_Rear: " << IR_Rear <<endl;
+                   
 
                    string irRearRight = sensorData.substr(9, 3);
                    IR_RearRight = atoi(irRearRight.c_str());
                   // cout <<"string IR Rear Right: " << irRearRight <<endl;
-                   cout << "IR_RearRight: " << IR_RearRight <<endl;
+                   
 
                    string irFrontRight = sensorData.substr(12, 3);
                    IR_FrontRight = atoi(irFrontRight.c_str());
                   // cout <<"string IR Front Right: " << irFrontRight <<endl;
-                   cout << "IR_FrontRight: " << IR_FrontRight <<endl;
+                   
+                   // string wheelEncoder = sensorData.substr(15, 5);
+                   // int we = atoi(wheelEncoder.c_str());
+                   // cout << "Wheel Encoder clicks: " << we << endl;
+                   // wheel_encoder = we;
 
-                   string wheelEncoder = sensorData.substr(15, 5);
-                   int we = atoi(wheelEncoder.c_str());
-                   cout << "Wheel Encoder clicks: " << we << endl;
-                   wheel_encoder = we;
-
-           
-
+                    avgUSFC += US_FrontCenter;
+                    avgUSFR += US_FrontRight;
+                    avgIRFR += IR_FrontRight;
+                    avgIRRR += IR_RearRight;
+                    avgIRR += IR_Rear;
+                    avgCounter++;
 
                 }
 
                 // map the sensor values
                 // the sensor id is the same as in the configuration file
-                sbd.putTo_MapOfDistances(0, IR_FrontRight);  
-                sbd.putTo_MapOfDistances(1, IR_Rear);   
-                sbd.putTo_MapOfDistances(2, IR_RearRight);        
-                sbd.putTo_MapOfDistances(3, US_FrontCenter);    
-                sbd.putTo_MapOfDistances(4, US_FrontRight); 
-                sbd.putTo_MapOfDistances(5, wheel_encoder);  
-                
+                if(avgCounter == 3){
+                    getAvg();
+                    string wheelEncoder = sensorData.substr(15, 5);
+                    int we = atoi(wheelEncoder.c_str());
+                    wheel_encoder = we;
 
+                    cout << "US_FrontCenter: " << US_FrontCenter <<endl;
+                    cout << "US_FrontRight: " << US_FrontRight <<endl;
+                    cout << "IR_Rear: " << IR_Rear <<endl;
+                    cout << "IR_RearRight: " << IR_RearRight <<endl;
+                    cout << "IR_FrontRight: " << IR_FrontRight <<endl;
+                    sbd.putTo_MapOfDistances(0, IR_FrontRight);  
+                    sbd.putTo_MapOfDistances(1, IR_Rear);   
+                    sbd.putTo_MapOfDistances(2, IR_RearRight);        
+                    sbd.putTo_MapOfDistances(3, US_FrontCenter);    
+                    sbd.putTo_MapOfDistances(4, US_FrontRight); 
+                    sbd.putTo_MapOfDistances(5, wheel_encoder); 
+                    resetAvg(); 
+                }
                 //cout<<"FRONT RIGHT:";
                 //cout<<IR_FrontRight<<endl;
                 //cout<<"REAR:";
