@@ -24,11 +24,11 @@
 #define HOLE_MIN 1
 #define HOLE_MAX 2
 
-#define IR1 A0 //IR pin
+#define IR3 A0 //IR pin
 #define IR2 A1 //IR pin
-#define IR3 A2 //IR pin
+#define IR1 A2 //IR pin
 int US1 = 112; //Ultrasonic addresses
-int US2 = 115; //Ultrasonic addresses
+int US2 = 113; //Ultrasonic addresses
 
 
 Servo esc, Sservo;
