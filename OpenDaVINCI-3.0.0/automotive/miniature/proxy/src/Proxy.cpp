@@ -60,7 +60,7 @@
 #define CAR_REVERSE 'z'
 #define CAR_DRIVE 'w'
 
-std::string SERIAL_PORT = "/dev/ttyACM0";
+std::string SERIAL_PORT = "/dev/ttyACM1";
 const uint32_t BAUD_RATE = 9600;
 const uint32_t SENSOR_BAUD_RATE = 19200;
 char angleBuff;
@@ -403,6 +403,7 @@ namespace miniature {
                     cout << "IR_Rear: " << IR_Rear <<endl;
                     cout << "IR_RearRight: " << IR_RearRight <<endl;
                     cout << "IR_FrontRight: " << IR_FrontRight <<endl;
+                    cout << "Wheel Encoder clicks: " << we << endl;
                     sbd.putTo_MapOfDistances(0, IR_FrontRight);  
                     sbd.putTo_MapOfDistances(1, IR_Rear);   
                     sbd.putTo_MapOfDistances(2, IR_RearRight);        

@@ -17,10 +17,10 @@
 #define YPIN A4
 #define WHEEL_A 5
 #define WHEEL_B 3
-#define BASE_SPEED 1579
-#define BOOST_SPEED 1585
-#define BOOST_REV_SPEED 1223
-#define BASE_REV_SPEED 1237
+#define BASE_SPEED 1552
+#define BOOST_SPEED 1568
+#define BOOST_REV_SPEED 1220
+#define BASE_REV_SPEED 1235
 #define HOLE_MIN 1
 #define HOLE_MAX 2
 
@@ -67,7 +67,7 @@ void setup(){
   //end
   esc.attach(motor);
   Sservo.attach(servo); 
-  Sservo.write(90);
+  Sservo.write(65);
   encoder = digitalRead(WHEEL_A);
 
   esc.writeMicroseconds(neutral);
@@ -180,25 +180,25 @@ void setWheelAngle(int input){
       Sservo.write(150);
       break;
     case 's':
-      Sservo.write(115);
+      Sservo.write(105);
       break;
     case 'A':
-      Sservo.write(65);
+      Sservo.write(40);
       break;
     case 'Z':
-      Sservo.write(90);
+      Sservo.write(65);
       break;
     case 'c':
-      Sservo.write(98);
+      Sservo.write(78);
       break;
     case 'f':
-      Sservo.write(109);
+      Sservo.write(90);
       break;
     case 'R':
-      Sservo.write(82);
+      Sservo.write(55);
       break;
     case 'L':
-      Sservo.write(71);
+      Sservo.write(50);
       break;
     default:
       Serial.println("passed no known angles");    

@@ -70,9 +70,9 @@ namespace automotive {
             const int32_t INFRARED_REAR_RIGHT = 2;
 
             //measurement variables
-            const double OVERTAKING_DISTANCE = 50;
+            const double OVERTAKING_DISTANCE = 55;
             const double HEADING_PARALLEL = 1.0;
-            const int val[] = {43, 42};
+            const int val[] = {51, 50};
 
             // Get most recent sensor board data:
             Container containerSensorBoardData = getKeyValueDataStore().get(automotive::miniature::SensorBoardData::ID());
@@ -138,7 +138,8 @@ namespace automotive {
 				cerr << "State is HAVE_BOTH_IR" << endl;
 
                     		// Remain in this stage until both IRs see something.
-                    		if ( (sbd.getValueForKey_MapOfDistances(INFRARED_FRONT_RIGHT) > 0) && (sbd.getValueForKey_MapOfDistances(INFRARED_REAR_RIGHT) > 0) ) {
+                    		if ( (sbd.getValueForKey_MapOfDistances(INFRARED_FRONT_RIGHT) < 15) && (sbd.getValueForKey_MapOfDistances(INFRARED_REAR_RIGHT) < 20) && 
+                                (sbd.getValueForKey_MapOfDistances(INFRARED_REAR_RIGHT) > 0) && (sbd.getValueForKey_MapOfDistances(INFRARED_FRONT_RIGHT) > 0)) {
                         		// Turn to right.
                         		unit.stageMoving = ControlUnit::TO_LEFT_LANE_RIGHT_TURN;
                     		}
@@ -192,8 +193,8 @@ namespace automotive {
 
         ControlUnit Overtaker::movementStage(ControlUnit unit){
 
-		const double toRightLaneRightTurn = 20; 
-		const double toRightLaneLeftTurn = 15;
+		const double toRightLaneRightTurn = 1; 
+		const double toRightLaneLeftTurn = 1;
 
 
                 Container followerContainer = getKeyValueDataStore().get(automotive::miniature::SteeringData::ID());
