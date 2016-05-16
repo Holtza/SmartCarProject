@@ -17,8 +17,8 @@
 #define YPIN A4
 #define WHEEL_A 5
 #define WHEEL_B 3
-#define BASE_SPEED 1552
-#define BOOST_SPEED 1568
+#define BASE_SPEED 1525
+#define BOOST_SPEED 1565
 #define BOOST_REV_SPEED 1220
 #define BASE_REV_SPEED 1235
 #define HOLE_MIN 1
