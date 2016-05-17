@@ -26,11 +26,11 @@
 #define HOLE_MIN 1
 #define HOLE_MAX 2
 
-#define IR3 A0 //IR pin
+#define IR1 A0 //IR pin
 #define IR2 A1 //IR pin
-#define IR1 A2 //IR pin
+#define IR3 A2 //IR pin
 int US1 = 112; //Ultrasonic addresses
-int US2 = 113; //Ultrasonic addresses
+int US2 = 114; //Ultrasonic addresses
 
 
 Servo esc, Sservo;
@@ -38,9 +38,9 @@ const int motor = 9;
 const int servo = 6;
 int delay_sec = 10;
 
-int neutral = 1500; // //value for making car stand still
+int neutral = 1200; // //value for making car stand still
 int high = 2000;  ////value for making car go forward
-int low = 1000;  //value for making car go backwards
+int low = 800;  //value for making car go backwards
 char buffer;
 
 int lastReset = 0;
@@ -50,7 +50,11 @@ unsigned long updateSinceChange;
 int encoder;
 int compare;
 boolean stationary = true;
-int driving = 0;
+boolean driving = false;
+
+int static sonarBufferLength = 6;
+int sonarBufferOne[] = {0,0,0,0,0,0};
+int sonarBufferTwo[] = {0,0,0,0,0,0};
  
 void setup(){
 
@@ -69,7 +73,7 @@ void setup(){
   //end
   esc.attach(motor);
   Sservo.attach(servo); 
-  Sservo.write(65);
+  Sservo.write(90);
   encoder = digitalRead(WHEEL_A);
 
   esc.writeMicroseconds(neutral);
@@ -83,7 +87,6 @@ void setup(){
 }
 
 void loop(){
-  
   if(lastReset < 3000){
   if(stationary)digitalWrite(41, HIGH);
   else digitalWrite(41, LOW);
@@ -96,18 +99,13 @@ void loop(){
     updateSinceChange = 0;
     encoder = compare;
   }
-  
-  if(driving == 1){
+  if(driving){
     if(rotation<HOLE_MIN)esc.writeMicroseconds(BOOST_SPEED);
     else if(rotation<HOLE_MAX)esc.writeMicroseconds(BASE_SPEED);
     else esc.writeMicroseconds(neutral);
-  }else if(driving == 2){
-     if(rotation<HOLE_MIN)esc.writeMicroseconds(BOOST_REV_SPEED);
-    else if(rotation<HOLE_MAX)esc.writeMicroseconds(BASE_REV_SPEED);
   }else{
-    esc.writeMicroseconds(neutral);
+     esc.writeMicroseconds(neutral);
   }
-  
   //Serial.println(stationary);  
   //Serial.println(driving);         
   if(Serial.available() > 0){  // checks if there's any buffered data
@@ -121,20 +119,18 @@ void loop(){
     switch(last_input){  // check what key was pressed (ASCII)
       case 'w': //w
         //forward
-          driving = 1;
+          driving = true;
           Serial.println("Forward?");
-          //esc.writeMicroseconds(1567);
         break;
         
       case 'z': //z
         //back
-        driving = 2;
-        //esc.writeMicroseconds(1250);
+        esc.writeMicroseconds(1100);
         break;
         
       case 'x': //x
-        driving = 0;
-        //esc.writeMicroseconds(1500);
+        driving = false;
+        esc.writeMicroseconds(1200);
         break;       
         
       default:
@@ -175,32 +171,26 @@ void loop(){
 void setWheelAngle(int input){
 
   switch(input){
-    case 'q':
-      Sservo.write(20);
-      break;
-    case 'r':
-      Sservo.write(150);
-      break;
     case 's':
-      Sservo.write(105);
+      Sservo.write(115);
       break;
     case 'A':
-      Sservo.write(40);
-      break;
-    case 'Z':
       Sservo.write(65);
       break;
-    case 'c':
-      Sservo.write(78);
-      break;
-    case 'f':
+    case 'Z':
       Sservo.write(90);
       break;
+    case 'c':
+      Sservo.write(98);
+      break;
+    case 'f':
+      Sservo.write(109);
+      break;
     case 'R':
-      Sservo.write(55);
+      Sservo.write(82);
       break;
     case 'L':
-      Sservo.write(50);
+      Sservo.write(71);
       break;
     default:
       Serial.println("passed no known angles");    
@@ -219,9 +209,9 @@ void docount(){
 
 void timerIsr(){
   Timer1.detachInterrupt();  //stop the timer
-  //Serial.print("Motor Speed: ");
-  //Serial.print(rotation);  
-  //Serial.println(" Holes per seconds"); 
+ // Serial.print("Motor Speed: ");
+ // Serial.print(rotation);  
+ // Serial.println(" Holes per seconds"); 
   rotation=0;  //  reset counter to zero
   Timer1.attachInterrupt( timerIsr );  //enable the timer
 }
@@ -230,14 +220,27 @@ void timerIsr(){
  * Reads the sensors and returns a netstring, using helper functions.
  */
 String readSensors(){
-  int sonar1 = ReadUSSensor(US1); //Read ultrasonic sensors
-  int sonar2 = ReadUSSensor(US2);
+  int sonar1 = getMovingAverage(sonarBufferOne, ReadUSSensor(US1)); //Read ultrasonic sensors
+  int sonar2 = getMovingAverage(sonarBufferTwo, ReadUSSensor(US2));
   int inred1 = voltageToCm(analogRead(IR1));  //Read IR sensors
   int inred2 = voltageToCm(analogRead(IR2));
   int inred3 = voltageToCm(analogRead(IR3));
   String valueString = setString(sonar1, sonar2, inred1, inred2, inred3); //Create string containing the sensor values as ints
   //String encodedString = encodeNetstring(valueString); //Create netstring and return it
   return valueString;
+}
+
+int getMovingAverage(int* buffer, int value){
+  int total = 0;
+  for (int i = sonarBufferLength-1; i > 0; i--) 
+  {   
+      buffer[i-1]=buffer[i];
+  }
+  buffer[0] = value;
+  for(int i = 0; i < sonarBufferLength; i++){
+    total += buffer[i];
+  }
+  return total/sonarBufferLength;
 }
 
 /*
