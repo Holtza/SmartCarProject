@@ -17,10 +17,10 @@
 #define YPIN A4
 #define WHEEL_A 5
 #define WHEEL_B 3
-#define BASE_REDUCED_SPEED 1538
-#define BOOST_REDUCED_SPEED 1562
-#define BASE_SPEED 1542
-#define BOOST_SPEED 1565
+#define BASE_REDUCED_SPEED 1540
+#define BOOST_REDUCED_SPEED 1568
+#define BASE_SPEED 1540
+#define BOOST_SPEED 1568
 #define BOOST_REV_SPEED 1240
 #define BASE_REV_SPEED 1235
 #define HOLE_MIN 1
@@ -52,12 +52,12 @@ int compare;
 boolean stationary = true;
 int driving = 0;
 
-int static sonarBufferLength = 6;
-int sonarBufferOne[] = {0,0,0,0,0,0};
-int sonarBufferTwo[] = {0,0,0,0,0,0};
-int irBufferOne[] = {0,0,0,0,0,0};
-int irBufferTwo[] = {0,0,0,0,0,0};
-int irBufferThree[] = {0,0,0,0,0,0};
+int static sonarBufferLength = 5;
+int sonarBufferOne[] = {0,0,0,0,0};
+int sonarBufferTwo[] = {0,0,0,0,0};
+int irBufferOne[] =  {0,0,0,0,0};
+int irBufferTwo[] =  {0,0,0,0,0};
+int irBufferThree[] = {0,0,0,0,0};
  
 void setup(){
 
@@ -255,11 +255,13 @@ String readSensors(){
 
 int getMovingAverage(int* buffer, int value){
   int total = 0;
-  for (int i = sonarBufferLength-1; i > 0; i--) 
-  {   
-      buffer[i-1]=buffer[i];
+  if(value != -1){
+    for(int i = 0; i < sonarBufferLength; i++)
+    {   
+        buffer[i]=buffer[i+1];
+    }
+    buffer[sonarBufferLength-1] = value;
   }
-  buffer[0] = value;
   for(int i = 0; i < sonarBufferLength; i++){
     total += buffer[i];
   }

@@ -67,12 +67,7 @@ const uint32_t SENSOR_BAUD_RATE = 19200;
 char angleBuff;
 char speedBuff;
 int firstFlag;
-int avgCounter;
-int avgUSFC;
-int avgUSFR;
-int avgIRFR;
-int avgIRRR;
-int avgIRR;
+
 
 namespace automotive {
 namespace miniature {

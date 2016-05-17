@@ -70,9 +70,9 @@ namespace automotive {
             const int32_t INFRARED_REAR_RIGHT = 2;
 
             //measurement variables
-            const double OVERTAKING_DISTANCE = 50;
-            const double HEADING_PARALLEL = 3.0;
-            const int val[] = {44, 43};
+            const double OVERTAKING_DISTANCE = 65;
+            const double HEADING_PARALLEL = 5.0;
+            const int val[] = {59, 58};
 
             // Get most recent sensor board data:
             Container containerSensorBoardData = getKeyValueDataStore().get(automotive::miniature::SensorBoardData::ID());
