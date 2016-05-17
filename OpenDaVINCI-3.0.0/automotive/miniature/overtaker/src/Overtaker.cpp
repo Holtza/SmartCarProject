@@ -70,9 +70,9 @@ namespace automotive {
             const int32_t INFRARED_REAR_RIGHT = 2;
 
             //measurement variables
-            const double OVERTAKING_DISTANCE = 55;
+            const double OVERTAKING_DISTANCE = 50;
             const double HEADING_PARALLEL = 3.0;
-            const int val[] = {51, 50};
+            const int val[] = {44, 43};
 
             // Get most recent sensor board data:
             Container containerSensorBoardData = getKeyValueDataStore().get(automotive::miniature::SensorBoardData::ID());
@@ -193,8 +193,8 @@ namespace automotive {
 
         ControlUnit Overtaker::movementStage(ControlUnit unit){
 
-		const double toRightLaneRightTurn = 2; 
-		const double toRightLaneLeftTurn = 2;
+		const double toRightLaneRightTurn = 4; 
+		const double toRightLaneLeftTurn = 4;
 
 
                 Container followerContainer = getKeyValueDataStore().get(automotive::miniature::SteeringData::ID());
@@ -220,7 +220,7 @@ namespace automotive {
 			case ControlUnit::FORWARD: {
 				
 				// Go forward.
-                    		vc.setSpeed(1.5);
+                    		vc.setSpeed(2.0);
                     		vc.setSteeringWheelAngle(sd.getExampleData());
 			}break;
 
