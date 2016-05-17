@@ -17,9 +17,11 @@
 #define YPIN A4
 #define WHEEL_A 5
 #define WHEEL_B 3
-#define BASE_SPEED 1525
+#define BASE_REDUCED_SPEED 1538
+#define BOOST_REDUCED_SPEED 1562
+#define BASE_SPEED 1542
 #define BOOST_SPEED 1565
-#define BOOST_REV_SPEED 1220
+#define BOOST_REV_SPEED 1240
 #define BASE_REV_SPEED 1235
 #define HOLE_MIN 1
 #define HOLE_MAX 2
@@ -82,7 +84,7 @@ void setup(){
 
 void loop(){
   
-  if(lastReset < 5000){
+  if(lastReset < 3000){
   if(stationary)digitalWrite(41, HIGH);
   else digitalWrite(41, LOW);
   compare = digitalRead(WHEEL_A);
@@ -161,7 +163,7 @@ void loop(){
      stationary = false;
   }
 */
-  if(lastReset >= 5000){  
+  if(lastReset >= 3000){  
     String netstring = readSensors();
     Serial.println(netstring);
     lastReset = 0;

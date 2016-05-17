@@ -71,7 +71,7 @@ namespace automotive {
 
             //measurement variables
             const double OVERTAKING_DISTANCE = 55;
-            const double HEADING_PARALLEL = 1.0;
+            const double HEADING_PARALLEL = 3.0;
             const int val[] = {51, 50};
 
             // Get most recent sensor board data:
@@ -169,7 +169,7 @@ namespace automotive {
                     		unit.distanceToObstacle = sbd.getValueForKey_MapOfDistances(INFRARED_REAR_RIGHT);
                     		//unit.distanceToObstacleOld = sbd.getValueForKey_MapOfDistances(ULTRASONIC_FRONT_RIGHT);
 
-                    		if (unit.distanceToObstacle < 0 || unit.distanceToObstacle > 30) {
+                    		if (unit.distanceToObstacle < 0 || unit.distanceToObstacle > 25) {
                         		// Move to right lane again.
                         		unit.stageMoving = ControlUnit::TO_RIGHT_LANE_RIGHT_TURN;
 
@@ -193,8 +193,8 @@ namespace automotive {
 
         ControlUnit Overtaker::movementStage(ControlUnit unit){
 
-		const double toRightLaneRightTurn = 1; 
-		const double toRightLaneLeftTurn = 1;
+		const double toRightLaneRightTurn = 2; 
+		const double toRightLaneLeftTurn = 2;
 
 
                 Container followerContainer = getKeyValueDataStore().get(automotive::miniature::SteeringData::ID());
