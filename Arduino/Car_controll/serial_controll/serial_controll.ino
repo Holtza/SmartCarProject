@@ -51,6 +51,13 @@ int encoder;
 int compare;
 boolean stationary = true;
 int driving = 0;
+
+int static sonarBufferLength = 6;
+int sonarBufferOne[] = {0,0,0,0,0,0};
+int sonarBufferTwo[] = {0,0,0,0,0,0};
+int irBufferOne[] = {0,0,0,0,0,0};
+int irBufferTwo[] = {0,0,0,0,0,0};
+int irBufferThree[] = {0,0,0,0,0,0};
  
 void setup(){
 
@@ -236,15 +243,29 @@ void timerIsr(){
  * Reads the sensors and returns a netstring, using helper functions.
  */
 String readSensors(){
-  int sonar1 = ReadUSSensor(US1); //Read ultrasonic sensors
-  int sonar2 = ReadUSSensor(US2);
-  int inred1 = voltageToCm(analogRead(IR1));  //Read IR sensors
-  int inred2 = voltageToCm(analogRead(IR2));
-  int inred3 = voltageToCm(analogRead(IR3));
+  int sonar1 = getMovingAverage(sonarBufferOne, ReadUSSensor(US1)); //Read ultrasonic sensors
+  int sonar2 = getMovingAverage(sonarBufferTwo, ReadUSSensor(US2));
+  int inred1 = getMovingAverage(irBufferOne, voltageToCm(analogRead(IR1)));  //Read IR sensors
+  int inred2 = getMovingAverage(irBufferTwo, voltageToCm(analogRead(IR2)));  //Read IR sensors
+  int inred3 = getMovingAverage(irBufferThree, voltageToCm(analogRead(IR3)));  //Read IR sensors
   String valueString = setString(sonar1, sonar2, inred1, inred2, inred3); //Create string containing the sensor values as ints
   //String encodedString = encodeNetstring(valueString); //Create netstring and return it
   return valueString;
 }
+
+int getMovingAverage(int* buffer, int value){
+  int total = 0;
+  for (int i = sonarBufferLength-1; i > 0; i--) 
+  {   
+      buffer[i-1]=buffer[i];
+  }
+  buffer[0] = value;
+  for(int i = 0; i < sonarBufferLength; i++){
+    total += buffer[i];
+  }
+  return total/sonarBufferLength;
+}
+
 
 /*
  * Function which uses the Wire library to read from an ultrasonic sensor,
