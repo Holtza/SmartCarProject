@@ -241,25 +241,39 @@ namespace automotive {
             }break;
 
 			case ControlUnit::TO_LEFT_LANE_LEFT_TURN: {
-				// Move to the left lane: Turn left part until both IRs see something.
+
+				if (backupCounter <= 15){
                     		vc.setSpeed(1.5);
                     		vc.setSteeringWheelAngle(LEFT_WHEELANGLE);
+				backupCounter++;
+				}else{
+					unit.stageMeasuring = ControlUnit::DISABLE;
+					unit.stageMoving = ControlUnit::TO_LEFT_LANE_RIGHT_TURN;
+					backupCounter = 0;
+				}
 
                     		// State machine measuring: Both IRs need to see something before leaving this moving state.
-                    		unit.stageMeasuring = ControlUnit::HAVE_BOTH_IR;
+                    		//unit.stageMeasuring = ControlUnit::HAVE_BOTH_IR;
 
-                    		unit.stageToRightLaneRightTurn++;
+                    		//unit.stageToRightLaneRightTurn++;
 			}break;
 
 			case ControlUnit::TO_LEFT_LANE_RIGHT_TURN: {
-				// Move to the left lane: Turn right part until both IRs have the same distance to obstacle.
+
+				if(backupCounter <= 15){
                     		vc.setSpeed(1);
                     		vc.setSteeringWheelAngle(WHEELEANGLE);
+				backupCounter++;
+				}else{
+					unit.stageMoving = ControlUnit::FORWARD;
+					unit.stageMeasuring = ControlUnit::END_OF_OBJECT;
+					backupCounter = 0;
+				}
 
                     		// State machine measuring: Both IRs need to have the same distance before leaving this moving state.
-                    		unit.stageMeasuring = ControlUnit::HAVE_BOTH_IR_SAME_DISTANCE;
+                    		//unit.stageMeasuring = ControlUnit::HAVE_BOTH_IR_SAME_DISTANCE;
 
-                    		unit.stageToRightLaneLeftTurn++;
+                    		//unit.stageToRightLaneLeftTurn++;
 			}break;
 
 			case ControlUnit::CONTINUE_ON_LEFT_LANE: {
