@@ -72,9 +72,9 @@ namespace automotive {
             const int32_t INFRARED_REAR_RIGHT = 2;
 
             //measurement variables
-            const double OVERTAKING_DISTANCE = 50;
-            const double HEADING_PARALLEL = 5.0;
-            const int val[] = {46, 45};
+            const double OVERTAKING_DISTANCE = 58;
+            const double HEADING_PARALLEL = 2.0;
+            const int val[] = {53, 52};
 
             // Get most recent sensor board data:
             Container containerSensorBoardData = getKeyValueDataStore().get(automotive::miniature::SensorBoardData::ID());
@@ -148,6 +148,11 @@ namespace automotive {
 			}break;
 
 			case ControlUnit::HAVE_BOTH_IR_SAME_DISTANCE: {
+                cout<<"COMPARING THE IRS"<<endl;
+                cout<<"COMPARING THE IRS"<<endl;
+                cout<<"COMPARING THE IRS"<<endl;
+                cout<<"COMPARING THE IRS"<<endl;
+
 				// Remain in this stage until both IRs have the similar distance to obstacle (i.e. turn car)
                     		// and the driven parts of the turn are plausible.
 
@@ -156,12 +161,12 @@ namespace automotive {
                     		const double IR_RR = sbd.getValueForKey_MapOfDistances(INFRARED_REAR_RIGHT);
 
                     		cerr << "vals: " << fabs(IR_FR - IR_RR) << endl;
-                    		cerr << "Counter2: " << (unit.stageToRightLaneLeftTurn - unit.stageToRightLaneRightTurn) << endl;
-                    		if ((fabs(IR_FR - IR_RR) < HEADING_PARALLEL) && ((unit.stageToRightLaneLeftTurn - unit.stageToRightLaneRightTurn) > -15)) {
+                    		
+                    		if ((fabs(IR_FR - IR_RR) < HEADING_PARALLEL) && (sbd.getValueForKey_MapOfDistances(INFRARED_REAR_RIGHT) > 0) && 
+                                (sbd.getValueForKey_MapOfDistances(INFRARED_FRONT_RIGHT) > 0)) {
                         		// Straight forward again.
                         		//unit.stageMoving = ControlUnit::CONTINUE_ON_LEFT_LANE;
-                        		unit.stageMoving = ControlUnit::FORWARD;
-                        		unit.stageMeasuring = ControlUnit::END_OF_OBJECT;
+                        		unit.stageMoving = ControlUnit::CONTINUE_ON_LEFT_LANE;
                     		}
 
 			}break;
@@ -223,7 +228,7 @@ namespace automotive {
 			case ControlUnit::FORWARD: {
 				
 				// Go forward.
-                    		vc.setSpeed(2.0);
+                    		vc.setSpeed(1.5);
                     		vc.setSteeringWheelAngle(sd.getExampleData());
 			}break;
 
@@ -242,10 +247,10 @@ namespace automotive {
 
 			case ControlUnit::TO_LEFT_LANE_LEFT_TURN: {
 
-				if (backupCounter <= 15){
+				if (backupCounter <= 25){
                     		vc.setSpeed(1.5);
                     		vc.setSteeringWheelAngle(LEFT_WHEELANGLE);
-				backupCounter++;
+				            backupCounter++;
 				}else{
 					unit.stageMeasuring = ControlUnit::DISABLE;
 					unit.stageMoving = ControlUnit::TO_LEFT_LANE_RIGHT_TURN;
@@ -260,13 +265,13 @@ namespace automotive {
 
 			case ControlUnit::TO_LEFT_LANE_RIGHT_TURN: {
 
-				if(backupCounter <= 15){
-                    		vc.setSpeed(1);
+				if(backupCounter <= 25){
+                    		vc.setSpeed(1.5);
                     		vc.setSteeringWheelAngle(WHEELEANGLE);
-				backupCounter++;
+				            backupCounter++;
 				}else{
 					unit.stageMoving = ControlUnit::FORWARD;
-					unit.stageMeasuring = ControlUnit::END_OF_OBJECT;
+					unit.stageMeasuring = ControlUnit::HAVE_BOTH_IR_SAME_DISTANCE;
 					backupCounter = 0;
 				}
 
@@ -290,7 +295,7 @@ namespace automotive {
 				// Move to the right lane: Turn right part.
 
 				if (backupCounter <= 15){ //vd.getAbsTraveledPath() - currentTraveledPath <= toRightLaneRightTurn){
-                    			vc.setSpeed(1);
+                    			vc.setSpeed(1.5);
                     			vc.setSteeringWheelAngle(WHEELEANGLE);
                                 backupCounter++;
 				}else{
@@ -310,7 +315,7 @@ namespace automotive {
 			case ControlUnit::TO_RIGHT_LANE_LEFT_TURN: {
 				// Move to the left lane: Turn left part.
 				if (backupCounter <= 15){ //vd.getAbsTraveledPath() - currentTraveledPath <= toRightLaneLeftTurn){
-                    			vc.setSpeed(1);
+                    			vc.setSpeed(1.5);
                     			vc.setSteeringWheelAngle(LEFT_WHEELANGLE);
                                 backupCounter++;
 
@@ -347,7 +352,7 @@ namespace automotive {
 
             unit.stageMoving = ControlUnit::FORWARD;
             //unit.stageMeasuring = ControlUnit::DISABLE;
-            unit.stageMeasuring = ControlUnit::FIND_OBJECT_INIT;
+            unit.stageMeasuring = ControlUnit::HAVE_BOTH_IR_SAME_DISTANCE;
 
             cerr << "FIND_OBJECT_INIT" << endl;
 
