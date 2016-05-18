@@ -148,10 +148,6 @@ namespace automotive {
 			}break;
 
 			case ControlUnit::HAVE_BOTH_IR_SAME_DISTANCE: {
-                cout<<"COMPARING THE IRS"<<endl;
-                cout<<"COMPARING THE IRS"<<endl;
-                cout<<"COMPARING THE IRS"<<endl;
-                cout<<"COMPARING THE IRS"<<endl;
 
 				// Remain in this stage until both IRs have the similar distance to obstacle (i.e. turn car)
                     		// and the driven parts of the turn are plausible.
@@ -352,7 +348,7 @@ namespace automotive {
 
             unit.stageMoving = ControlUnit::FORWARD;
             //unit.stageMeasuring = ControlUnit::DISABLE;
-            unit.stageMeasuring = ControlUnit::HAVE_BOTH_IR_SAME_DISTANCE;
+            unit.stageMeasuring = ControlUnit::FIND_OBJECT_INIT;
 
             cerr << "FIND_OBJECT_INIT" << endl;
 

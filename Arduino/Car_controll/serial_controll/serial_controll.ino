@@ -18,7 +18,8 @@
 #define WHEEL_A 5
 #define WHEEL_B 3
 #define BASE_SPEED 1542
-#define BOOST_SPEED 1565
+#define BOOST_SPEED 1578
+#define TURN_SPEED 1563
 #define BOOST_REV_SPEED 1240
 #define BASE_REV_SPEED 1235
 #define HOLE_MIN 1
@@ -48,6 +49,7 @@ unsigned long updateSinceChange;
 int encoder;
 int compare;
 boolean stationary = true;
+boolean turning = false;
 int driving = 0;
 
 int static sonarBufferLength = 8;
@@ -100,8 +102,14 @@ void loop(){
   }
   
   if(driving == 1){
-    if(rotation<HOLE_MIN)esc.writeMicroseconds(BOOST_SPEED);
-    else if(rotation<HOLE_MAX)esc.writeMicroseconds(BASE_SPEED);
+    if(rotation<HOLE_MIN)      
+      if(turning)
+        esc.writeMicroseconds(BOOST_SPEED);
+      else
+        esc.writeMicroseconds(TURN_SPEED);
+    else if(rotation<HOLE_MAX){
+      esc.writeMicroseconds(BASE_SPEED);
+    }
     else esc.writeMicroseconds(neutral);
   }else if(driving == 2){
      if(rotation<HOLE_MIN)esc.writeMicroseconds(BOOST_REV_SPEED);
@@ -177,30 +185,39 @@ void setWheelAngle(int input){
 
   switch(input){
     case 'q':
+      turning = true;
       Sservo.write(20);
       break;
     case 'r':
+      turning = true;
       Sservo.write(150);
       break;
     case 's':
+      turning = true;
       Sservo.write(105);
       break;
     case 'A':
+      turning = true;
       Sservo.write(40);
       break;
     case 'Z':
+      turning = false;
       Sservo.write(65);
       break;
     case 'c':
+      turning = true;
       Sservo.write(78);
       break;
     case 'f':
+      turning = false;
       Sservo.write(90);
       break;
     case 'R':
+      turning = false;
       Sservo.write(55);
       break;
     case 'L':
+      turning = true;
       Sservo.write(50);
       break;
     default:
