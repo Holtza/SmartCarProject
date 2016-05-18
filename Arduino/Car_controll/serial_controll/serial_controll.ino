@@ -18,7 +18,7 @@
 #define WHEEL_A 5
 #define WHEEL_B 3
 #define BASE_SPEED 1545
-#define BOOST_SPEED 1574
+#define BOOST_SPEED 1576
 #define TURN_SPEED 1567
 #define BOOST_REV_SPEED 1240
 #define BASE_REV_SPEED 1235
@@ -51,6 +51,7 @@ int compare;
 boolean stationary = true;
 boolean turning = false;
 int driving = 0;
+boolean hasClicked = false;
 
 int static sonarBufferLength = 8;
 int sonarBufferOne[] = {0,0,0,0,0,0,0,0};
@@ -172,7 +173,8 @@ void loop(){
      stationary = false;
   }
 */
-  if(lastReset >= 3000){  
+  if(lastReset >= 3000){
+    hasClicked = false;  
     String netstring = readSensors();
     Serial.println(netstring);
     lastReset = 0;
@@ -232,7 +234,10 @@ void setWheelAngle(int input){
 
 void docount(){
   rotation++;
-  clicks++;
+  if(!hasClicked){
+    clicks++;
+    hasClicked = true;
+  }
 }
 
 void timerIsr(){
