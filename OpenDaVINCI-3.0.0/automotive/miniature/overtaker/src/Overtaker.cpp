@@ -232,7 +232,7 @@ namespace automotive {
                             vc.setSpeed(-1);
                             vc.setSteeringWheelAngle(0);
 
-                            if(backupCounter >= 6){
+                            if(backupCounter >= 10){
                                 unit.stageMoving = ControlUnit::TO_LEFT_LANE_LEFT_TURN;
                                 vc.setSpeed(1.5);
                                 backupCounter = 0;
@@ -243,7 +243,7 @@ namespace automotive {
 
 			case ControlUnit::TO_LEFT_LANE_LEFT_TURN: {
 
-				if (backupCounter <= 25){
+				if (backupCounter <= 22){
                     		vc.setSpeed(1.5);
                     		vc.setSteeringWheelAngle(LEFT_WHEELANGLE);
 				            backupCounter++;
@@ -261,7 +261,7 @@ namespace automotive {
 
 			case ControlUnit::TO_LEFT_LANE_RIGHT_TURN: {
 
-				if(backupCounter <= 25){
+				if(backupCounter <= 22){
                     		vc.setSpeed(1.5);
                     		vc.setSteeringWheelAngle(WHEELEANGLE);
 				            backupCounter++;
@@ -290,7 +290,7 @@ namespace automotive {
 			case ControlUnit::TO_RIGHT_LANE_RIGHT_TURN: {
 				// Move to the right lane: Turn right part.
 
-				if (backupCounter <= 15){ //vd.getAbsTraveledPath() - currentTraveledPath <= toRightLaneRightTurn){
+				if (backupCounter <= 10){ //vd.getAbsTraveledPath() - currentTraveledPath <= toRightLaneRightTurn){
                     			vc.setSpeed(1.5);
                     			vc.setSteeringWheelAngle(WHEELEANGLE);
                                 backupCounter++;
@@ -310,7 +310,7 @@ namespace automotive {
 
 			case ControlUnit::TO_RIGHT_LANE_LEFT_TURN: {
 				// Move to the left lane: Turn left part.
-				if (backupCounter <= 15){ //vd.getAbsTraveledPath() - currentTraveledPath <= toRightLaneLeftTurn){
+				if (backupCounter <= 10){ //vd.getAbsTraveledPath() - currentTraveledPath <= toRightLaneLeftTurn){
                     			vc.setSpeed(1.5);
                     			vc.setSteeringWheelAngle(LEFT_WHEELANGLE);
                                 backupCounter++;

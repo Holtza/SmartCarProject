@@ -17,9 +17,9 @@
 #define YPIN A4
 #define WHEEL_A 5
 #define WHEEL_B 3
-#define BASE_SPEED 1542
-#define BOOST_SPEED 1578
-#define TURN_SPEED 1563
+#define BASE_SPEED 1545
+#define BOOST_SPEED 1574
+#define TURN_SPEED 1567
 #define BOOST_REV_SPEED 1240
 #define BASE_REV_SPEED 1235
 #define HOLE_MIN 1
@@ -205,7 +205,7 @@ void setWheelAngle(int input){
       Sservo.write(65);
       break;
     case 'c':
-      turning = true;
+      turning = false;
       Sservo.write(78);
       break;
     case 'f':
@@ -217,7 +217,7 @@ void setWheelAngle(int input){
       Sservo.write(55);
       break;
     case 'L':
-      turning = true;
+      turning = false;
       Sservo.write(50);
       break;
     default:
