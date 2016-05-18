@@ -37,6 +37,7 @@
 
 double currentTraveledPath;
 const int32_t WHEEL_ENCODER = 5;
+int backupCounter;
 
 namespace automotive {
     namespace miniature {
@@ -54,6 +55,7 @@ namespace automotive {
         Overtaker::~Overtaker() {}
 
         void Overtaker::setUp() {
+            backupCounter = 0;
             // This method will be call automatically _before_ running body().
         }
 
@@ -70,9 +72,9 @@ namespace automotive {
             const int32_t INFRARED_REAR_RIGHT = 2;
 
             //measurement variables
-            const double OVERTAKING_DISTANCE = 65;
+            const double OVERTAKING_DISTANCE = 50;
             const double HEADING_PARALLEL = 5.0;
-            const int val[] = {59, 58};
+            const int val[] = {46, 45};
 
             // Get most recent sensor board data:
             Container containerSensorBoardData = getKeyValueDataStore().get(automotive::miniature::SensorBoardData::ID());
@@ -122,7 +124,7 @@ namespace automotive {
 				cout<<sbd.getValueForKey_MapOfDistances(ULTRASONIC_FRONT_CENTER)<<endl;
                     		if (sbd.getValueForKey_MapOfDistances(ULTRASONIC_FRONT_CENTER) < OVERTAKING_DISTANCE) {
                         
-                        		unit.stageMoving = ControlUnit::TO_LEFT_LANE_LEFT_TURN;
+                        		unit.stageMoving = ControlUnit::BACK_UP;
 
                         		cerr << "State is DISABLE" << endl;
                         		// Disable measuring until requested from moving state machine again.
@@ -192,9 +194,10 @@ namespace automotive {
         }
 
         ControlUnit Overtaker::movementStage(ControlUnit unit){
-
-		const double toRightLaneRightTurn = 4; 
-		const double toRightLaneLeftTurn = 4;
+            cout<<"Backup counter is: ";
+            cout<<backupCounter<<endl;
+		//const double toRightLaneRightTurn = 13; 
+		//const double toRightLaneLeftTurn = 13;
 
 
                 Container followerContainer = getKeyValueDataStore().get(automotive::miniature::SteeringData::ID());
@@ -224,9 +227,22 @@ namespace automotive {
                     		vc.setSteeringWheelAngle(sd.getExampleData());
 			}break;
 
+            case ControlUnit::BACK_UP: {
+                            vc.setSpeed(-1);
+                            vc.setSteeringWheelAngle(0);
+
+                            if(backupCounter >= 6){
+                                unit.stageMoving = ControlUnit::TO_LEFT_LANE_LEFT_TURN;
+                                vc.setSpeed(1.5);
+                                backupCounter = 0;
+                            }
+                            backupCounter++;
+
+            }break;
+
 			case ControlUnit::TO_LEFT_LANE_LEFT_TURN: {
 				// Move to the left lane: Turn left part until both IRs see something.
-                    		vc.setSpeed(1);
+                    		vc.setSpeed(1.5);
                     		vc.setSteeringWheelAngle(LEFT_WHEELANGLE);
 
                     		// State machine measuring: Both IRs need to see something before leaving this moving state.
@@ -259,12 +275,14 @@ namespace automotive {
 			case ControlUnit::TO_RIGHT_LANE_RIGHT_TURN: {
 				// Move to the right lane: Turn right part.
 
-				if (vd.getAbsTraveledPath() - currentTraveledPath <= toRightLaneRightTurn){
+				if (backupCounter <= 15){ //vd.getAbsTraveledPath() - currentTraveledPath <= toRightLaneRightTurn){
                     			vc.setSpeed(1);
                     			vc.setSteeringWheelAngle(WHEELEANGLE);
+                                backupCounter++;
 				}else{
 					unit.stageMoving = ControlUnit::TO_RIGHT_LANE_LEFT_TURN;
 					currentTraveledPath = vd.getAbsTraveledPath();
+                    backupCounter = 0;
 				}
 
                     		/*unit.stageToRightLaneRightTurn--;
@@ -277,11 +295,13 @@ namespace automotive {
 
 			case ControlUnit::TO_RIGHT_LANE_LEFT_TURN: {
 				// Move to the left lane: Turn left part.
-				if (vd.getAbsTraveledPath() - currentTraveledPath <= toRightLaneLeftTurn){
+				if (backupCounter <= 15){ //vd.getAbsTraveledPath() - currentTraveledPath <= toRightLaneLeftTurn){
                     			vc.setSpeed(1);
                     			vc.setSteeringWheelAngle(LEFT_WHEELANGLE);
+                                backupCounter++;
 
 				}else{
+                    backupCounter = 0;
 					unit.stageMoving = ControlUnit::FORWARD;
 					unit.stageMeasuring = ControlUnit::FIND_OBJECT_INIT;
 				

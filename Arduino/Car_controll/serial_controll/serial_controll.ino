@@ -29,8 +29,8 @@
 #define IR3 A0 //IR pin
 #define IR2 A1 //IR pin
 #define IR1 A2 //IR pin
-int US1 = 112; //Ultrasonic addresses
-int US2 = 113; //Ultrasonic addresses
+int US1 = 113; //Ultrasonic addresses
+int US2 = 114; //Ultrasonic addresses
 
 
 Servo esc, Sservo;
@@ -245,9 +245,9 @@ void timerIsr(){
 String readSensors(){
   int sonar1 = getMovingAverage(sonarBufferOne, ReadUSSensor(US1)); //Read ultrasonic sensors
   int sonar2 = getMovingAverage(sonarBufferTwo, ReadUSSensor(US2));
-  int inred1 = getMovingAverage(irBufferOne, voltageToCm(analogRead(IR1)));  //Read IR sensors
-  int inred2 = getMovingAverage(irBufferTwo, voltageToCm(analogRead(IR2)));  //Read IR sensors
-  int inred3 = getMovingAverage(irBufferThree, voltageToCm(analogRead(IR3)));  //Read IR sensors
+  int inred1 = voltageToCm(analogRead(IR1));  //Read IR sensors
+  int inred2 = voltageToCm(analogRead(IR2));  //Read IR sensors
+  int inred3 = voltageToCm(analogRead(IR3));  //Read IR sensors
   String valueString = setString(sonar1, sonar2, inred1, inred2, inred3); //Create string containing the sensor values as ints
   //String encodedString = encodeNetstring(valueString); //Create netstring and return it
   return valueString;

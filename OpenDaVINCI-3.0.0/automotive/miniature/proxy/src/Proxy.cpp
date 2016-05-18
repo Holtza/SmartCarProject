@@ -272,6 +272,8 @@ namespace miniature {
              }else if(vc.getSpeed() >= 1.9 && vc.getSpeed() <= 2.1){
                 setArduinoSpeed = OVERTAKER_SPEED;
              }
+
+             
             //writeMiddleman(setAngle);
              if(captureCounter > 100){
                 try {
