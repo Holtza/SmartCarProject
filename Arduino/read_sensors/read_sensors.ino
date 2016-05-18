@@ -115,7 +115,7 @@ String encodeNetstring(String string){
   if (len <= 0){
     return "empty";
   }
-  return len + String("," + string + ",");
+  return String(string + ",");
 }
 
 /*
@@ -126,6 +126,6 @@ int VoltageToCm(int voltrep){
   float voltage = voltrep * (5.0 / 1023.0);
   float value = 12.5 / voltage;
   int i = (int) value;
-  if (value > 45) return 100;
+  if (value > 45) return -1;
   return i;
 }
