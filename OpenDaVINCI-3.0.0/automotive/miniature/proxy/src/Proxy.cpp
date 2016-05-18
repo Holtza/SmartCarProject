@@ -61,7 +61,7 @@
 #define CAR_DRIVE 'w'
 #define OVERTAKER_SPEED 'd'
 
-std::string SERIAL_PORT = "/dev/ttyACM1";
+std::string SERIAL_PORT = "/dev/ttyACM0";
 const uint32_t BAUD_RATE = 9600;
 const uint32_t SENSOR_BAUD_RATE = 19200;
 char angleBuff;
@@ -263,17 +263,20 @@ namespace miniature {
             else if ((int)(vc.getSteeringWheelAngle() * (180.0 / 3.14159)) == 14)
                 setAngle = CAR_SHARP_TURN_RIGHT;
 
-             if(vc.getSpeed() >= -0.1 && vc.getSpeed() <= 0.1){
-                setArduinoSpeed = CAR_STOP;
-             }else if(vc.getSpeed() >= 1.4 && vc.getSpeed() <= 1.6){
+            // if(vc.getSpeed() >= -0.1 && vc.getSpeed() <= 0.1){
+            //    setArduinoSpeed = CAR_STOP;
+             if(vc.getSpeed() >= 1.4 && vc.getSpeed() <= 1.6){
                 setArduinoSpeed = CAR_DRIVE;
              }else if(vc.getSpeed() >= -1.1 && vc.getSpeed() <= -0.9){
                 setArduinoSpeed = CAR_REVERSE;
-             }else if(vc.getSpeed() >= 1.9 && vc.getSpeed() <= 2.1){
-                setArduinoSpeed = OVERTAKER_SPEED;
              }
 
+             cout<<setArduinoSpeed<<endl;
              
+             cout<<setArduinoSpeed<<endl;
+             cout<<setArduinoSpeed<<endl;
+             cout<<setArduinoSpeed<<endl;
+             cout<<setArduinoSpeed<<endl;
             //writeMiddleman(setAngle);
              if(captureCounter > 100){
                 try {

@@ -17,10 +17,9 @@
 #define YPIN A4
 #define WHEEL_A 5
 #define WHEEL_B 3
-#define BASE_REDUCED_SPEED 1540
-#define BOOST_REDUCED_SPEED 1568
-#define BASE_SPEED 1540
-#define BOOST_SPEED 1568
+#define BASE_SPEED 1542
+#define BOOST_SPEED 1578
+#define TURN_SPEED 1563
 #define BOOST_REV_SPEED 1240
 #define BASE_REV_SPEED 1235
 #define HOLE_MIN 1
@@ -29,8 +28,8 @@
 #define IR3 A0 //IR pin
 #define IR2 A1 //IR pin
 #define IR1 A2 //IR pin
-int US1 = 113; //Ultrasonic addresses
-int US2 = 114; //Ultrasonic addresses
+int US1 = 112; //Ultrasonic addresses
+int US2 = 113; //Ultrasonic addresses
 
 
 Servo esc, Sservo;
@@ -50,14 +49,12 @@ unsigned long updateSinceChange;
 int encoder;
 int compare;
 boolean stationary = true;
+boolean turning = false;
 int driving = 0;
 
-int static sonarBufferLength = 5;
-int sonarBufferOne[] = {0,0,0,0,0};
-int sonarBufferTwo[] = {0,0,0,0,0};
-int irBufferOne[] =  {0,0,0,0,0};
-int irBufferTwo[] =  {0,0,0,0,0};
-int irBufferThree[] = {0,0,0,0,0};
+int static sonarBufferLength = 8;
+int sonarBufferOne[] = {0,0,0,0,0,0,0,0};
+int sonarBufferTwo[] = {0,0,0,0,0,0,0,0};
  
 void setup(){
 
@@ -105,16 +102,18 @@ void loop(){
   }
   
   if(driving == 1){
-    if(rotation<HOLE_MIN)esc.writeMicroseconds(BOOST_SPEED);
-    else if(rotation<HOLE_MAX)esc.writeMicroseconds(BASE_SPEED);
+    if(rotation<HOLE_MIN)      
+      if(turning)
+        esc.writeMicroseconds(BOOST_SPEED);
+      else
+        esc.writeMicroseconds(TURN_SPEED);
+    else if(rotation<HOLE_MAX){
+      esc.writeMicroseconds(BASE_SPEED);
+    }
     else esc.writeMicroseconds(neutral);
   }else if(driving == 2){
      if(rotation<HOLE_MIN)esc.writeMicroseconds(BOOST_REV_SPEED);
     else if(rotation<HOLE_MAX)esc.writeMicroseconds(BASE_REV_SPEED);
-  }else if(driving == 3){
-    if(rotation<HOLE_MIN)esc.writeMicroseconds(BOOST_SPEED);
-    else if(rotation<HOLE_MAX)esc.writeMicroseconds(BASE_SPEED);
-    else esc.writeMicroseconds(neutral);
   }else{
     esc.writeMicroseconds(neutral);
   }
@@ -147,9 +146,6 @@ void loop(){
         driving = 0;
         //esc.writeMicroseconds(1500);
         break;       
-      case 'b':
-        driving = 3;
-        break;
       default:
         Serial.println("unknown input?");
     }
@@ -189,30 +185,39 @@ void setWheelAngle(int input){
 
   switch(input){
     case 'q':
+      turning = true;
       Sservo.write(20);
       break;
     case 'r':
+      turning = true;
       Sservo.write(150);
       break;
     case 's':
+      turning = true;
       Sservo.write(105);
       break;
     case 'A':
+      turning = true;
       Sservo.write(40);
       break;
     case 'Z':
+      turning = false;
       Sservo.write(65);
       break;
     case 'c':
+      turning = true;
       Sservo.write(78);
       break;
     case 'f':
+      turning = false;
       Sservo.write(90);
       break;
     case 'R':
+      turning = false;
       Sservo.write(55);
       break;
     case 'L':
+      turning = true;
       Sservo.write(50);
       break;
     default:
