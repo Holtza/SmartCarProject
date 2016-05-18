@@ -17,10 +17,10 @@
 #define YPIN A4
 #define WHEEL_A 5
 #define WHEEL_B 3
-#define BASE_REDUCED_SPEED 1540
-#define BOOST_REDUCED_SPEED 1568
-#define BASE_SPEED 1540
-#define BOOST_SPEED 1568
+#define BASE_REDUCED_SPEED 1542
+#define BOOST_REDUCED_SPEED 1566
+#define BASE_SPEED 1545
+#define BOOST_SPEED 1570
 #define BOOST_REV_SPEED 1240
 #define BASE_REV_SPEED 1235
 #define HOLE_MIN 1
@@ -29,8 +29,8 @@
 #define IR3 A0 //IR pin
 #define IR2 A1 //IR pin
 #define IR1 A2 //IR pin
-int US1 = 113; //Ultrasonic addresses
-int US2 = 114; //Ultrasonic addresses
+int US1 = 112; //Ultrasonic addresses
+int US2 = 113; //Ultrasonic addresses
 
 
 Servo esc, Sservo;
@@ -52,12 +52,9 @@ int compare;
 boolean stationary = true;
 int driving = 0;
 
-int static sonarBufferLength = 5;
-int sonarBufferOne[] = {0,0,0,0,0};
-int sonarBufferTwo[] = {0,0,0,0,0};
-int irBufferOne[] =  {0,0,0,0,0};
-int irBufferTwo[] =  {0,0,0,0,0};
-int irBufferThree[] = {0,0,0,0,0};
+int static sonarBufferLength = 8;
+int sonarBufferOne[] = {0,0,0,0,0,0,0,0};
+int sonarBufferTwo[] = {0,0,0,0,0,0,0,0};
  
 void setup(){
 
@@ -111,10 +108,6 @@ void loop(){
   }else if(driving == 2){
      if(rotation<HOLE_MIN)esc.writeMicroseconds(BOOST_REV_SPEED);
     else if(rotation<HOLE_MAX)esc.writeMicroseconds(BASE_REV_SPEED);
-  }else if(driving == 3){
-    if(rotation<HOLE_MIN)esc.writeMicroseconds(BOOST_SPEED);
-    else if(rotation<HOLE_MAX)esc.writeMicroseconds(BASE_SPEED);
-    else esc.writeMicroseconds(neutral);
   }else{
     esc.writeMicroseconds(neutral);
   }
@@ -147,9 +140,6 @@ void loop(){
         driving = 0;
         //esc.writeMicroseconds(1500);
         break;       
-      case 'b':
-        driving = 3;
-        break;
       default:
         Serial.println("unknown input?");
     }
