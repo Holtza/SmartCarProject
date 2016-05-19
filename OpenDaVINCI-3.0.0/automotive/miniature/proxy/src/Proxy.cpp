@@ -263,9 +263,9 @@ namespace miniature {
             else if ((int)(vc.getSteeringWheelAngle() * (180.0 / 3.14159)) == 14)
                 setAngle = CAR_SHARP_TURN_RIGHT;
 
-            // if(vc.getSpeed() >= -0.1 && vc.getSpeed() <= 0.1){
-            //    setArduinoSpeed = CAR_STOP;
-             if(vc.getSpeed() >= 1.4 && vc.getSpeed() <= 1.6){
+             if(vc.getSpeed() >= -0.1 && vc.getSpeed() <= 0.1){
+                setArduinoSpeed = CAR_STOP;
+             }else if(vc.getSpeed() >= 1.4 && vc.getSpeed() <= 1.6){
                 setArduinoSpeed = CAR_DRIVE;
              }else if(vc.getSpeed() >= -1.1 && vc.getSpeed() <= -0.9){
                 setArduinoSpeed = CAR_REVERSE;

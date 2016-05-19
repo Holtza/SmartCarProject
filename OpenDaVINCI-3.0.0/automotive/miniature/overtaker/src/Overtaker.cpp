@@ -197,7 +197,7 @@ namespace automotive {
         ControlUnit Overtaker::movementStage(ControlUnit unit){
             cout<<"Backup counter is: ";
             cout<<backupCounter<<endl;
-		const double toRightLaneRightTurn = 4; 
+		const double toRightLaneRightTurn = 6; 
 		const double toRightLaneLeftTurn = 6;
         const double toLeftLaneLeftTurn = 7;
         const double toLeftLaneRightTurn = 7;

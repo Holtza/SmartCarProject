@@ -88,10 +88,10 @@ ControlUnit AlternativeParker::measureStage(ControlUnit unit){
 	const int32_t IR_REAR = 1;
 
 	//Measurement variables go here:
-	const double carSize = 10;
-	const double minSpaceWidth = 30;
-	const double minSpaceLength = carSize * 1.9;
-	const int noiseAllowance = 2;
+	//const double carSize = 5;
+	const double minSpaceWidth = 20;
+	const double minSpaceLength = 5;
+	const int noiseAllowance = 5;
 	const int backSafeDist = 10; //in cm (value from IR sensor)
 	
 
@@ -106,40 +106,46 @@ ControlUnit AlternativeParker::measureStage(ControlUnit unit){
 	//Set AbsTraveledPath data to latest wheel encoder data
 	    vd.setAbsTraveledPath(sbd.getValueForKey_MapOfDistances(WHEEL_ENCODER));
 
-
+	    cout<<vd.getAbsTraveledPath() - currentTraveledPath<<endl;
 	switch(unit.stageMeasuring) {
 
 		//Controlling if there is an obstacle
 		case ControlUnit::DETECT_OBSTACLE: {
 			//If no obstacle is detected, start MEASURING stage
 			if (sbd.getValueForKey_MapOfDistances(IR_REAR_RIGHT) < 0 || sbd.getValueForKey_MapOfDistances(IR_REAR_RIGHT) > minSpaceWidth) {
-                    		unit.stageMeasuring = ControlUnit::MEASURE_SIDE;
                     		currentTraveledPath = vd.getAbsTraveledPath();
+                    		unit.stageMeasuring = ControlUnit::MEASURE_SIDE;
 			}
 		}break;
 
 		//Measure empty space
 		case ControlUnit::MEASURE_SIDE: {
+			//cout<<"COUNTER IS: ";
+			//cout<<counter<<endl;
 			//If obstacle is encountered, go back to detecting obstacle state
-			if ((sbd.getValueForKey_MapOfDistances(IR_REAR_RIGHT) > -1 && sbd.getValueForKey_MapOfDistances(IR_REAR_RIGHT) < minSpaceWidth)
-			     && (counter > noiseAllowance)) {
-                    		unit.stageMeasuring = ControlUnit::DETECT_OBSTACLE;
-			//Account for noise
-			}else if (sbd.getValueForKey_MapOfDistances(IR_REAR_RIGHT) > -1 && sbd.getValueForKey_MapOfDistances(IR_REAR_RIGHT) < minSpaceWidth){
-				counter++;
-			//If the space is big enough
-                	}else if (vd.getAbsTraveledPath() - currentTraveledPath >= minSpaceLength) {
+			if (vd.getAbsTraveledPath() - currentTraveledPath >= minSpaceLength) {
 				unit.stageMeasuring = ControlUnit::DISABLE;
 				unit.stageMoving = ControlUnit::FRONT_ALIGN;
 				currentTraveledPath = vd.getAbsTraveledPath();
 				counter = 0; //reset for next use
-			}
-                }break;
+			}else if ((sbd.getValueForKey_MapOfDistances(IR_REAR_RIGHT) > -1 && sbd.getValueForKey_MapOfDistances(IR_REAR_RIGHT) < minSpaceWidth)
+			     && (counter > noiseAllowance)) {
+
+                    		unit.stageMeasuring = ControlUnit::DETECT_OBSTACLE;
+
+			//Account for noise
+			}else if (sbd.getValueForKey_MapOfDistances(IR_REAR_RIGHT) > -1 && sbd.getValueForKey_MapOfDistances(IR_REAR_RIGHT) < minSpaceWidth){
+				counter++;
+			//If the space is big enough
+            }else{
+				counter = 0;
+            }
+		}break;
 
 		case ControlUnit::MEASURE_BACK: {
 			if (sbd.getValueForKey_MapOfDistances(IR_REAR) <= backSafeDist && sbd.getValueForKey_MapOfDistances(IR_REAR) > -1){
-				unit.stageMoving = ControlUnit::ADJUST;
 				unit.stageMeasuring = ControlUnit::DISABLE;
+				unit.stageMoving = ControlUnit::ADJUST;
 				currentTraveledPath = vd.getAbsTraveledPath();
 				cerr << "OBSTACLE TOO CLOSE, INITIATING FORWARD ADJUSTMENT" << endl;
 			}
@@ -183,10 +189,10 @@ ControlUnit AlternativeParker::movementStage(ControlUnit unit){
 	//Measurement variables
 	const double reverseSpeed = -1;
 	const double frontAlign = 0;
-	const double frontLeft = 11;
-	const double reverse = 15;
-	const double backLeft = 11;
-	const double adjust = 10;
+	const double frontLeft = 4;
+	const double reverse = 5;
+	const double backLeft = 4;
+	const double adjust = 1;
 
 
 	switch(unit.stageMoving){
