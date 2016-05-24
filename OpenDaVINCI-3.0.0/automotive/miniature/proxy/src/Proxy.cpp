@@ -393,6 +393,9 @@ namespace miniature {
         return odcore::data::dmcp::ModuleExitCodeMessage::OKAY;
     }
 
+	//function for transforming 'clicks' from the wheel encoder into distance in the metric system.
+	//decimeter used to correspond to the simulation output (meters on a 1:10 scale)
+	//UNUSED due to wheel encoders on different cars not behaving the same.
     double Proxy::clicksToDistance(int clicks)
     {
 
@@ -401,7 +404,7 @@ namespace miniature {
 
         double mm = clicks * clickToMm;
 
-        double dm = mm / 190;
+        double dm = mm / 100;
         cerr << "Decimeters: " << dm << endl;
 
         return dm;
