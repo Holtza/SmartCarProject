@@ -121,23 +121,20 @@ ControlUnit AlternativeParker::measureStage(ControlUnit unit){
 		//Measure empty space
 		case ControlUnit::MEASURE_SIDE: {
 			//If obstacle is encountered, go back to detecting obstacle state
-			if ((sbd.getValueForKey_MapOfDistances(IR_REAR_RIGHT) > -1 && sbd.getValueForKey_MapOfDistances(IR_REAR_RIGHT) < minSpaceWidth) && (counter > noiseAllowance)) {
-        			unit.stageMeasuring = ControlUnit::DETECT_OBSTACLE;
-				counter = 0; //reset for next use
+			if ((sbd.getValueForKey_MapOfDistances(IR_REAR_RIGHT) > -1 && sbd.getValueForKey_MapOfDistances(IR_REAR_RIGHT) < minSpaceWidth)
+			     && (counter > noiseAllowance)) {
+                    		unit.stageMeasuring = ControlUnit::DETECT_OBSTACLE;
 			//Account for noise
 			}else if (sbd.getValueForKey_MapOfDistances(IR_REAR_RIGHT) > -1 && sbd.getValueForKey_MapOfDistances(IR_REAR_RIGHT) < minSpaceWidth){
 				counter++;
 			//If the space is big enough
-        		}else if (vd.getAbsTraveledPath() - currentTraveledPath >= minSpaceLength) {
+                	}else if (vd.getAbsTraveledPath() - currentTraveledPath >= minSpaceLength) {
 				unit.stageMeasuring = ControlUnit::DISABLE;
 				unit.stageMoving = ControlUnit::FRONT_ALIGN;
 				currentTraveledPath = vd.getAbsTraveledPath();
 				counter = 0; //reset for next use
-			//If no obstacle is detected, but the space is not long enough
-			}else if (sbd.getValueForKey_MapOfDistances(IR_REAR_RIGHT) < -1 || sbd.getValueForKey_MapOfDistances(IR_REAR_RIGHT) >= minSpaceWidth){
-				counter = 0; //reset for next use
 			}
-		}break;
+                }break;
 
 		case ControlUnit::MEASURE_BACK: {
 			if (sbd.getValueForKey_MapOfDistances(IR_REAR) <= backSafeDist && sbd.getValueForKey_MapOfDistances(IR_REAR) > -1){
